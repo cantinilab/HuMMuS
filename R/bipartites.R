@@ -3,35 +3,34 @@
 #' Return list of links between peaks and TFs, based on their binding motifs locations on a reference genome.
 #' Currently based on Signac AddMotifs function (--> motifmachR, itself based on MOODs algorithm).
 #' 
-#' @param l_tfs vector(character) - List of genes.
+#' @param l_tfs vector(character) - List of tfs considered.
 #' @param l_peaks vector(character) - List of peaks.
-#' @param peak_sep1 (character) - Separator between chromosme number and startign coordinates (e.g. : chr1/100_1000 --> sep1='/').
-#' @param peak_sep2 (character) - Separator between chromosme number and startign coordinates (e.g. : chr1/100_1000 --> sep1='_').
-#' @param store_bipartite (bool) - Save the bipartite directly (\code{TRUE}, default) or return without saving on disk (\code{FALSE}).
-#' @param output_file (character) - Name of the output_file (if store_bipartite == \code{TRUE}).
+#' @param peak_sep1 (character) - Separator between chromosme number and starting coordinates (e.g. : chr1/100_1000 --> sep1='/').
+#' @param peak_sep2 (character) - Separator between chromosme number and starting coordinates (e.g. : chr1/100_1000 --> sep1='_').
 #' @param genome (BSGenome) - Genome sequences on which motifs positions will be searched for.
 #' @param gene.range (gene.range object) - TO DO.
 #' @param motifs  (PWMatrixList) List of PWMatrix (probability matrices of motifs).
 #' @param tf2motifs (data.frame) Corresponding table between PWMatrix names and binding TFs.
+#' @param store_bipartite (bool) - Save the bipartite directly (\code{TRUE}, default) or return without saving on disk (\code{FALSE}).
+#' @param output_file (character) - Name of the output_file (if store_bipartite == \code{TRUE}).
 #' @param verbose (integer) Display function messages. Set to 0 for no message displayed, >= 1 for more details.
 #'
 #' @return (data.frame) Return list of the links betweeen TFs and peaks.
 #' @export
 #'
-#' @examples TO DO. Same than unit test.
+#' @examples TO DO. Same than UNIT test.
 Bipartite_TFs2Peaks <- function(
   l_tfs,
   l_peaks,
   peak_sep1=":",
   peak_sep2="-",
-  store_bipartite=TRUE,
-  output_file = None,
   genome,
   gene.range,
   motifs, 
-
   tf2motifs,
-  verbose=1){
+  store_bipartite=TRUE,
+  output_file = None,
+   verbose=1){
 
   # Build up object to determine TF-peak links and peak-gene links
   rna  = data.frame(features=l_tfs)                                           # List of genes present in scRNA
@@ -88,46 +87,31 @@ Bipartite_TFs2Peaks <- function(
 }
 
 
-#' Compute links between TFs and DNA regions
-#'
-#' Return list of links between peaks and TFs, based on their binding motifs locations on a reference genome.
-#' Currently based on Signac AddMotifs function (--> motifmachR, itself based on MOODs algorithm).
-#' 
-#' @param l_tfs vector(character) - List of genes.
-#' @param l_peaks vector(character) - List of peaks.
-#' @param peak_sep1 (character) - Separator between chromosme number and startign coordinates (e.g. : chr1/100_1000 --> sep1='/').
-#' @param peak_sep2 (character) - Separator between chromosme number and startign coordinates (e.g. : chr1/100_1000 --> sep1='_').
-#' @param store_bipartite (bool) - Save the bipartite directly (\code{TRUE}, default) or return without saving on disk (\code{FALSE}).
-#' @param output_file (character) - Name of the output_file (if store_bipartite == \code{TRUE}).
-#' @param genome (BSGenome) - Genome sequences on which motifs positions will be searched for.
-#' @param gene.range (gene.range object) - TO DO.
-#' @param motifs  (PWMatrixList) List of PWMatrix (probability matrices of motifs).
-#' @param tf2motifs (data.frame) Corresponding table between PWMatrix names and binding TFs.
-#' @param verbose (integer) Display function messages. Set to 0 for no message displayed, >= 1 for more details.
-#'
+
 
 #' Compute links between DNA regions and genenames
 #'
 #' Return list of links between peaks and genes, based on the distance between peaks and gene's TSS location from gene.range annotations.
 #' Call find_peaks_near_genes function, that can use different methods.
 #'
-#' @param genes
-#' @param peaks
-#' @param peak_sep1
-#' @param peak_sep2
-#' @param gene.range
-#' @param peak_to_gene_method
-#' @param upstream
-#' @param downstream
-#' @param only_tss
-#' @param store_bipartite
-#' @param output_file
-#' @param peaks2genes_filename
+#' @param genes vector(character) - List of genes.
+#' @param peaks vector(character) - List of peaks.
+#' @param peak_sep1 (character) - Separator between chromosme number and starting coordinates (e.g. : chr1/100_1000 --> sep1='/').
+#' @param peak_sep2 (character) - Separator between chromosme number and starting coordinates (e.g. : chr1/100_1000 --> sep1='_').
+#' @param gene.range (gene.range object) - TO DO.
+#' @param peak_to_gene_method (character) - Method used to map peaks to near gene
+#' * \code{'Signac'} - TO DO.
+#' * \code{'GREAT'} - TO DO.
+#' @param upstream (integer) - size of the window upstream the TSS considered
+#' @param downstream (integer) - size of the window upstream the TSS considered
+#' @param only_tss (bool) - Associated peaks in the window size from TSS only (\code{TRUE}) or aroud the whole gene body (\code{FALSE}).
+#' @param store_bipartite (bool) - Save the bipartite directly (\code{TRUE}, default) or return without saving on disk (\code{FALSE}).
+#' @param output_file (character) - Name of the output_file (if store_bipartite == \code{TRUE}).
 #'
-#' @return
+#' @return (data.frame) Return list of the links betweeen peaks and genes.
 #' @export
 #'
-#' @examples
+#' @examples TO DO. Same than UNIT test.
 Bipartite_Peaks2Genes <- function(
   genes,
   peaks,
@@ -139,8 +123,7 @@ Bipartite_Peaks2Genes <- function(
   downstream=500,
   only_tss=TRUE,
   store_bipartite=TRUE,
-  output_file,
-  peaks2genes_filename){
+  output_file=None){
 
   # Build up object to determine peak-gene links
   rna  = data.frame(features=genes)                                           # List of genes present in scRNA
