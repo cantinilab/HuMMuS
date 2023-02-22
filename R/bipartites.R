@@ -1,36 +1,40 @@
-#' Title
+#' Compute links between TFs and DNA regions
 #'
-#' @param l_genes
-#' @param l_peaks
-#' @param peak_sep1
-#' @param peak_sep2
-#' @param store_bipartite
-#' @param output_file
-#' @param genome
-#' @param gene.range
-#' @param motifs
-#' @param tf2motifs
-#' @param verbose
+#' Return list of links between peaks and TFs, based on their binding motifs locations on a reference genome.
+#' Currently based on Signac AddMotifs function (--> motifmachR, itself based on MOODs algorithm).
+#' 
+#' @param l_tfs vector(character) - List of genes.
+#' @param l_peaks vector(character) - List of peaks.
+#' @param peak_sep1 (character) - Separator between chromosme number and startign coordinates (e.g. : chr1/100_1000 --> sep1='/').
+#' @param peak_sep2 (character) - Separator between chromosme number and startign coordinates (e.g. : chr1/100_1000 --> sep1='_').
+#' @param store_bipartite (bool) - Save the bipartite directly (\code{TRUE}, default) or return without saving on disk (\code{FALSE}).
+#' @param output_file (character) - Name of the output_file (if store_bipartite == \code{TRUE}).
+#' @param genome (BSGenome) - Genome sequences on which motifs positions will be searched for.
+#' @param gene.range (gene.range object) - TO DO.
+#' @param motifs  (PWMatrixList) List of PWMatrix (probability matrices of motifs).
+#' @param tf2motifs (data.frame) Corresponding table between PWMatrix names and binding TFs.
+#' @param verbose (integer) Display function messages. Set to 0 for no message displayed, >= 1 for more details.
 #'
-#' @return
+#' @return (data.frame) Return list of the links betweeen TFs and peaks.
 #' @export
 #'
-#' @examples
+#' @examples TO DO. Same than unit test.
 Bipartite_TFs2Peaks <- function(
-  l_genes,
+  l_tfs,
   l_peaks,
   peak_sep1=":",
   peak_sep2="-",
   store_bipartite=TRUE,
-  output_file,
+  output_file = None,
   genome,
   gene.range,
-  motifs,
+  motifs, 
+
   tf2motifs,
   verbose=1){
 
   # Build up object to determine TF-peak links and peak-gene links
-  rna  = data.frame(features=l_genes)                                           # List of genes present in scRNA
+  rna  = data.frame(features=l_tfs)                                           # List of genes present in scRNA
   rna[,c("dummy_cell1", "dummy_cell2")] <- 1
   rownames(rna) <- rna$features
   rna$features <- NULL
@@ -72,7 +76,7 @@ Bipartite_TFs2Peaks <- function(
   }
 
   TFs_Peaks = motif_pos@motifs@data %*% tf2motifs[, tfs_use] # Get TF peak links
-  TFs_Peaks = TFs_Peaks[,colnames(TFs_Peaks) %in% l_genes]                      # Keep only the TFs that are in our scRNA-seq dataset
+  TFs_Peaks = TFs_Peaks[,colnames(TFs_Peaks) %in% l_tfs]                      # Keep only the TFs that are in our scRNA-seq dataset
   l_tfs2peaks <- expand.grid(rownames(TFs_Peaks),colnames(TFs_Peaks))[as.vector(TFs_Peaks>0),] # TF-peak links
   colnames(l_tfs2peaks) <- c("peak","TF")                                                      # set column names
 
@@ -84,9 +88,28 @@ Bipartite_TFs2Peaks <- function(
 }
 
 
+#' Compute links between TFs and DNA regions
+#'
+#' Return list of links between peaks and TFs, based on their binding motifs locations on a reference genome.
+#' Currently based on Signac AddMotifs function (--> motifmachR, itself based on MOODs algorithm).
+#' 
+#' @param l_tfs vector(character) - List of genes.
+#' @param l_peaks vector(character) - List of peaks.
+#' @param peak_sep1 (character) - Separator between chromosme number and startign coordinates (e.g. : chr1/100_1000 --> sep1='/').
+#' @param peak_sep2 (character) - Separator between chromosme number and startign coordinates (e.g. : chr1/100_1000 --> sep1='_').
+#' @param store_bipartite (bool) - Save the bipartite directly (\code{TRUE}, default) or return without saving on disk (\code{FALSE}).
+#' @param output_file (character) - Name of the output_file (if store_bipartite == \code{TRUE}).
+#' @param genome (BSGenome) - Genome sequences on which motifs positions will be searched for.
+#' @param gene.range (gene.range object) - TO DO.
+#' @param motifs  (PWMatrixList) List of PWMatrix (probability matrices of motifs).
+#' @param tf2motifs (data.frame) Corresponding table between PWMatrix names and binding TFs.
+#' @param verbose (integer) Display function messages. Set to 0 for no message displayed, >= 1 for more details.
+#'
 
-
-#' Title
+#' Compute links between DNA regions and genenames
+#'
+#' Return list of links between peaks and genes, based on the distance between peaks and gene's TSS location from gene.range annotations.
+#' Call find_peaks_near_genes function, that can use different methods.
 #'
 #' @param genes
 #' @param peaks
