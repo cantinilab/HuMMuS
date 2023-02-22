@@ -8,11 +8,11 @@ Beside classical Gene Regulatory Networks (GRN), HuMMus propose enhancer predict
 
 We propose two ways of using HuMMuS : 
 
-## **scRNA-seq + scATAC-seq data** 
+## **scRNA + scATAC** 
 
 Like most of the current state-of-the-art method to infer Gene Regulatory Networks, we popose a minimal version of HuMMuS based on scRNA-seq + scATAC-seq data (paired or **unpaired**).
 
-## **3 single-cell omics** : scRNA-seq data + scATAC-seq data + **scMethylation data**
+## **3 single-cell omics** : scRNA + scATAC + **scMethylation**
 HuMMuS has been developed to be extendable to any additional biological modality of interest.
 We propose a standard adaptation of this framework to integration single-cell methylation.
 
