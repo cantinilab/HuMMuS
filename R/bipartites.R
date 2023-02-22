@@ -22,8 +22,8 @@
 Bipartite_TFs2Peaks <- function(
   tfs,
   peaks,
-  peak_sep1=":",
-  peak_sep2="-",
+  peak_sep1=":", 
+  peak_sep2="-", 
   genome,
   gene.range,
   motifs, 
