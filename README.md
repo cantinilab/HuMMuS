@@ -4,9 +4,10 @@
 ### Heterogeneous Multilayer network for Multi-omics Single-cell data 
 
 HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory relationships.
-We propose two ways of using HuMMuS. 
-- A standard usage for **scRNA-seq + scATAC-seq data** (paired or **unpaired**)
-- A **3 single-cell omics** approach for  scRNA-seq data + scATAC-seq data + **scMethylation data**
+We propose two ways of using HuMMuS : 
+
+## **scRNA-seq + scATAC-seq data** (paired or **unpaired**)
+## **3 single-cell omics** : scRNA-seq data + scATAC-seq data + **scMethylation data**
 
 
 Beside classical Gene Regulatory Networks (GRN), HuMMus propose enhancer predictions, binding regions prediction and even broad communities detection.
