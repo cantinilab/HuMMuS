@@ -1,6 +1,6 @@
 ![Build](https://github.com/cantinilab/HuMMuS/____/badge.svg?branch=main)
 
-# HuMMuS <img src="figures/hummus_logo.png" align="right" width="180"/>
+# HuMMuS <img src="Figures/hummus_logo.png" align="right" width="180"/>
 ## Heterogeneous Multilayer network for Multi-omics Single-cell data 
 
 HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory relationships.
