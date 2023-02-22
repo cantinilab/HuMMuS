@@ -29,6 +29,7 @@ Bipartite_TFs2Peaks <- function(
   genome,
   gene.range,
   motifs, 
+
   tf2motifs,
   verbose=1){
 
@@ -109,7 +110,7 @@ Bipartite_TFs2Peaks <- function(
 #'
 #' Return list of links between peaks and genes, based on the distance between peaks and gene's TSS location from gene.range annotations.
 #' Call find_peaks_near_genes function, that can use different methods.
-
+#'
 #' @param genes
 #' @param peaks
 #' @param peak_sep1
