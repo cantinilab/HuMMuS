@@ -3,8 +3,8 @@
 #' Return list of links between peaks and TFs, based on their binding motifs locations on a reference genome.
 #' Currently based on Signac AddMotifs function (--> motifmachR, itself based on MOODs algorithm).
 #' 
-#' @param l_tfs vector(character) - List of tfs considered.
-#' @param l_peaks vector(character) - List of peaks.
+#' @param tfs vector(character) - List of tfs considered.
+#' @param peaks vector(character) - List of peaks.
 #' @param peak_sep1 (character) - Separator between chromosme number and starting coordinates (e.g. : chr1/100_1000 --> sep1='/').
 #' @param peak_sep2 (character) - Separator between chromosme number and starting coordinates (e.g. : chr1/100_1000 --> sep1='_').
 #' @param genome (BSGenome) - Genome sequences on which motifs positions will be searched for.
@@ -20,8 +20,8 @@
 #'
 #' @examples TO DO. Same than UNIT test.
 Bipartite_TFs2Peaks <- function(
-  l_tfs,
-  l_peaks,
+  tfs,
+  peaks,
   peak_sep1=":",
   peak_sep2="-",
   genome,
@@ -30,14 +30,14 @@ Bipartite_TFs2Peaks <- function(
   tf2motifs,
   store_bipartite=TRUE,
   output_file = None,
-   verbose=1){
+  verbose=1){
 
   # Build up object to determine TF-peak links and peak-gene links
-  rna  = data.frame(features=l_tfs)                                           # List of genes present in scRNA
+  rna  = data.frame(features=tfs)                                           # List of genes present in scRNA
   rna[,c("dummy_cell1", "dummy_cell2")] <- 1
   rownames(rna) <- rna$features
   rna$features <- NULL
-  atac  = data.frame(features=l_peaks)                                          # List of peaks present in scATAC
+  atac  = data.frame(features=peaks)                                          # List of peaks present in scATAC
   atac[,c("dummy_cell1", "dummy_cell2")] <- 1
   rownames(atac) <- atac$features
   atac$features <- NULL
@@ -75,15 +75,15 @@ Bipartite_TFs2Peaks <- function(
   }
 
   TFs_Peaks = motif_pos@motifs@data %*% tf2motifs[, tfs_use] # Get TF peak links
-  TFs_Peaks = TFs_Peaks[,colnames(TFs_Peaks) %in% l_tfs]                      # Keep only the TFs that are in our scRNA-seq dataset
-  l_tfs2peaks <- expand.grid(rownames(TFs_Peaks),colnames(TFs_Peaks))[as.vector(TFs_Peaks>0),] # TF-peak links
-  colnames(l_tfs2peaks) <- c("peak","TF")                                                      # set column names
+  TFs_Peaks = TFs_Peaks[,colnames(TFs_Peaks) %in% tfs]                      # Keep only the TFs that are in our scRNA-seq dataset
+  tfs2peaks <- expand.grid(rownames(TFs_Peaks),colnames(TFs_Peaks))[as.vector(TFs_Peaks>0),] # TF-peak links
+  colnames(tfs2peaks) <- c("peak","TF")                                                      # set column names
 
   if(store_bipartite){
-    write.table(l_tfs2peaks, output_file, col.names = TRUE, row.names = FALSE, quote = FALSE, sep = "\t")
+    write.table(tfs2peaks, output_file, col.names = TRUE, row.names = FALSE, quote = FALSE, sep = "\t")
   }
 
-  return(l_tfs2peaks)
+  return(tfs2peaks)
 }
 
 
@@ -155,13 +155,13 @@ Bipartite_Peaks2Genes <- function(
                                  fun="sum")
   peaks2gene = peaks2gene[rownames(peaks2gene) %in% genes,]                   # Keep only the genes that are in our scRNA-seq dataset
   peaks2gene = peaks2gene[rowSums(peaks2gene)!=0, colSums(peaks2gene)!=0]       # Remove rows/cols with only zeros
-  l_peaks2genes <- expand.grid(rownames(peaks2gene),colnames(peaks2gene))[as.vector(peaks2gene>0),] # peak-gene links
-  colnames(l_peaks2genes) <- c("gene","peak")                                                      # set column names
+  peaks2genes <- expand.grid(rownames(peaks2gene),colnames(peaks2gene))[as.vector(peaks2gene>0),] # peak-gene links
+  colnames(peaks2genes) <- c("gene","peak")                                                      # set column names
 
   if(store_bipartite){
-    write.table(l_peaks2genes, output_file, col.names = TRUE, row.names = FALSE, quote = FALSE, sep = "\t")
+    write.table(peaks2genes, output_file, col.names = TRUE, row.names = FALSE, quote = FALSE, sep = "\t")
   }
 
   # Return list the two edgelists containing TF-peak and peak-gene links
-  return(l_peaks2genes)
+  return(peaks2genes)
 }

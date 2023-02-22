@@ -1,24 +1,25 @@
-############################################################################################################################################################
-## compute TF network
-############################################################################################################################################################
-
-#' Title
+#' Compute TF network
 #'
-#' @param organism
-#' @param list_TF
-#' @param store_network
-#' @param output_file
-#' @param source_target
+#' Compute a protein-protein interaction layer from Omnipath request that will represent tf cooperativity.
+#' This network is the top-layer of HuMMuS multilayer.
+#' 
+#' @param organism (integer)  - Specie identifier from Omnipath to fetch specific interactions
+#' @param tfs vector(character) - List of tfs considered.
+#' @param store_network (bool) - Save the network directly (\code{TRUE},
+#'  default) or return without saving on disk (\code{FALSE}).
+#' @param output_file (character) - Name of the output_file (if store_network == \code{TRUE}).
+#' @param source_target ('AND'|'OR') - Fetch only the interactions involving
+#'  two considered tfs (\code{'AND'}), or one considered tfs and any other element (\code{'OR'})
 #'
-#' @return
+#' @return (data.frame) - Return list of network interactions between tfs (or larger set of protein if source_target==\code{'OR'})
 #' @export
 #'
-#' @examples
+#' @examples TO DO. Same than UNIT test.
 compute_TF_network <- function(organism=9606,
-                               list_TF=NA, store_network=TRUE, output_file, source_target='AND'){
+                               tfs=NA, store_network=TRUE, output_file, source_target='AND'){
 
    TF_PPI <- import_post_translational_interactions(
-    organism = organism, partners = list_TF, source_target = source_target
+    organism = organism, partners = tfs, source_target = source_target
   )
 
   Network_TF = TF_PPI[,c(3,4)]
@@ -31,29 +32,37 @@ compute_TF_network <- function(organism=9606,
   return(Network_TF)
 }
 
-############################################################################################################################################################
-## compute gene network
-############################################################################################################################################################
-
-#' Title
+#' Compute gene netwok from scRNA-seq data
 #'
-#' @param scRNA
-#' @param TFs
-#' @param method
-#' @param store_network
-#' @param output_file
-#' @param threshold
-#' @param number_cores
-#' @param verbose
+#' This function will create a network from rna data (or in theory any data
+#' wtih genes as features).
+#' Different method should be implemented at some point (any suggestion is welcomed ! :) ),
+#' for now Genie3 is still the reference and only method available
 #'
-#' @return
+#' Method descriptions :
+#'  1. Genie3
+#'      Use tree random forest to infer regulatory networks :
+#'      https://bioconductor.org/packages/release/bioc/html/GENIE3.html
+#'
+#' @param scRNA (data.frame) - Expression matrix (cells*genes)
+#' @param tfs vector(character) - List of tfs considered.
+#' @param method (character) - Method used to infer network edges.
+#' * \code{'Genie3'} - TO DO.
+#' @param store_network (bool) - Save the network directly (\code{TRUE},
+#'  default) or return without saving on disk (\code{FALSE}).
+#' @param output_file (character) - Name of the output_file (if store_network == \code{TRUE}).
+#' @param threshold (interger, default 0) - Minimal threshold to select tf-gene edges.
+#' @param number_cores (interger, default 1) - Number of thread that should be used for the parallelizable methods.
+#' @param verbose (integer) - Display function messages. Set to 0 for no message displayed, >= 1 for more details.
+#'
+#' @return (data.frame) - Return list of network interactions between genes
 #' @export
 #'
-#' @examples
-compute_gene_network <- function(scRNA, TFs, method="GENIE3", store_network=TRUE, output_file, threshold=0.0, number_cores=1, verbose=1){
+#' @examples TO DO. Same than UNIT test.
+compute_gene_network <- function(scRNA, tfs, method="GENIE3", store_network=TRUE, output_file, threshold=0.0, number_cores=1, verbose=1){
   if(method=="GENIE3"){
     a = Sys.time()
-    weightMat = GENIE3(as.matrix(scRNA), regulators = TFs, nCores=number_cores)   # Infer network
+    weightMat = GENIE3(as.matrix(scRNA), regulators = tfs, nCores=number_cores)   # Infer network
 
     if (verbose>0){
       print(paste("Gene network construction time:",Sys.time()-a))
@@ -74,7 +83,7 @@ compute_gene_network <- function(scRNA, TFs, method="GENIE3", store_network=TRUE
   }
 }
 
-#' Compute netwok from atac data
+#' Compute peak network from scATAC-seq data
 #'
 #' This function will create a network from atac data (or in theory any data
 #' wtih peaks coordinates as features).
@@ -89,19 +98,20 @@ compute_gene_network <- function(scRNA, TFs, method="GENIE3", store_network=TRUE
 #' @param scATAC
 #' @param genome
 #' @param method
-#' @param store_network
-#' @param output_file
-#' @param threshold
-#' @param number_cluster
-#' @param number_sample
-#' @param seed
-#' @param verbose
-#' @param window
+#' @param store_network (bool) - Save the network directly (\code{TRUE},
+#'  default) or return without saving on disk (\code{FALSE}).
+#' @param output_file (character) - Name of the output_file (if store_network == \code{TRUE}).
+#' @param threshold (interger, default 0) - Minimal threshold to select tf-gene edges.
+#' @param number_cells_per_clusters (integer) - Number of cells grouped by territory to define pseudocells
+#' @param sample_num (integer | Cicero) - TO DO.
+#' @param seed ( __ ) - Random seed used by Cicero.
+#' @param verbose (integer) - Display function messages. Set to 0 for no message displayed, >= 1 for more details.
+#' @param window (interger) - Size of window to consider potential cis-regulatory cooperations
 #'
-#' @return
+#' @return (data.frame) - Return list of network interactions between peaks
 #' @export
 #'
-#' @examples
+#' @examples TO DO. Same than UNIT test.
 compute_atac_peak_network <- function(
     scATAC,
     genome=BSgenome.Hsapiens.UCSC.hg38,
@@ -109,8 +119,8 @@ compute_atac_peak_network <- function(
     store_network=TRUE,
     output_file,
     threshold=0.0,
-    number_cluster=50,
-    number_sample=100,
+    number_cells_per_clusters=50,
+    sample_num=100,
     seed=2021,
     verbose=1,
     window = 5e+05
@@ -141,7 +151,7 @@ compute_atac_peak_network <- function(
     umap_coords <- reducedDims(input_cds)$UMAP                                # Get reduced (UMAP) coordinates
     cicero_cds <- make_cicero_cds(input_cds,                                  # Create a Cicero CDS object
                                   reduced_coordinates = umap_coords,
-                                  k = number_cluster,  #number neighbors         # Default = 50
+                                  k = number_cells_per_clusters,  #number neighbors         # Default = 50
                                   summary_stats = NULL,         # Default
                                   size_factor_normalize = TRUE, # Default
                                   silent = FALSE)               # Default
@@ -151,7 +161,7 @@ compute_atac_peak_network <- function(
                          genomic_coords = chromosome_sizes, # mouse.mm10.genome,
                          window = window,             # Default
                          silent = FALSE,             # Default
-                         sample_num = number_sample) # Default = 100
+                         sample_num = sample_num) # Default = 100
     print('test 3')
     if (verbose<0){
       print(paste("Peak network construction time:",Sys.time()-a))}
