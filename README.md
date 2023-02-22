@@ -14,7 +14,6 @@ Beside classical Gene Regulatory Networks (GRN), HuMMus propose enhancer predict
 _A future development of the package should also allow integration of personalised proteomics data to reploace the general protein-protein interactions we are currently using._
 
 ## Introduction
-### test
-##### test5
+
 
 
