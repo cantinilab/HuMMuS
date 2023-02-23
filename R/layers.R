@@ -163,7 +163,7 @@ compute_atac_peak_network <- function(
                          silent = FALSE,             # Default
                          sample_num = sample_num) # Default = 100
     print('test 3')
-    if (verbose<0){
+    if (verbose>0){
       print(paste("Peak network construction time:",Sys.time()-a))}
     if(store_network){
       write.table(cicero, cicero_nw_filename, col.names = TRUE, row.names = FALSE, quote = FALSE, sep = "\t")
@@ -192,7 +192,7 @@ compute_atac_peak_network <- function(
     cicero$Peak1 <- gsub("_","-",cicero$Peak1)                                 # Peak names 2x"-" to match bipartites
     cicero$Peak2 <- gsub("_","-",cicero$Peak2)                                 # Peak names 2x"-" to match bipartites########? 2x"-" or 2x"_"
 
-    if (verbose<0){
+    if (verbose>0){
       print(paste(dim(Peak_Network)[1], "peak edges with weight > ", as.string(threshold)))}
 
     peak_network = cicero[which(cicero$coaccess>threshold),]
