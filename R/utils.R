@@ -196,8 +196,11 @@ find_peaks_near_genes <- function(
 ############################################################################################################################################################
 
 
-#' Title
+#' Filter peaks to those overlapping specific element
 #'
+#' function to reduce list of "Peaks" to the ones overlapping with list of "RegEl" 
+#' (e.g. regulatory elements, evolutionary conserved regions)
+#' 
 #' @param Peaks
 #' @param RegEl
 #' @param sep_Peak1
@@ -209,7 +212,14 @@ find_peaks_near_genes <- function(
 #' @export
 #'
 #' @examples
-peaksInRegEl <- function(Peaks, RegEl, sep_Peak1="-", sep_Peak2="-", sep_RegEl1="-", sep_RegEl2="-"){ # function to reduce list of "Peaks" to the ones overlapping with list of "RegEl"
+peaksInRegEl <- function(
+  Peaks, 
+  RegEl, 
+  sep_Peak1="-",
+  sep_Peak2="-", 
+  sep_RegEl1="-",
+  sep_RegEl2="-"
+  ){
   # Make sure Peaks and RegEl are unique
   Peaks <- unique(Peaks)
   RegEl <- unique(RegEl)
