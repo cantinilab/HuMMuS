@@ -18,7 +18,7 @@
 compute_TF_network <- function(organism=9606,
                                tfs=NA, store_network=TRUE, output_file, source_target='AND'){
 
-   TF_PPI <- import_post_translational_interactions(
+   TF_PPI <- OmnipathR::import_post_translational_interactions(
     organism = organism, partners = tfs, source_target = source_target
   )
 
@@ -62,13 +62,13 @@ compute_TF_network <- function(organism=9606,
 compute_gene_network <- function(scRNA, tfs, method="GENIE3", store_network=TRUE, output_file, threshold=0.0, number_cores=1, verbose=1){
   if(method=="GENIE3"){
     a = Sys.time()
-    weightMat = GENIE3(as.matrix(scRNA), regulators = tfs, nCores=number_cores)   # Infer network
+    weightMat = GENIE3::GENIE3(as.matrix(scRNA), regulators = tfs, nCores=number_cores)   # Infer network
 
     if (verbose>0){
       print(paste("Gene network construction time:",Sys.time()-a))
     }
 
-    linkList = getLinkList(weightMat)     # Get edge list
+    linkList = GENIE3::getLinkList(weightMat)     # Get edge list
     gene_network = linkList[which(linkList$weight>threshold),]
 
     if (store_network==TRUE){
@@ -95,9 +95,9 @@ compute_gene_network <- function(scRNA, tfs, method="GENIE3", store_network=TRUE
 #'      Use patial corelation between peaks that are in a given window (e.g. :
 #'      less distant than 500K base pairs)
 #'
-#' @param scATAC
-#' @param genome
-#' @param method
+#' @param scATAC TODO
+#' @param genome TODO
+#' @param method TODO
 #' @param store_network (bool) - Save the network directly (\code{TRUE},
 #'  default) or return without saving on disk (\code{FALSE}).
 #' @param output_file (character) - Name of the output_file (if store_network == \code{TRUE}).
@@ -127,6 +127,9 @@ compute_atac_peak_network <- function(
     ){
 
   if(method=="cicero"){
+    int_elementMetadata = SingleCellExperiment::int_elementMetadata
+    
+    
     chromosome_sizes <- data.frame(V1=genome@seqinfo@seqnames,    # obtain chromosome sizes
                                    V2=genome@seqinfo@seqlengths)
     # Matrix to edgelist
@@ -134,22 +137,22 @@ compute_atac_peak_network <- function(
     colnames(ACC) <- c("V1","V2","V3")
     ACC$V1 <- gsub("_", "-", ACC$V1)
     # Run cicero
-    input_cds <- make_atac_cds(ACC, binarize = TRUE)                         # Create CDS object
+    input_cds <- cicero::make_atac_cds(ACC, binarize = TRUE)                         # Create CDS object
     set.seed(seed)
-    print('test')
+    print(input_cds)
     if(length(which(colSums(exprs(input_cds))==0))==0)                       # It is required that there is no empty cell
     {
-      input_cds <- estimate_size_factors(input_cds)                            # Calculating size factors using default method = mean-geometric-mean-total
-      input_cds <- preprocess_cds(input_cds, method = "LSI")                   # Preprocessing using LSI
-      input_cds <- reduce_dimension(input_cds, reduction_method = 'UMAP',      # Dimensionality reduction
+      input_cds <- cicero::estimate_size_factors(input_cds)                            # Calculating size factors using default method = mean-geometric-mean-total
+      input_cds <- cicero::preprocess_cds(input_cds, method = "LSI")                   # Preprocessing using LSI
+      input_cds <- cicero::reduce_dimension(input_cds, reduction_method = 'UMAP',      # Dimensionality reduction
                                     preprocess_method = "LSI")
     }
     else{
       print("Error: there is at least one cell with no signal.")
     }
     print(input_cds)
-    umap_coords <- reducedDims(input_cds)$UMAP                                # Get reduced (UMAP) coordinates
-    cicero_cds <- make_cicero_cds(input_cds,                                  # Create a Cicero CDS object
+    umap_coords <- cicero::reducedDims(input_cds)$UMAP                                # Get reduced (UMAP) coordinates
+    cicero_cds <- cicero::make_cicero_cds(input_cds,                                  # Create a Cicero CDS object
                                   reduced_coordinates = umap_coords,
                                   k = number_cells_per_clusters,  #number neighbors         # Default = 50
                                   summary_stats = NULL,         # Default
@@ -157,7 +160,7 @@ compute_atac_peak_network <- function(
                                   silent = FALSE)               # Default
     print('test 2')
     a = Sys.time()
-    cicero <- run_cicero(cds = cicero_cds,                                   # Infer peak-links
+    cicero <- cicero::run_cicero(cds = cicero_cds,                                   # Infer peak-links
                          genomic_coords = chromosome_sizes, # mouse.mm10.genome,
                          window = window,             # Default
                          silent = FALSE,             # Default

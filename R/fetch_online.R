@@ -1,16 +1,16 @@
 #' Title
 #'
-#' @param EnsDb_annotations
+#' @param EnsDb_annotations TODO
 #'
-#' @return
+#' @return TODO
 #' @export
 #'
-#' @examples
-get_genome_annotations <- function(EnsDb_annotations = EnsDb.Hsapiens.v86){
+#' @examples TODO
+get_genome_annotations <- function(EnsDb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86){
 
   gene.range <- GetGRangesFromEnsDb(EnsDb_annotations) # Get genome annotations
 
-  ucsc.levels <- str_replace(string=paste("chr",seqlevels(gene.range),sep=""), pattern="chrMT", replacement="chrM")
+  ucsc.levels <- stringr::str_replace(string=paste("chr",seqlevels(gene.range),sep=""), pattern="chrMT", replacement="chrM")
   seqlevels(gene.range) <- ucsc.levels
 
   return(gene.range)
@@ -18,12 +18,12 @@ get_genome_annotations <- function(EnsDb_annotations = EnsDb.Hsapiens.v86){
 
 #' Title
 #'
-#' @param species
+#' @param species TODO
 #'
-#' @return
+#' @return TODO
 #' @export
 #'
-#' @examples
+#' @examples TODO
 get_tf2motifs <- function(species = 'human'){
   #TF motifs using the union of databases: JASPAR and cis-BP included in chromVAR
 
@@ -31,7 +31,7 @@ get_tf2motifs <- function(species = 'human'){
     opts=list(collection = 'CORE',                       # Parameters for JASPAR2020
               species    = 'Homo sapiens',
               all_versions = FALSE)
-    JASPAR_PWM = toPWM(getMatrixSet(JASPAR2020, opts))   # Load data from JASPAR2020
+    JASPAR_PWM = toPWM(getMatrixSet(JASPAR2020::JASPAR2020, opts))   # Load data from JASPAR2020
     data("human_pwms_v2")                                # Load data from chromVARmotifs
     motifs = human_pwms_v2                               # Motifs from chromVARmotifs
   }
@@ -40,7 +40,7 @@ get_tf2motifs <- function(species = 'human'){
     opts=list(collection = 'CORE',                       # Parameters for JASPAR2020
               species    = 'Mus musculus',
               all_versions = FALSE)
-    JASPAR_PWM = toPWM(getMatrixSet(JASPAR2020, opts))   # Load data from JASPAR2020
+    JASPAR_PWM = toPWM(getMatrixSet(JASPAR::JASPAR2020, opts))   # Load data from JASPAR2020
     data("mouse_pwms_v2")                                # Load data from chromVARmotifs
     motifs = mouse_pwms_v2                               # Motifs from chromVARmotifs
   }
@@ -59,7 +59,7 @@ get_tf2motifs <- function(species = 'human'){
     }
   }
 
-  return(new("Motifs_database",
+  return(new("MotifsDatabase",
              tf2motifs=tf2motifs,
              motifs=motifs))
 }
