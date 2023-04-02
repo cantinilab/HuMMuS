@@ -18,7 +18,7 @@
 #' @return (data.frame) Return list of the links betweeen TFs and peaks.
 #' @export
 #'
-#' @examples TO DO. Same than UNIT test.
+#' @examples TO DO. Same than UNIT test. 
 Bipartite_TFs2Peaks <- function(
   tfs,
   peaks,
@@ -138,10 +138,8 @@ Bipartite_Peaks2Genes <- function(
   seurat[['peaks']] <- CreateChromatinAssay(atac, sep=c(peak_sep1,peak_sep2))   # Combine genes and peaks in a seurat object
   Annotation(seurat@assays$peaks) <- gene.range# Add genome annotations to seurat object
 
-
-    #Params <- Params(seuratPlus)                                                  # Get variables (name of peak_assay and rna_assay and boolean exlude_exon)
-  regions <- NetworkRegions(seuratPlus)                                         # Get network regions
-  gene_annot <- Signac::Annotation(seuratPlus[['peaks']])             # gene annotation
+  #might be remove and use directly genes = gene_annot in find_peaks_near_genes
+  gene_annot <- Signac::Annotation(seurat[['peaks']])             # gene annotation
 
   peaks_near_gene <- find_peaks_near_genes(peaks = seurat[['peaks']]@ranges,              # Find candidate regions near gene bodies
                                            method = peak_to_gene_method,
