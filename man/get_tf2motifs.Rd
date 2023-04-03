@@ -2,7 +2,7 @@
 % Please edit documentation in R/fetch_online.R
 \name{get_tf2motifs}
 \alias{get_tf2motifs}
-\title{Title}
+\title{Fetch online TF motifs from JASPAR2020 and chromVARmotifs}
 \usage{
 get_tf2motifs(species = "human")
 }
@@ -13,7 +13,7 @@ get_tf2motifs(species = "human")
 TODO
 }
 \description{
-Title
+Fetch online TF motifs from JASPAR2020 and chromVARmotifs
 }
 \examples{
 TODO

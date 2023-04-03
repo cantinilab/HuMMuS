@@ -101,9 +101,9 @@ Bipartite_TFs2Peaks <- function(
 #' @param gene.range (gene.range object) - TO DO.
 #' @param peak_to_gene_method (character) - Method used to map peaks to near gene
 #' * \code{'Signac'} - TO DO.
-#' * \code{'GREAT'} - TO DO.
+#' * \code{'GREAT'} - not implemented yet.
 #' @param upstream (integer) - size of the window upstream the TSS considered
-#' @param downstream (integer) - size of the window upstream the TSS considered
+#' @param downstream (integer) - size of the window downstream the TSS considered
 #' @param only_tss (bool) - Associated peaks in the window size from TSS only (\code{TRUE}) or aroud the whole gene body (\code{FALSE}).
 #' @param store_bipartite (bool) - Save the bipartite directly (\code{TRUE}, default) or return without saving on disk (\code{FALSE}).
 #' @param output_file (character) - Name of the output_file (if store_bipartite == \code{TRUE}).

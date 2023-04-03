@@ -1,22 +1,27 @@
-#' Title
+#'  Fetch online genome annotations from Ensembldb database
 #'
-#' @param EnsDb_annotations TODO
+#' @param EnsDb_annotations (EndsDb object) - Ensembldb database (default: EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
 #'
-#' @return TODO
+#' @return gene_range (GRanges object) - Genome annotations
 #' @export
 #'
-#' @examples TODO
-get_genome_annotations <- function(EnsDb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86){
+#' @examples gene_range = get_genome_annotations(EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
+get_genome_annotations <- function(
+  ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86) {
 
-  gene.range <- GetGRangesFromEnsDb(EnsDb_annotations) # Get genome annotations
+  gene_range <- GetGRangesFromEnsDb(ensdb_annotations) # Get genome annotations
 
-  ucsc.levels <- stringr::str_replace(string=paste("chr",seqlevels(gene.range),sep=""), pattern="chrMT", replacement="chrM")
-  seqlevels(gene.range) <- ucsc.levels
+  ucsc.levels <- stringr::str_replace(
+    string=paste("chr", seqlevels(gene_range),sep=""),
+    pattern="chrMT",
+    replacement="chrM")
 
-  return(gene.range)
+  seqlevels(gene_range) <- ucsc.levels
+
+  return(gene_range)
 }
 
-#' Title
+#' Fetch online TF motifs from JASPAR2020 and chromVARmotifs
 #'
 #' @param species TODO
 #'
@@ -24,8 +29,9 @@ get_genome_annotations <- function(EnsDb_annotations = EnsDb.Hsapiens.v86::EnsDb
 #' @export
 #'
 #' @examples TODO
-get_tf2motifs <- function(species = 'human'){
-  #TF motifs using the union of databases: JASPAR and cis-BP included in chromVAR
+get_tf2motifs <- function(species = "human") {
+  #TF motifs using the union of databases: JASPAR and cis-BP
+  # included in chromVAR
 
   if(species=="human"){
     opts=list(collection = 'CORE',                       # Parameters for JASPAR2020

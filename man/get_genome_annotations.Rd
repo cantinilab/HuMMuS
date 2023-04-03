@@ -2,19 +2,21 @@
 % Please edit documentation in R/fetch_online.R
 \name{get_genome_annotations}
 \alias{get_genome_annotations}
-\title{Title}
+\title{Fetch online genome annotations from Ensembldb database}
 \usage{
-get_genome_annotations(EnsDb_annotations = EnsDb.Hsapiens.v86)
+get_genome_annotations(
+  ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
+)
 }
 \arguments{
-\item{EnsDb_annotations}{TODO}
+\item{EnsDb_annotations}{(EndsDb object) - Ensembldb database (default: EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86}
 }
 \value{
-TODO
+gene_range (GRanges object) - Genome annotations
 }
 \description{
-Title
+Fetch online genome annotations from Ensembldb database
 }
 \examples{
-TODO
+gene_range = get_genome_annotations(EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
 }

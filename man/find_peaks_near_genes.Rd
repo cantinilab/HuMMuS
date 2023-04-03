@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{find_peaks_near_genes}
 \alias{find_peaks_near_genes}
-\title{Title}
+\title{Associate peaks to genes based on distance to TSS (or gene body)}
 \usage{
 find_peaks_near_genes(
   peaks,
@@ -17,29 +17,37 @@ find_peaks_near_genes(
 )
 }
 \arguments{
-\item{peaks}{TODO}
+\item{peaks}{vector(character) - List of peaks.}
 
-\item{genes}{TODO}
+\item{genes}{vector(character) - List of genes.}
 
-\item{sep}{TODO}
+\item{sep}{vector(character) - Separator between chromosome,
+start and end position. Default: c('-', '-').}
 
-\item{method}{TODO}
+\item{method}{(character) - Method to use. Default: "Signac".
+\itemize{
+\item \code{'Signac'} - Use Signac::Extend to extend genes.
+\item \code{'GREAT'} - Not implemented yet.
+}}
 
-\item{upstream}{TODO}
+\item{upstream}{(int) - Upstream distance from TSS
+to consider as potential promoter.}
 
-\item{downstream}{TODO}
+\item{downstream}{(int) - Downstream distance from TSS
+to consider as potential promoter.}
 
-\item{extend}{TODO}
+\item{extend}{(int) - Integer defining the distance from the upstream
+and downstream of the basal regulatory region. Used only by method 'GREAT'.}
 
-\item{only_tss}{TODO}
+\item{only_tss}{(logical) - If TRUE, only TSS will be considered.}
 
-\item{verbose}{TODO}
+\item{verbose}{(logical) - If TRUE, print progress messages.}
 }
 \value{
-TODO
+(matrix) - Matrix of peaks x genes with 1 if peak is near gene.
 }
 \description{
-Title
+Associate peaks to genes based on distance to TSS (or gene body)
 }
 \examples{
 TODO

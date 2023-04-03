@@ -32,12 +32,12 @@ Bipartite_Peaks2Genes(
 \item{peak_to_gene_method}{(character) - Method used to map peaks to near gene
 \itemize{
 \item \code{'Signac'} - TO DO.
-\item \code{'GREAT'} - TO DO.
+\item \code{'GREAT'} - not implemented yet.
 }}
 
 \item{upstream}{(integer) - size of the window upstream the TSS considered}
 
-\item{downstream}{(integer) - size of the window upstream the TSS considered}
+\item{downstream}{(integer) - size of the window downstream the TSS considered}
 
 \item{only_tss}{(bool) - Associated peaks in the window size from TSS only (\code{TRUE}) or aroud the whole gene body (\code{FALSE}).}
 

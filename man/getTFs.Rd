@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{getTFs}
 \alias{getTFs}
-\title{Title}
+\title{Extract TF names from scRNA data and tf2motifs}
 \usage{
 getTFs(
   species = "human",
@@ -13,22 +13,19 @@ getTFs(
 )
 }
 \arguments{
-\item{species}{TODO}
+\item{species}{(character) - Species name. Default: "human".}
 
-\item{l_expressed_genes}{TODO}
+\item{l_expressed_genes}{(vector(character)) - List of expressed genes.}
 
-\item{output_file}{TODO}
+\item{output_file}{(character) - Path to output file.}
 
-\item{tf2motifs}{TODO}
+\item{tf2motifs}{(data.frame) - TF to motifs names mapping. Columns: motif, tf.}
 
-\item{verbose}{TODO}
+\item{verbose}{(integer) - Verbosity level. Default: 1.}
 }
 \value{
-TODO
+TFs (vector(character)) - List of TFs expressed with motifs in the database.
 }
 \description{
-Title
-}
-\examples{
-TODO
+Extract TF names from scRNA data and tf2motifs
 }
