@@ -1,21 +1,24 @@
 [project]
-name = "hummus-py"
-version = "0.0.1"
+name = "hummuspy"
+version = "0.0.4"
 authors = [
   { name="Rémi Trimbour", email="remi.trimbour@pasteur.fr" },
 ]
 description = "Python package for HuMMuS: Heterogeneous Multilayer networks for Multi-omics Single-cell data"
 readme = "README.md"
+license = "GPL-3.0-only"
 requires-python = ">=3.7"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: AGPL3 License",
     "Operating System :: OS Independent",
 ]
 [project.urls]
 "Homepage" = "https://github.com/cantinilab/hummus"
 "Bug Tracker" = "https://github.com/cantinilab/hummus/issues"
 
+[tool.poetry.dependencies]
+python = "^3.7"
+
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

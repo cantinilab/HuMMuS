@@ -10,7 +10,7 @@
 #' @exportClass motifs_db
 motifs_db = setClass("motifs_db",
                            representation(
-                             motifs = "TFBSTools::PWMatrixList",
+                             motifs = "PWMatrixList",
                              tf2motifs = "data.frame"
                            ))
 

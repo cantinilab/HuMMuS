@@ -71,16 +71,25 @@ Bipartite_TFs2Peaks <- function(
     column_to_rownames('motif') %>% as.matrix() %>% Matrix::Matrix(sparse=TRUE)
   tfs_use <- intersect(rownames(GetAssay(seurat, 'RNA')), colnames(tf2motifs))
   if (length(tfs_use)==0){
-    stop('None of the provided TFs were found in the dataset. Consider providing a custom motif-to-TF map as `motif_tfs`')
+    stop('None of the provided TFs were found in the dataset.
+    Consider providing a custom motif-to-TF map as `motif_tfs`')
   }
 
   TFs_Peaks = motif_pos@motifs@data %*% tf2motifs[, tfs_use] # Get TF peak links
-  TFs_Peaks = TFs_Peaks[,colnames(TFs_Peaks) %in% tfs]                      # Keep only the TFs that are in our scRNA-seq dataset
-  tfs2peaks <- expand.grid(rownames(TFs_Peaks),colnames(TFs_Peaks))[as.vector(TFs_Peaks>0),] # TF-peak links
-  colnames(tfs2peaks) <- c("peak","TF")                                                      # set column names
+  TFs_Peaks = TFs_Peaks[,colnames(TFs_Peaks) %in% tfs]
+   # Keep only the TFs that are in our scRNA-seq dataset
+  tfs2peaks <- expand.grid(rownames(TFs_Peaks),
+                           colnames(TFs_Peaks))[as.vector(TFs_Peaks > 0), ]
+                          # TF-peak links
+  colnames(tfs2peaks) <- c("peak","TF")     # set column names
 
   if(store_bipartite){
-    write.table(tfs2peaks, output_file, col.names = TRUE, row.names = FALSE, quote = FALSE, sep = "\t")
+    write.table(tfs2peaks,
+                output_file,
+                col.names = TRUE,
+                row.names = FALSE,
+                quote = FALSE,
+                sep = "\t")
   }
 
   return(tfs2peaks)
@@ -91,19 +100,23 @@ Bipartite_TFs2Peaks <- function(
 
 #' Compute links between DNA regions and genenames
 #'
-#' Return list of links between peaks and genes, based on the distance between peaks and gene's TSS location from gene.range annotations.
+#' Return list of links between peaks and genes,
+#' based on the distance between peaks and gene's TSS location
+#' from gene.range annotations.
 #' Call find_peaks_near_genes function, that can use different methods.
 #'
 #' @param genes vector(character) - List of genes.
 #' @param peaks vector(character) - List of peaks.
-#' @param peak_sep1 (character) - Separator between chromosme number and starting coordinates (e.g. : chr1/100_1000 --> sep1='/').
-#' @param peak_sep2 (character) - Separator between chromosme number and starting coordinates (e.g. : chr1/100_1000 --> sep1='_').
+#' @param peak_sep1 (character) - Separator between chromosme number
+#'  and starting coordinates (e.g. : chr1/100_1000 --> sep1='/').
+#' @param peak_sep2 (character) - Separator between chromosme number
+#'  and starting coordinates (e.g. : chr1/100_1000 --> sep1='_').
 #' @param gene.range (gene.range object) - TO DO.
-#' @param peak_to_gene_method (character) - Method used to map peaks to near gene
+#' @param peak_to_gene_method (character) - Method to map peaks to near gene
 #' * \code{'Signac'} - TO DO.
 #' * \code{'GREAT'} - not implemented yet.
-#' @param upstream (integer) - size of the window upstream the TSS considered
-#' @param downstream (integer) - size of the window downstream the TSS considered
+#' @param upstream (int) - size of the window upstream the TSS considered
+#' @param downstream (int) - size of the window downstream the TSS considered
 #' @param only_tss (bool) - Associated peaks in the window size from TSS only (\code{TRUE}) or aroud the whole gene body (\code{FALSE}).
 #' @param store_bipartite (bool) - Save the bipartite directly (\code{TRUE}, default) or return without saving on disk (\code{FALSE}).
 #' @param output_file (character) - Name of the output_file (if store_bipartite == \code{TRUE}).

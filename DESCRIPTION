@@ -23,7 +23,9 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+biocViews:
 Imports:
+    TFBSTools,
     stringr,
     JASPAR2020,
     chromVAR,
@@ -34,4 +36,6 @@ Imports:
     tidyr,
     OmnipathR,
     GENIE3,
-    reshape2
+    reshape2,
+    Signac,
+    biovizBase
