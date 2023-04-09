@@ -22,7 +22,7 @@ compute_TF_network <- function(organism=9606,
     organism = organism, partners = tfs, source_target = source_target
   )
 
-  Network_TF = TF_PPI[,c(3,4)]
+  Network_TF = TF_PPI[, c(3, 4)]
 
   if (store_network==TRUE){
     write.table(Network_TF, output_file,                                                  # Store edgelist
@@ -64,21 +64,24 @@ compute_gene_network <- function(scRNA, tfs, method="GENIE3", store_network=TRUE
     a = Sys.time()
     weightMat = GENIE3::GENIE3(as.matrix(scRNA), regulators = tfs, nCores=number_cores)   # Infer network
 
-    if (verbose>0){
-      print(paste("Gene network construction time:",Sys.time()-a))
+    if (verbose > 0) {
+      print(paste("Gene network construction time:", Sys.time() - a))
     }
 
-    linkList = GENIE3::getLinkList(weightMat)     # Get edge list
-    gene_network = linkList[which(linkList$weight>threshold),]
+    linkList <- GENIE3::getLinkList(weightMat)     # Get edge list
+    gene_network <- linkList[which(linkList$weight > threshold), ]
 
-    if (store_network==TRUE){
-      write.table(gene_network, output_file,                                                           # Store edgelist
-                  col.names = FALSE, row.names = FALSE, quote = FALSE, sep = "\t")
+    if (store_network == TRUE) {
+      write.table(gene_network,
+                  output_file,  # Store edgelist
+                  col.names = FALSE,
+                  row.names = FALSE,
+                  quote = FALSE,
+                  sep = "\t")
     }
 
-    return(gene_network)                                     # Return edges with weight > 0
-  }
-  else{
+    return(gene_network)  # Return edges with weight > 0
+  } else {
     return("no gene network computed!")
   }
 }
@@ -114,102 +117,121 @@ compute_gene_network <- function(scRNA, tfs, method="GENIE3", store_network=TRUE
 #' @examples TO DO. Same than UNIT test.
 compute_atac_peak_network <- function(
     scATAC,
-    genome=BSgenome.Hsapiens.UCSC.hg38,
-    method="cicero",
-    store_network=TRUE,
+    genome = BSgenome.Hsapiens.UCSC.hg38,
+    method = "cicero",
+    store_network = TRUE,
     output_file,
-    threshold=0.0,
-    number_cells_per_clusters=50,
-    sample_num=100,
-    seed=2021,
-    verbose=1,
+    threshold = 0.0,
+    number_cells_per_clusters = 50,
+    sample_num = 100,
+    seed = 2021,
+    verbose = 1,
     window = 5e+05
-    ){
+    ) {
 
-  if(method=="cicero"){
-    int_elementMetadata = SingleCellExperiment::int_elementMetadata
-    
-    
-    chromosome_sizes <- data.frame(V1=genome@seqinfo@seqnames,    # obtain chromosome sizes
-                                   V2=genome@seqinfo@seqlengths)
+  if (method=="cicero") {
+    int_elementMetadata <- SingleCellExperiment::int_elementMetadata
+
+  # obtain chromosome sizes
+    chromosome_sizes <- data.frame(V1 = genome@seqinfo@seqnames,
+                                   V2 = genome@seqinfo@seqlengths)
     # Matrix to edgelist
     ACC <- reshape2::melt(as.matrix(scATAC))
-    colnames(ACC) <- c("V1","V2","V3")
+    colnames(ACC) <- c("V1", "V2", "V3")
     ACC$V1 <- gsub("_", "-", ACC$V1)
     # Run cicero
-    input_cds <- cicero::make_atac_cds(ACC, binarize = TRUE)                         # Create CDS object
+    input_cds <- cicero::make_atac_cds(ACC, binarize = TRUE) # Create CDS object
     set.seed(seed)
     print(input_cds)
-    if(length(which(colSums(exprs(input_cds))==0))==0)                       # It is required that there is no empty cell
+    # It is required that there is no empty cell
+    if (length(which(colSums(as.matrix(Biobase::exprs(input_cds))) == 0)) == 0)
     {
-      input_cds <- cicero::estimate_size_factors(input_cds)                            # Calculating size factors using default method = mean-geometric-mean-total
-      input_cds <- cicero::preprocess_cds(input_cds, method = "LSI")                   # Preprocessing using LSI
-      input_cds <- cicero::reduce_dimension(input_cds, reduction_method = 'UMAP',      # Dimensionality reduction
+      input_cds <- estimate_size_factors(input_cds)   # Calculating size factors using default method = mean-geometric-mean-total
+      input_cds <- preprocess_cds(input_cds, method = "LSI")  # Preprocessing using LSI
+      input_cds <- cicero::reduce_dimension(input_cds, reduction_method = 'UMAP',  # Dimensionality reduction
                                     preprocess_method = "LSI")
     }
     else{
       print("Error: there is at least one cell with no signal.")
     }
     print(input_cds)
-    umap_coords <- cicero::reducedDims(input_cds)$UMAP                                # Get reduced (UMAP) coordinates
-    cicero_cds <- cicero::make_cicero_cds(input_cds,                                  # Create a Cicero CDS object
+    umap_coords <- reducedDims(input_cds)$UMAP # Get reduced (UMAP) coordinates
+    cicero_cds <- cicero::make_cicero_cds(input_cds,  # Create a Cicero CDS object
                                   reduced_coordinates = umap_coords,
                                   k = number_cells_per_clusters,  #number neighbors         # Default = 50
                                   summary_stats = NULL,         # Default
                                   size_factor_normalize = TRUE, # Default
                                   silent = FALSE)               # Default
-    print('test 2')
+    print("test 2")
     a = Sys.time()
     cicero <- cicero::run_cicero(cds = cicero_cds,                                   # Infer peak-links
                          genomic_coords = chromosome_sizes, # mouse.mm10.genome,
                          window = window,             # Default
                          silent = FALSE,             # Default
                          sample_num = sample_num) # Default = 100
-    print('test 3')
-    if (verbose>0){
-      print(paste("Peak network construction time:",Sys.time()-a))}
-    if(store_network){
-      write.table(cicero, cicero_nw_filename, col.names = TRUE, row.names = FALSE, quote = FALSE, sep = "\t")
+    print("test 3")
+    if (verbose > 0) {
+      print(paste("Peak network construction time:", Sys.time() - a))
+      }
+    if (store_network ){
+      write.table(cicero,
+                  cicero_nw_filename,
+                  col.names = TRUE,
+                  row.names = FALSE,
+                  quote = FALSE,
+                  sep = "\t")
     }
     # Remove NAs, double edges, and edges with weight <=0
-    if(length(which(is.na(cicero$coaccess)))>threshold)                                # Check for coaccess = NA
-    {
-      cicero <- cicero[which(!is.na(cicero$coaccess)),]                        # Remove NAs
+    # Check for coaccess = NA
+    if (length(which(is.na(cicero$coaccess))) > threshold) {
+      cicero <- cicero[which(!is.na(cicero$coaccess)),]  # Remove NAs
     }
-    cicero$temp <- NA                                                          # Helper column to check and remove double edges
+    cicero$temp <- NA  # Helper column to check and remove double edges
     my_cols <- which(as.character(cicero$Peak1) <= as.character(cicero$Peak2))
-    cicero$temp[my_cols] <- paste(cicero$Peak1[my_cols],cicero$Peak2[my_cols],sep = ";")
+    cicero$temp[my_cols] <- paste(cicero$Peak1[my_cols],
+                                  cicero$Peak2[my_cols],
+                                  sep = ";")
+
     my_cols <- which(as.character(cicero$Peak1) > as.character(cicero$Peak2))
-    cicero$temp[my_cols] <- paste(cicero$Peak2[my_cols],cicero$Peak1[my_cols],sep = ";")
-    cicero <- cicero[with(cicero, order(temp, decreasing = TRUE)),]            # Sort table according to temp-column (each entry appears double)
+    cicero$temp[my_cols] <- paste(cicero$Peak2[my_cols],
+                                  cicero$Peak1[my_cols],
+                                  sep = ";")
+
+    # Sort table according to temp-column (each entry appears double)
+    cicero <- cicero[with(cicero, order(temp, decreasing = TRUE)), ]
     rownames(cicero) <- c(1:dim(cicero)[1])
-    A <- as.character(cicero$Peak1[seq(1,dim(cicero)[1],2)])
-    Anum <- round(cicero$coaccess[seq(1,dim(cicero)[1],2)],10)
-    B <- as.character(cicero$Peak2[seq(2,dim(cicero)[1],2)])
-    Bnum <- round(cicero$coaccess[seq(2,dim(cicero)[1],2)],10)
-    #length(which(A==B & Anum==Bnum))                                          # Each edge appears twice with same coaccess score (rounded to 10 digits after comma)
-    cicero <- cicero[seq(1,dim(cicero)[1],2),]                                 # Remove double edges
-    cicero$temp <- NULL                                                        # Remove helper column
-    cicero <- cicero[with(cicero, order(coaccess, decreasing = TRUE)),]        # Sort
+    A <- as.character(cicero$Peak1[seq(1, dim(cicero)[1], 2)])
+    Anum <- round(cicero$coaccess[seq(1, dim(cicero)[1], 2)], 10)
+    B <- as.character(cicero$Peak2[seq(2, dim(cicero)[1], 2)])
+    Bnum <- round(cicero$coaccess[seq(2, dim(cicero)[1], 2)], 10)
+    #length(which(A==B & Anum==Bnum))  # Each edge appears twice with same coaccess score (rounded to 10 digits after comma)
+    cicero <- cicero[seq(1, dim(cicero)[1], 2), ] # Remove double edges
+    cicero$temp <- NULL # Remove helper column
+    cicero <- cicero[with(cicero, order(coaccess, decreasing = TRUE)), ]  # Sort
     rownames(cicero) <- c(1:dim(cicero)[1])
-    cicero$Peak1 <- gsub("_","-",cicero$Peak1)                                 # Peak names 2x"-" to match bipartites
-    cicero$Peak2 <- gsub("_","-",cicero$Peak2)                                 # Peak names 2x"-" to match bipartites########? 2x"-" or 2x"_"
+    cicero$Peak1 <- gsub("_", "-", cicero$Peak1) # Peak names 2x"-" to match bipartites
+    cicero$Peak2 <- gsub("_", "-", cicero$Peak2) # Peak names 2x"-" to match bipartites########? 2x"-" or 2x"_"
 
-    if (verbose>0){
-      print(paste(dim(Peak_Network)[1], "peak edges with weight > ", as.string(threshold)))}
+    peak_network <- cicero[which(cicero$coaccess > threshold), ]
+    # Remove edges with coaccess score <= threshold
 
-    peak_network = cicero[which(cicero$coaccess>threshold),]
+    if (verbose > 0) {
+      print(paste(dim(peak_network)[1], "peak edges with weight > ", as.string(threshold)))}
 
-    if(store_network){
-      write.table(peak_network, outputfilename,
-                  col.names = FALSE, row.names = FALSE, quote = FALSE, sep = "\t") # Store edgelist
+    if (store_network) {
+      write.table(peak_network,
+                  output_filename,
+                  col.names = FALSE,
+                  row.names = FALSE,
+                  quote = FALSE,
+                  sep = "\t") # Store edgelist
     }
 
     # Return peak network including edges with positive coaccess score
-    print('test')
+    print("test")
     return(peak_network)
-  }
-  else{
+  } else {
     return("no peak network computed!")
   }
 }
+

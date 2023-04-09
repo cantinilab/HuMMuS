@@ -8,34 +8,35 @@
 #' @examples gene_range = get_genome_annotations(EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
 get_genome_annotations <- function(
   ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86) {
-
-  gene_range <- Signac::GetGRangesFromEnsDb(ensdb_annotations) # Get genome annotations
+  # Get genome annotations from Ensembldb database
+  gene_range <- Signac::GetGRangesFromEnsDb(ensdb_annotations)
 
   ucsc.levels <- stringr::str_replace(
-    string = paste("chr", seqlevels(gene_range), sep = ""),
+    string = paste("chr", Signac::seqlevels(gene_range), sep = ""),
     pattern = "chrMT",
-    replacement = "chrM")
+    replacement = "chrM") # Change chromosome names to UCSC format
 
-  seqlevels(gene_range) <- ucsc.levels
+  Signac::seqlevels(gene_range) <- ucsc.levels
+  # check if Signac is the good package
 
-  return(gene_range)
+  return(gene_range) # Return genome annotations
 }
 
 #' Fetch online TF motifs from JASPAR2020 and chromVARmotifs
 #'
-#' @param species TODO
+#' @param species (character) - Species name (default: "human")
 #'
-#' @return TODO
+#' @return motifs_db (motifs_db object) - TF2motifs + motifs PWMs
 #' @export
 #'
-#' @examples TODO
+#' @examples motifs_db = get_tf2motifs(species = "human")
 get_tf2motifs <- function(species = "human") {
   #TF motifs using the union of databases: JASPAR and cis-BP
   # included in chromVAR
   getMatrixSet <- TFBSTools::getMatrixSet
   if (species == "human") {
     # Parameters for JASPAR2020
-    opts=list(collection = "CORE",
+    opts <- list(collection = "CORE",
               species    = "Homo sapiens",
               all_versions = FALSE)
     JASPAR_PWM <- TFBSTools::toPWM(getMatrixSet(JASPAR2020::JASPAR2020, opts))
@@ -48,7 +49,7 @@ get_tf2motifs <- function(species = "human") {
     # Motifs from chromVARmotifs
   } else if (species == "mouse") {
     # Parameters for JASPAR2020
-    opts=list(collection = "CORE",
+    opts <- list(collection = "CORE",
               species    = "Mus musculus",
               all_versions = FALSE)
     JASPAR_PWM <- TFBSTools::toPWM(getMatrixSet(JASPAR::JASPAR2020, opts))
@@ -64,12 +65,14 @@ get_tf2motifs <- function(species = "human") {
     # Combine motifs of JASPAR20202 and chromVARmotif
     motifs[name] <- JASPAR_PWM[name]
   }
-  tf2motifs <- data.frame(motif = character(),
+
   # Initiate final TF motifs table
+  tf2motifs <- data.frame(motif = character(),
                           tf = character(),
                           stringsAsFactors = FALSE)
-  for (i in seq_along(names(motifs))){                   # Fill TF motif table
-    tfs <- strsplit(names(motifs)[i], "::")[[1]]
+  for (i in seq_along(TFBSTools::name(motifs))){  # Fill TF motif table
+  # TFBSTools::name(motifs) returns names of TFs associated to each PWMatrix
+    tfs <- strsplit(TFBSTools::name(motifs)[i], "::")[[1]]
     # splitting TFs that are given as "name1::name2"
     for (tf in tfs){
       tf <- strsplit(tf, "(", fixed = TRUE)[[1]][1]
@@ -80,5 +83,5 @@ get_tf2motifs <- function(species = "human") {
 
   return(new("motifs_db",
              tf2motifs = tf2motifs,
-             motifs = motifs))
+             motifs = motifs)) # Return motifs_db <- TF2motifs + motifs PWMs
 }

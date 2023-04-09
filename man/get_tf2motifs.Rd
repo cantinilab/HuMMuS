@@ -7,14 +7,14 @@
 get_tf2motifs(species = "human")
 }
 \arguments{
-\item{species}{TODO}
+\item{species}{(character) - Species name (default: "human")}
 }
 \value{
-TODO
+motifs_db (motifs_db object) - TF2motifs + motifs PWMs
 }
 \description{
 Fetch online TF motifs from JASPAR2020 and chromVARmotifs
 }
 \examples{
-TODO
+motifs_db = get_tf2motifs(species = "human")
 }

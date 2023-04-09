@@ -1,23 +1,19 @@
-[project]
+[tool.poetry]
 name = "hummuspy"
 version = "0.0.4"
-authors = [
-  { name="Rémi Trimbour", email="remi.trimbour@pasteur.fr" },
-]
-description = "Python package for HuMMuS: Heterogeneous Multilayer networks for Multi-omics Single-cell data"
-readme = "README.md"
+description = "HuMMuS is a novel method for the inference of regulatory mechanisms from multi-omics data with any type and number of omics, thorugh a heterogeneous multilayer networks framework."
+authors = ["Rémi Trimbour <remi.trimbour@pasteur.fr>"]
 license = "GPL-3.0-only"
-requires-python = ">=3.7"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
-]
-[project.urls]
-"Homepage" = "https://github.com/cantinilab/hummus"
-"Bug Tracker" = "https://github.com/cantinilab/hummus/issues"
+readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = ">=3.8"
+multixrank = "^0.1"
+joblib = "^1.2.0"
+tqdm = "^4.65.0"
+numpy = "^1.24.2"
+pandas = "^2.0.0"
+pyyaml = "^6.0"
 
 [build-system]
 requires = ["poetry-core"]

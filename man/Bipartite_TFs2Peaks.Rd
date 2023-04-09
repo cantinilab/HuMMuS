@@ -23,31 +23,40 @@ Bipartite_TFs2Peaks(
 
 \item{peaks}{vector(character) - List of peaks.}
 
-\item{peak_sep1}{(character) - Separator between chromosme number and starting coordinates (e.g. : chr1/100_1000 --> sep1='/').}
+\item{peak_sep1}{(character) - Separator between chromosme number
+and starting coordinates (e.g. : chr1/100_1000 --> sep1='/').}
 
-\item{peak_sep2}{(character) - Separator between chromosme number and starting coordinates (e.g. : chr1/100_1000 --> sep1='_').}
+\item{peak_sep2}{(character) - Separator between chromosme number
+and starting coordinates (e.g. : chr1/100_1000 --> sep1='_').}
 
-\item{genome}{(BSGenome) - Genome sequences on which motifs positions will be searched for.}
+\item{genome}{(BSGenome) - Genome sequences on which motifs positions
+will be searched for.}
 
 \item{gene.range}{(gene.range object) - TO DO.}
 
-\item{motifs}{(PWMatrixList) List of PWMatrix (probability matrices of motifs).}
+\item{motifs}{(PWMatrixList) List of PWMatrix (PWMs of motifs).}
 
-\item{tf2motifs}{(data.frame) Corresponding table between PWMatrix names and binding TFs.}
+\item{tf2motifs}{(data.frame) Corresponding table between PWMatrix names
+and binding TFs.}
 
-\item{store_bipartite}{(bool) - Save the bipartite directly (\code{TRUE}, default) or return without saving on disk (\code{FALSE}).}
+\item{store_bipartite}{(bool) - Save the bipartite directly
+(\code{TRUE}, default) or return without saving on disk (\code{FALSE}).}
 
-\item{output_file}{(character) - Name of the output_file (if store_bipartite == \code{TRUE}).}
+\item{output_file}{(character) - Name of the output_file
+(if store_bipartite == \code{TRUE}).}
 
-\item{verbose}{(integer) Display function messages. Set to 0 for no message displayed, >= 1 for more details.}
+\item{verbose}{(integer) Display function messages.
+Set to 0 for no message displayed, >= 1 for more details.}
 }
 \value{
 (data.frame) Return list of the links betweeen TFs and peaks.
 }
 \description{
-Return list of links between peaks and TFs, based on their binding motifs locations on a reference genome.
-Currently based on Signac AddMotifs function (--> motifmachR, itself based on MOODs algorithm).
+Return list of links between peaks and TFs, based on their binding motifs
+locations on a reference genome.
+Currently based on Signac AddMotifs function (--> motifmachR, itself based on
+MOODs algorithm).
 }
 \examples{
-TO DO. Same than UNIT test. 
+TO DO. Same than UNIT test.
 }

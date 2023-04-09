@@ -15,8 +15,8 @@ and tf2motifs (TF to motifs names mapping) data.
 \section{Slots}{
 
 \describe{
-\item{\code{motifs}}{(PWMatrixList) - PFM matrices.}
+\item{\code{motifs}}{(TFBSTools::PWMatrixList) - PFM matrices.}
 
-\item{\code{tf2motifs}}{(data.frame) - TF to motifs names mapping. Columns: motif, tf.}
+\item{\code{tf2motifs}}{(data.frame) - TF to motif names mapping. Columns: motif, tf.}
 }}
 

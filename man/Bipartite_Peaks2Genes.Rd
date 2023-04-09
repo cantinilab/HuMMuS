@@ -5,11 +5,9 @@
 \title{Compute links between DNA regions and genenames}
 \usage{
 Bipartite_Peaks2Genes(
-  genes,
-  peaks,
-  peak_sep1,
-  peak_sep2,
-  gene.range,
+  seurat_object,
+  gene_assay = "RNA",
+  peak_assay = "peaks",
   peak_to_gene_method = "Signac",
   upstream = 500,
   downstream = 500,
@@ -19,39 +17,40 @@ Bipartite_Peaks2Genes(
 )
 }
 \arguments{
-\item{genes}{vector(character) - List of genes.}
-
-\item{peaks}{vector(character) - List of peaks.}
-
-\item{peak_sep1}{(character) - Separator between chromosme number and starting coordinates (e.g. : chr1/100_1000 --> sep1='/').}
-
-\item{peak_sep2}{(character) - Separator between chromosme number and starting coordinates (e.g. : chr1/100_1000 --> sep1='_').}
-
-\item{gene.range}{(gene.range object) - TO DO.}
-
-\item{peak_to_gene_method}{(character) - Method used to map peaks to near gene
+\item{peak_to_gene_method}{(character) - Method to map peaks to near gene
 \itemize{
-\item \code{'Signac'} - TO DO.
+\item \code{'Signac'} - Signac method (default).
 \item \code{'GREAT'} - not implemented yet.
 }}
 
-\item{upstream}{(integer) - size of the window upstream the TSS considered}
+\item{upstream}{(int) - size of the window upstream the TSS considered}
 
-\item{downstream}{(integer) - size of the window downstream the TSS considered}
+\item{downstream}{(int) - size of the window downstream the TSS considered}
 
 \item{only_tss}{(bool) - Associated peaks in the window size from TSS only (\code{TRUE}) or aroud the whole gene body (\code{FALSE}).}
 
 \item{store_bipartite}{(bool) - Save the bipartite directly (\code{TRUE}, default) or return without saving on disk (\code{FALSE}).}
 
 \item{output_file}{(character) - Name of the output_file (if store_bipartite == \code{TRUE}).}
+
+\item{genes}{vector(character) - List of genes.}
+
+\item{peaks}{vector(character) - List of peaks.}
+
+\item{peak_sep1}{(character) - Separator between chromosme number
+and starting coordinates (e.g. : chr1/100_1000 --> sep1='/').}
+
+\item{peak_sep2}{(character) - Separator between chromosme number
+and starting coordinates (e.g. : chr1/100_1000 --> sep1='_').}
+
+\item{gene.range}{(gene.range object) - Gene range object.}
 }
 \value{
 (data.frame) Return list of the links betweeen peaks and genes.
 }
 \description{
-Return list of links between peaks and genes, based on the distance between peaks and gene's TSS location from gene.range annotations.
+Return list of links between peaks and genes,
+based on the distance between peaks and gene's TSS location
+from gene.range annotations.
 Call find_peaks_near_genes function, that can use different methods.
-}
-\examples{
-TO DO. Same than UNIT test.
 }

@@ -1,9 +1,11 @@
 Package: HuMMuS
 Title: Heterogeneous Multilayer Network for Multi-Omics Single-Cell Data
 Version: 0.0.0.9000
-Authors@R: 
-    person("Rémi", "Trimbour", , "remi.trimbour@pasteur.fr", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+Authors@R: person(given = "Rémi", 
+                  family = "Trimbour",
+                  email = "remi.trimbour@pasteur.fr",
+                  role = c("aut", "cre"),
+                  comment = c(ORCID = "YOUR-ORCID-ID"))
 Description: A general framework to infer regulatory mechanisms from multi-omics single-cell data. 
     HuMMuS package provides functions to build individual networks
     from different single-cell modalities, then to integrate them 
@@ -23,6 +25,8 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Depends:
+    R (>= 4.0.0)
 biocViews:
 Imports:
     TFBSTools,
@@ -38,4 +42,11 @@ Imports:
     GENIE3,
     reshape2,
     Signac,
-    biovizBase
+    biovizBase,
+    SingleCellExperiment,
+    cicero
+Suggests:
+    doParallel,
+    doRNG,
+    EnsDb.Hsapiens.v86,
+    BSgenome.Hsapiens.UCSC.hg38

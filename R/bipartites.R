@@ -1,89 +1,104 @@
 #' Compute links between TFs and DNA regions
 #'
-#' Return list of links between peaks and TFs, based on their binding motifs locations on a reference genome.
-#' Currently based on Signac AddMotifs function (--> motifmachR, itself based on MOODs algorithm).
-#' 
+#' Return list of links between peaks and TFs, based on their binding motifs
+#' locations on a reference genome.
+#' Currently based on Signac AddMotifs function (--> motifmachR, itself based on
+#' MOODs algorithm).
+#'
 #' @param tfs vector(character) - List of tfs considered.
 #' @param peaks vector(character) - List of peaks.
-#' @param peak_sep1 (character) - Separator between chromosme number and starting coordinates (e.g. : chr1/100_1000 --> sep1='/').
-#' @param peak_sep2 (character) - Separator between chromosme number and starting coordinates (e.g. : chr1/100_1000 --> sep1='_').
-#' @param genome (BSGenome) - Genome sequences on which motifs positions will be searched for.
+#' @param peak_sep1 (character) - Separator between chromosme number
+#' and starting coordinates (e.g. : chr1/100_1000 --> sep1='/').
+#' @param peak_sep2 (character) - Separator between chromosme number
+#' and starting coordinates (e.g. : chr1/100_1000 --> sep1='_').
+#' @param genome (BSGenome) - Genome sequences on which motifs positions
+#' will be searched for.
 #' @param gene.range (gene.range object) - TO DO.
-#' @param motifs  (PWMatrixList) List of PWMatrix (probability matrices of motifs).
-#' @param tf2motifs (data.frame) Corresponding table between PWMatrix names and binding TFs.
-#' @param store_bipartite (bool) - Save the bipartite directly (\code{TRUE}, default) or return without saving on disk (\code{FALSE}).
-#' @param output_file (character) - Name of the output_file (if store_bipartite == \code{TRUE}).
-#' @param verbose (integer) Display function messages. Set to 0 for no message displayed, >= 1 for more details.
+#' @param motifs  (PWMatrixList) List of PWMatrix (PWMs of motifs).
+#' @param tf2motifs (data.frame) Corresponding table between PWMatrix names
+#' and binding TFs.
+#' @param store_bipartite (bool) - Save the bipartite directly
+#' (\code{TRUE}, default) or return without saving on disk (\code{FALSE}).
+#' @param output_file (character) - Name of the output_file
+#' (if store_bipartite == \code{TRUE}).
+#' @param verbose (integer) Display function messages.
+#' Set to 0 for no message displayed, >= 1 for more details.
 #'
 #' @return (data.frame) Return list of the links betweeen TFs and peaks.
 #' @export
 #'
-#' @examples TO DO. Same than UNIT test. 
+#' @examples TO DO. Same than UNIT test.
 Bipartite_TFs2Peaks <- function(
   tfs,
   peaks,
-  peak_sep1=":", 
-  peak_sep2="-", 
+  peak_sep1 = ":",
+  peak_sep2 = "-",
   genome,
   gene.range,
-  motifs, 
+  motifs,
   tf2motifs,
-  store_bipartite=TRUE,
+  store_bipartite = TRUE,
   output_file = None,
-  verbose=1){
+  verbose = 1) {
 
   # Build up object to determine TF-peak links and peak-gene links
-  rna  = data.frame(features=tfs)                                           # List of genes present in scRNA
-  rna[,c("dummy_cell1", "dummy_cell2")] <- 1
+  rna <- data.frame(features=tfs) # List of genes present in scRNA
+  rna[, c("dummy_cell1", "dummy_cell2")] <- 1
   rownames(rna) <- rna$features
   rna$features <- NULL
-  atac  = data.frame(features=peaks)                                          # List of peaks present in scATAC
-  atac[,c("dummy_cell1", "dummy_cell2")] <- 1
+  atac  <- data.frame(features=peaks) # List of peaks present in scATAC
+  atac[, c("dummy_cell1", "dummy_cell2")] <- 1
   rownames(atac) <- atac$features
   atac$features <- NULL
-  seurat = CreateSeuratObject(rna)                                              # Create seurat object with genes
-  seurat[['peaks']] <- CreateChromatinAssay(atac, sep=c(peak_sep1,peak_sep2))   # Combine genes and peaks in a seurat object
-  Annotation(seurat@assays$peaks) <- gene.range# Add genome annotations to seurat object
+  seurat <- CreateSeuratObject(rna)
+  # Create seurat object with genes
+  seurat[["peaks"]] <- CreateChromatinAssay(atac, sep = c(peak_sep1,peak_sep2))
+  # Combine genes and peaks in a seurat object
+  Annotation(seurat@assays$peaks) <- gene.range
+  # Add genome annotations to seurat object
 
-  #cand_ranges <- object@grn@regions@ranges
   motif_pos <- Signac::AddMotifs(
-    object = seurat[['peaks']],
+    object = seurat[["peaks"]],
     genome = genome,
     pfm = motifs,  #add verbose options
   )
-  #regons_motifs <- AddMotifs(seurat[['peaks']], genome, motifs)
 
-  #### The 17 following lines are inspired from the Pando package : https://github.com/quadbiolab/Pando/blob/main/R/regions.R
+  ## The 17 following lines are inspired from the Pando package :
+  # https://github.com/quadbiolab/Pando/blob/main/R/regions.R
   # Add TF info for motifs
-  if (verbose>0){
-    print('Adding TF info', verbose=verbose)
+  if (verbose > 0) {
+    print("Adding TF info", verbose = verbose)
   }
-  if (!is.null(tf2motifs)){
-    tf2motifs <- tibble(tf2motifs)
+  if (!is.null(tf2motifs)) {
+    tf2motifs <- dplyr::tibble(tf2motifs) #if error check other than dplyr::
   } else {
     utils::data(tf2motifs, envir = environment())
   }
 
   # Spread dataframe to sparse matrix
-  tf2motifs <- tf2motifs %>% dplyr::select('motif'=1,'tf'=2) %>%
-    distinct() %>% mutate(val=1) %>%
-    tidyr::pivot_wider(names_from = 'tf', values_from=val, values_fill=0) %>%
-    column_to_rownames('motif') %>% as.matrix() %>% Matrix::Matrix(sparse=TRUE)
-  tfs_use <- intersect(rownames(GetAssay(seurat, 'RNA')), colnames(tf2motifs))
-  if (length(tfs_use)==0){
-    stop('None of the provided TFs were found in the dataset.
-    Consider providing a custom motif-to-TF map as `motif_tfs`')
+  tf2motifs <- tf2motifs %>%
+    dplyr::select("motif" = 1, "tf" = 2) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(val = 1) %>%
+    tidyr::pivot_wider(names_from = "tf", values_from = val, values_fill = 0) %>%
+    tibble::column_to_rownames("motif") %>%
+    as.matrix() %>%
+    Matrix::Matrix(sparse = TRUE)
+  tfs_use <- intersect(rownames(GetAssay(seurat, "RNA")), colnames(tf2motifs))
+  if (length(tfs_use) == 0) { # If no TFs are found in the dataset
+    stop("None of the provided TFs were found in the dataset.
+    Consider providing a custom motif-to-TF map as `motif_tfs`")
   }
 
-  TFs_Peaks = motif_pos@motifs@data %*% tf2motifs[, tfs_use] # Get TF peak links
-  TFs_Peaks = TFs_Peaks[,colnames(TFs_Peaks) %in% tfs]
+  TFs_Peaks <- motif_pos@motifs@data %*% tf2motifs[, tfs_use] # Get TF peak links
+  TFs_Peaks <- TFs_Peaks[, colnames(TFs_Peaks) %in% tfs]
    # Keep only the TFs that are in our scRNA-seq dataset
   tfs2peaks <- expand.grid(rownames(TFs_Peaks),
                            colnames(TFs_Peaks))[as.vector(TFs_Peaks > 0), ]
                           # TF-peak links
-  colnames(tfs2peaks) <- c("peak","TF")     # set column names
+  colnames(tfs2peaks) <- c("peak", "TF")     # set column names
 
-  if(store_bipartite){
+  if (store_bipartite) { # Save TF-peak links
     write.table(tfs2peaks,
                 output_file,
                 col.names = TRUE,
@@ -92,7 +107,7 @@ Bipartite_TFs2Peaks <- function(
                 sep = "\t")
   }
 
-  return(tfs2peaks)
+  return(tfs2peaks) # Return TF-peak links
 }
 
 
@@ -111,9 +126,9 @@ Bipartite_TFs2Peaks <- function(
 #'  and starting coordinates (e.g. : chr1/100_1000 --> sep1='/').
 #' @param peak_sep2 (character) - Separator between chromosme number
 #'  and starting coordinates (e.g. : chr1/100_1000 --> sep1='_').
-#' @param gene.range (gene.range object) - TO DO.
+#' @param gene.range (gene.range object) - Gene range object.
 #' @param peak_to_gene_method (character) - Method to map peaks to near gene
-#' * \code{'Signac'} - TO DO.
+#' * \code{'Signac'} - Signac method (default).
 #' * \code{'GREAT'} - not implemented yet.
 #' @param upstream (int) - size of the window upstream the TSS considered
 #' @param downstream (int) - size of the window downstream the TSS considered
@@ -124,53 +139,66 @@ Bipartite_TFs2Peaks <- function(
 #' @return (data.frame) Return list of the links betweeen peaks and genes.
 #' @export
 #'
-#' @examples TO DO. Same than UNIT test.
+#' @examples
 Bipartite_Peaks2Genes <- function(
-  genes,
-  peaks,
-  peak_sep1,
-  peak_sep2,
-  gene.range,
-  peak_to_gene_method='Signac',
-  upstream=500,
-  downstream=500,
-  only_tss=TRUE,
-  store_bipartite=TRUE,
-  output_file=None){
+  seurat_object,
+  gene_assay = 'RNA',
+  peak_assay = 'peaks',
+  peak_to_gene_method = "Signac",
+  upstream = 500,
+  downstream = 500,
+  only_tss = TRUE,
+  store_bipartite = TRUE,
+  output_file = None) {
+  # Check if the gene assay is present in the seurat object
+  if (!gene_assay %in% names(seurat_object@assays)) {
+    stop("The gene assay is not present in the seurat object")
+  }
+  # Check if the peak assay is present in the seurat object
+  else if (!peak_assay %in% names(seurat_object@assays)) {
+    stop("The peak assay is not present in the seurat object")
+  }
+  # Check if the peak assay is a ChromatinAssay object
+  else if (!inherits(seurat_object@assays[[peak_assay]],
+                     "ChromatinAssay")) {
+    stop("The peak assay is not a ChromatinAssay object 
+    or does not have annotations (gene.range object))")
+  }
+  # Check if the peak assay has gene.range annotations
+  else if (is.null(Signac::Annotation(seurat_object[[peak_assay]]))) {
+      stop("The peak assay does not have annotations (gene.range object)")
+  }
 
-  # Build up object to determine peak-gene links
-  rna  = data.frame(features=genes)                                           # List of genes present in scRNA
-  rna[,c("dummy_cell1", "dummy_cell2")] <- 1
-  rownames(rna) <- rna$features
-  rna$features <- NULL
-  atac  = data.frame(features=peaks)                                          # List of peaks present in scATAC
-  atac[,c("dummy_cell1", "dummy_cell2")] <- 1
-  rownames(atac) <- atac$features
-  atac$features <- NULL
-  seurat = CreateSeuratObject(rna)                                              # Create seurat object with genes
-  seurat[['peaks']] <- CreateChromatinAssay(atac, sep=c(peak_sep1,peak_sep2))   # Combine genes and peaks in a seurat object
-  Annotation(seurat@assays$peaks) <- gene.range# Add genome annotations to seurat object
+  # Find candidate regions near gene bodies
+  peaks_near_genes <- find_peaks_near_genes(
+                        peaks = seurat_object[[peak_assay]]@ranges,
+                        method = peak_to_gene_method,
+                        genes = Signac::Annotation(seurat_object[[peak_assay]]),
+                        upstream = upstream,
+                        downstream = downstream,
+                        only_tss = only_tss)
+  # Aggregate candidate regions to gene bodies (peak to gene matrix)
+  peaks2genes <- aggregate_matrix(Matrix::t(peaks_near_genes),
+                                 groups = colnames(peaks_near_genes),
+                                 fun = "sum")
+  # Keep only the genes that are in our scRNA-seq dataset
+  peaks2genes <- peaks2genes[rownames(peaks2genes) 
+                 %in% rownames(seurat_object@assays[[gene_assay]]), ]
+  # Remove rows/cols with only zeros
+  peaks2genes <- peaks2genes[Matrix::rowSums(peaks2genes) != 0,
+                             Matrix::colSums(peaks2genes) != 0]
+  # peak-gene links
+  peaks2genes <- expand.grid(rownames(peaks2genes),
+                             colnames(peaks2genes))[as.vector(peaks2genes > 0), ]
+  colnames(peaks2genes) <- c("gene", "peak") # set column names
 
-  #might be remove and use directly genes = gene_annot in find_peaks_near_genes
-  gene_annot <- Signac::Annotation(seurat[['peaks']])             # gene annotation
-
-  peaks_near_gene <- find_peaks_near_genes(peaks = seurat[['peaks']]@ranges,              # Find candidate regions near gene bodies
-                                           method = peak_to_gene_method,
-                                           genes = gene_annot,
-                                           upstream = upstream,
-                                           downstream = downstream,
-                                           only_tss = only_tss)
-
-  peaks2gene <- aggregate_matrix(t(peaks_near_gene),                            # Get gene to peak matrix
-                                 groups=colnames(peaks_near_gene),
-                                 fun="sum")
-  peaks2gene = peaks2gene[rownames(peaks2gene) %in% genes,]                   # Keep only the genes that are in our scRNA-seq dataset
-  peaks2gene = peaks2gene[rowSums(peaks2gene)!=0, colSums(peaks2gene)!=0]       # Remove rows/cols with only zeros
-  peaks2genes <- expand.grid(rownames(peaks2gene),colnames(peaks2gene))[as.vector(peaks2gene>0),] # peak-gene links
-  colnames(peaks2genes) <- c("gene","peak")                                                      # set column names
-
-  if(store_bipartite){
-    write.table(peaks2genes, output_file, col.names = TRUE, row.names = FALSE, quote = FALSE, sep = "\t")
+  if (store_bipartite) {
+    write.table(peaks2genes,
+                output_file,
+                col.names = TRUE,
+                row.names = FALSE,
+                quote = FALSE,
+                sep = "\t")
   }
 
   # Return list the two edgelists containing TF-peak and peak-gene links

@@ -4,8 +4,6 @@ import yaml
 import re
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sb
 import multixrank as mxr
 import time
 from joblib import Parallel, delayed
@@ -88,31 +86,33 @@ def define_minimal_config(
                               for i in range(len(rna_layers))]
     config = dict()
     config['multiplex'] = dict()
-    config['multiplex'][folder_tf_layers] = {'layers':[folder_tf_layers+'/'+tf_layer for tf_layer in tf_layers],
-                              'graph_type':tf_layers_types}
+    config['multiplex'][folder_tf_layers] = {
+        'layers': [folder_tf_layers+'/'+tf_layer for tf_layer in tf_layers],
+        'graph_type': tf_layers_types}
 
-    config['multiplex'][folder_atac_layers] = {'layers':[folder_atac_layers+'/'+atac_layer for atac_layer in atac_layers],
-                              'graph_type':atac_layers_types}
+    config['multiplex'][folder_atac_layers] = {
+        'layers': [folder_atac_layers+'/'+atac_layer for atac_layer in atac_layers],
+        'graph_type': atac_layers_types}
 
-    config['multiplex'][folder_rna_layers] = {'layers':[folder_rna_layers+'/'+rna_layer for rna_layer in rna_layers],
-                              'graph_type':rna_layers_types}
-    #add delta and tau parameters
-
+    config['multiplex'][folder_rna_layers] = {
+        'layers': [folder_rna_layers+'/'+rna_layer for rna_layer in rna_layers],
+        'graph_type': rna_layers_types}
+    # add delta and tau parameters
 
     tf_atac_links_type = str(int(tf_atac_links_directed))\
-                          + str(int(tf_atac_links_weighted))
+        + str(int(tf_atac_links_weighted))
 
     atac_rna_links_type = str(int(atac_rna_links_directed))\
-                          + str(int(atac_rna_links_weighted))
+        + str(int(atac_rna_links_weighted))
 
     config['bipartite'] = {}
-    config['bipartite'][tf_atac_links] = {'source':folder_tf_layers,
-                                          'target':folder_atac_layers,
-                                          'graph_type':tf_atac_links_type}
+    config['bipartite'][tf_atac_links] = {'source': folder_tf_layers,
+                                          'target': folder_atac_layers,
+                                          'graph_type': tf_atac_links_type}
 
-    config['bipartite'][atac_rna_links] = {'source':folder_atac_layers,
-                                           'target':folder_rna_layers,
-                                           'graph_type':atac_rna_links_type}
+    config['bipartite'][atac_rna_links] = {'source': folder_atac_layers,
+                                           'target': folder_rna_layers,
+                                           'graph_type': atac_rna_links_type}
 
     config['seed'] = seed_path
     config['r'] = r
@@ -208,24 +208,24 @@ def detailed_config(
 
     if return_config:
         return config
-    
-    
+
+
 def compute_multiple_RandomWalk(
-    multilayer_f, 
-    config_name, 
-    output_f, 
-    list_seeds, 
-    config_folder = 'config',
-    save=True, 
-    Return=False, 
-    spec_layer_result_saved='all', 
+    multilayer_f,
+    config_name,
+    output_f,
+    list_seeds,
+    config_folder='config',
+    save=True,
+    Return=False,
+    spec_layer_result_saved='all',
     njobs=1):
-    
+
     ranking_all_dfs = pd.DataFrame(columns = ['layer', 'target', 'path_layer', 'score', 'tf'])
 
     l_ranking_df = Parallel(n_jobs=njobs)(delayed(compute_RandomWalk)(multilayer_f, config_name, seeds, config_folder, spec_layer_result_saved) for seeds in tqdm(list_seeds))
     ranking_all_dfs = pd.concat([ranking_all_dfs]+l_ranking_df)
-    
+
     if save:
         ranking_all_dfs.sort_values(by='score').to_csv(output_f, sep='\t', index=False, header=True)
     if Return:
@@ -235,25 +235,25 @@ def compute_RandomWalk(
     multilayer_f,
     config_name,
     seeds,
-    config_folder = 'config',
+    config_folder='config',
     spec_layer_result_saved='all',
     unnamed=False,
     njobs=1):
-    
-    #seeds file names
-    seeds = make_values_list(seeds) 
-    if unnamed == True:
-        seeds_filename = 'seeds.txt'        
+
+    # seeds file names
+    seeds = make_values_list(seeds)
+    if unnamed is True:
+        seeds_filename = 'seeds.txt'
         if njobs>1:
             raise Exception("Impossible to use unnamed seeds files while parallelising random walks.")
     else:
         seeds_filename = '_'.join(seeds)
 
-    #write seeds file
+    # write seeds file
     with open(multilayer_f+'/seeds/'+seeds_filename+'.txt', 'w') as f:
         f.write('\n'.join(seeds)+'\n')        
     
-    #config file personalised with seed file
+    # config file personalised with seed file
     with open(multilayer_f+'/{}/'.format(config_folder)+config_name, 'r') as f:
         config = yaml.load(f, Loader=yaml.BaseLoader)
         config['seed'] = 'seeds/'+seeds_filename+'.txt'
@@ -266,7 +266,7 @@ def compute_RandomWalk(
     
     # and filter df results andadd seeds name
     ranking_df['tf'] = '_'.join(seeds)
-    ranking_df = ranking_df[ranking_df.score>0] #??
+    ranking_df = ranking_df[ranking_df.score > 0]  # ??
     ranking_df.columns = ['layer', 'target', 'path_layer', 'score', 'seed']
     if spec_layer_result_saved != 'all':
         if type(spec_layer_result_saved)==str:
@@ -277,7 +277,7 @@ def compute_RandomWalk(
 
 
 def define_grn(
-    mutlilayer_f: str,
+    multilayer_f: str,
     TFs: typing.Union[str, list[str], dict[str]] = 'all',
     save: bool = True,
     output_f_grn = 'RW_grn.tsv',
@@ -289,8 +289,8 @@ def define_grn(
     rna_layers: typing.Union[str, list[str], dict[str]] = 'gene_edges.tsv',
     tf_atac_links: str = 'bipartite/tfs2peaks.tsv', 
     atac_rna_links: str = 'bipartite/peaks2genes.tsv',
-    config_name = 'grn_config.yml',
-    config_folder = 'config',
+    config_name='grn_config.yml',
+    config_folder='config',
     seed_path: str = 'seeds/seeds.txt',
     folder_tf_layers: str = 'multiplex/layer_TFS',
     folder_atac_layers: str = 'multiplex/layer_PEAKS',
@@ -309,30 +309,30 @@ def define_grn(
     self_loops: bool = 0):
 
     detailed_config(
-        request = 'grn',
-        filename = multilayer_f+'/'+config_folder+'/'+config_name,
+        request='grn',
+        filename=multilayer_f+'/'+config_folder+'/'+config_name,
         tf_layers=tf_layers,
         atac_layers=atac_layers,
         rna_layers=rna_layers,
-        tf_atac_links=tf_atac_links, 
+        tf_atac_links=tf_atac_links,
         atac_rna_links=atac_rna_links,
         seed_path=seed_path,
-        folder_tf_layers = folder_tf_layers,
-        folder_atac_layers = folder_atac_layers,
-        folder_rna_layers = folder_rna_layers,
-        tf_layers_weighted=tf_layers_weighted, 
-        atac_layers_weighted=atac_layers_weighted, 
+        folder_tf_layers=folder_tf_layers,
+        folder_atac_layers=folder_atac_layers,
+        folder_rna_layers=folder_rna_layers,
+        tf_layers_weighted=tf_layers_weighted,
+        atac_layers_weighted=atac_layers_weighted,
         rna_layers_weighted=rna_layers_weighted,
-        tf_layers_directed=tf_layers_directed, 
-        atac_layers_directed=atac_layers_directed, 
+        tf_layers_directed=tf_layers_directed,
+        atac_layers_directed=atac_layers_directed,
         rna_layers_directed=rna_layers_directed,
         tf_atac_links_weighted=tf_atac_links_weighted,
         atac_rna_links_weighted=atac_rna_links_weighted,
-        tf_atac_links_directed=tf_atac_links_directed, 
+        tf_atac_links_directed=tf_atac_links_directed,
         atac_rna_links_directed=atac_rna_links_directed,
         r=r,
-        self_loops = self_loops,
-        return_config = False)
+        self_loops=self_loops,
+        return_config=False)
     
     if TFs == 'all':
         TFs = list(pd.read_csv(multilayer_f + '/' + tf_atac_links, sep="\t", header=None)[0].str.strip().unique())
@@ -341,17 +341,30 @@ def define_grn(
     rna_layers = make_values_list(rna_layers)
     print([folder_rna_layers+'/'+rna_layer for rna_layer in rna_layers])
 
+    if Return is True:
+        grn = compute_multiple_RandomWalk(
+            multilayer_f=multilayer_f,
+            config_name=config_name,
+            output_f=output_f_grn,
+            list_seeds=TFs,
+            config_folder=config_folder,
+            save=save,
+            Return=Return,
+            spec_layer_result_saved=folder_rna_layers,
+            njobs=njobs)
+        return grn
+    else:
+        grn = compute_multiple_RandomWalk(
+            multilayer_f=multilayer_f,
+            config_name=config_name,
+            output_f=output_f_grn,
+            list_seeds=TFs,
+            config_folder=config_folder,
+            save=save,
+            Return=Return,
+            spec_layer_result_saved=folder_rna_layers,
+            njobs=njobs)
 
-    compute_multiple_RandomWalk(
-        multilayer_f = multilayer_f, 
-        config_name = config_name, 
-        output_f=output_f_grn, 
-        list_seeds = TFs, 
-        config_folder = config_folder,
-        save=True, 
-        Return=False, 
-        spec_layer_result_saved=folder_rna_layers, 
-        njobs=njobs)
-    
-#multilayer_f = '../../flattened_networks/ML_hESC_Chen_GeneNW_all_Peaks2Genes_UP0.5K_DOWN0.5K_nofilt_nofilt_TFlayer_nolinks'
-#define_grn(multilayer_f, njobs=45)
+
+# multilayer_f = '../../flattened_networks/ML_hESC_Chen_GeneNW_all_Peaks2Genes_UP0.5K_DOWN0.5K_nofilt_nofilt_TFlayer_nolinks'
+# define_grn(multilayer_f, njobs=45)
