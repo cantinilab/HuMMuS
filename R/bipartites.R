@@ -28,39 +28,43 @@
 #' @export
 #'
 #' @examples TO DO. Same than UNIT test.
-Bipartite_TFs2Peaks <- function(
-  tfs,
-  peaks,
-  peak_sep1 = ":",
-  peak_sep2 = "-",
+bipartite_tfs2peaks <- function(
+  hummus_object,
+  tf_gene_assay = "RNA",
+  peak_assay = "peaks",
+  tf_network_name = NULL,
+  peak_network_name = NULL,
   genome,
-  gene.range,
-  motifs,
-  tf2motifs,
   store_bipartite = TRUE,
-  output_file = None,
+  output_file = NULL,
   verbose = 1) {
 
-  # Build up object to determine TF-peak links and peak-gene links
-  rna <- data.frame(features=tfs) # List of genes present in scRNA
-  rna[, c("dummy_cell1", "dummy_cell2")] <- 1
-  rownames(rna) <- rna$features
-  rna$features <- NULL
-  atac  <- data.frame(features=peaks) # List of peaks present in scATAC
-  atac[, c("dummy_cell1", "dummy_cell2")] <- 1
-  rownames(atac) <- atac$features
-  atac$features <- NULL
-  seurat <- CreateSeuratObject(rna)
-  # Create seurat object with genes
-  seurat[["peaks"]] <- CreateChromatinAssay(atac, sep = c(peak_sep1,peak_sep2))
-  # Combine genes and peaks in a seurat object
-  Annotation(seurat@assays$peaks) <- gene.range
-  # Add genome annotations to seurat object
+  # Check if the gene assay is present in the seurat object
+  if (!tf_gene_assay %in% names(hummus_object@assays)) {
+    stop("The gene assay is not present in the seurat object")
+  }
+  # Check if the peak assay is present in the seurat object
+  else if (!peak_assay %in% names(hummus_object@assays)) {
+    stop("The peak assay is not present in the seurat object")
+  }
+  # Check if the peak assay is a ChromatinAssay object
+  else if (!inherits(hummus_object@assays[[peak_assay]],
+                     "ChromatinAssay")) {
+    stop("The peak assay is not a ChromatinAssay object 
+    or does not have annotations (gene.range object))")
+  }
+  # Check if the peak assay has gene.range annotations
+  else if (is.null(Signac::Annotation(hummus_object[[peak_assay]]))) {
+      stop("The peak assay does not have annotations (gene.range object)")
+  }
+
+  # Get TFs expressed in scRNA-seq data and having known binding motifs
+  tfs_use <- get_tfs(hummus_object, assay = tf_gene_assay, store_tfs = FALSE)
 
   motif_pos <- Signac::AddMotifs(
-    object = seurat[["peaks"]],
+    object = hummus_object[[peak_assay]],
     genome = genome,
-    pfm = motifs,  #add verbose options
+    pfm = hummus_object@motifs_db@motifs #add verbose options
   )
 
   ## The 17 following lines are inspired from the Pando package :
@@ -69,36 +73,41 @@ Bipartite_TFs2Peaks <- function(
   if (verbose > 0) {
     print("Adding TF info", verbose = verbose)
   }
-  if (!is.null(tf2motifs)) {
-    tf2motifs <- dplyr::tibble(tf2motifs) #if error check other than dplyr::
-  } else {
-    utils::data(tf2motifs, envir = environment())
-  }
 
   # Spread dataframe to sparse matrix
-  tf2motifs <- tf2motifs %>%
-    dplyr::select("motif" = 1, "tf" = 2) %>%
-    dplyr::distinct() %>%
-    dplyr::mutate(val = 1) %>%
-    tidyr::pivot_wider(names_from = "tf", values_from = val, values_fill = 0) %>%
-    tibble::column_to_rownames("motif") %>%
-    as.matrix() %>%
-    Matrix::Matrix(sparse = TRUE)
-  tfs_use <- intersect(rownames(GetAssay(seurat, "RNA")), colnames(tf2motifs))
+  tf2motifs <- hummus_object@motifs_db@tf2motifs
+  tf2motifs <- dplyr::'%>%'(tf2motifs, dplyr::select("motif" = 1, "tf" = 2)) # Select motif and tf columns
+  tf2motifs <- dplyr::'%>%'(tf2motifs, dplyr::distinct()) # Remove duplicates
+  tf2motifs <- dplyr::'%>%'(tf2motifs, dplyr::mutate(val = 1)) # Add value column
+  tf2motifs <- dplyr::'%>%'(tf2motifs, # Spread TFs
+                  tidyr::pivot_wider(names_from = "tf",
+                                     values_from = val,
+                                     values_fill = 0)
+                            )
+  tf2motifs <- dplyr::'%>%'(tf2motifs, tibble::column_to_rownames("motif")) # Set motif as rownames
+  tf2motifs <- dplyr::'%>%'(tf2motifs, as.matrix()) # Convert to matrix
+  tf2motifs <- dplyr::'%>%'(tf2motifs, Matrix::Matrix(sparse = TRUE)) # Convert to sparse matrix
+
   if (length(tfs_use) == 0) { # If no TFs are found in the dataset
     stop("None of the provided TFs were found in the dataset.
     Consider providing a custom motif-to-TF map as `motif_tfs`")
   }
 
-  TFs_Peaks <- motif_pos@motifs@data %*% tf2motifs[, tfs_use] # Get TF peak links
-  TFs_Peaks <- TFs_Peaks[, colnames(TFs_Peaks) %in% tfs]
+  # Get TF peak links
+  TFs_Peaks <- motif_pos@motifs@data %*% tf2motifs[, tfs_use]
+  # TFs_Peaks <- TFs_Peaks[, colnames(TFs_Peaks) %in% tfs]
+
    # Keep only the TFs that are in our scRNA-seq dataset
   tfs2peaks <- expand.grid(rownames(TFs_Peaks),
                            colnames(TFs_Peaks))[as.vector(TFs_Peaks > 0), ]
                           # TF-peak links
   colnames(tfs2peaks) <- c("peak", "TF")     # set column names
 
-  if (store_bipartite) { # Save TF-peak links
+  # Save TF-peak links
+  if (store_bipartite) { 
+    if (is.null(output_file)) {
+      stop("Please provide an output file name")
+    }
     write.table(tfs2peaks,
                 output_file,
                 col.names = TRUE,
@@ -106,8 +115,22 @@ Bipartite_TFs2Peaks <- function(
                 quote = FALSE,
                 sep = "\t")
   }
+  print("Returning TF-peak links as bipartite object")
+  # Return TF-peak links
 
-  return(tfs2peaks) # Return TF-peak links
+  # Set default names for the networks if not provided
+  if (is.null(tf_network_name)) {
+    tf_network_name <- tf_gene_assay
+  }
+  if (is.null(peak_network_name)) {
+    peak_network_name <- peak_assay
+  }
+
+  bipartite_tf_peak <- new("bipartite",
+                           "network" = tfs2peaks,
+                           "multiplex_left" = peak_network_name,
+                           "multiplex_right" = tf_network_name)
+  return(bipartite_tf_peak) # Return TF-peak bipartite object
 }
 
 
@@ -140,16 +163,18 @@ Bipartite_TFs2Peaks <- function(
 #' @export
 #'
 #' @examples
-Bipartite_Peaks2Genes <- function(
+bipartite_peaks2genes <- function(
   seurat_object,
   gene_assay = 'RNA',
   peak_assay = 'peaks',
+  gene_network_name = NULL,
+  peak_network_name = NULL,
   peak_to_gene_method = "Signac",
   upstream = 500,
   downstream = 500,
   only_tss = TRUE,
   store_bipartite = TRUE,
-  output_file = None) {
+  output_file = NULL) {
   # Check if the gene assay is present in the seurat object
   if (!gene_assay %in% names(seurat_object@assays)) {
     stop("The gene assay is not present in the seurat object")
@@ -193,6 +218,9 @@ Bipartite_Peaks2Genes <- function(
   colnames(peaks2genes) <- c("gene", "peak") # set column names
 
   if (store_bipartite) {
+    if (is.null(output_file)) {
+      stop("Please provide an output file name")
+    }
     write.table(peaks2genes,
                 output_file,
                 col.names = TRUE,
@@ -200,7 +228,19 @@ Bipartite_Peaks2Genes <- function(
                 quote = FALSE,
                 sep = "\t")
   }
+  # Set default names for the networks if not provided
+  if (is.null(gene_network_name)) {
+    gene_network_name <- gene_assay
+  }
+  if (is.null(peak_network_name)) {
+    peak_network_name <- peak_assay
+  }
 
-  # Return list the two edgelists containing TF-peak and peak-gene links
-  return(peaks2genes)
+  print(class(peaks2genes))
+  # Return atac-rna bipartite
+  bipartite_atac_rna <- new("bipartite",
+                           "network" = peaks2genes,
+                           "multiplex_left" = gene_network_name,
+                           "multiplex_right" = peak_network_name)
+  return(bipartite_atac_rna)
 }

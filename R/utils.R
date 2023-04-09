@@ -31,7 +31,7 @@ multiplex <- setClass(Class = "multiplex",
                          "features" = "vector"# Vector of features
                         )
                       )
-setMethod("show", "motifs_db",
+setMethod("show", "multiplex",
   function(object) {
     cat(
       paste("Multiplex of ", length(object@networks),
@@ -52,7 +52,7 @@ setMethod("show", "bipartite",
     cat(
       paste("Bipartite network of ", nrow(object@network), " edges.\n",
       "Multiplexes names: ", object@multiplex_left,
-      " and ", object@multiplex_right)
+      " and ", object@multiplex_right, "\n")
       )
   })
 
@@ -60,7 +60,6 @@ multilayer <- setClass(Class = "multilayer",
                        slots = c(
                         "bipartites" = "list", # Bipartite networks
                         "multiplex" = "list", # Multiplex networks
-                        "motifs_db" = "motifs_db", # Motifs database
                         "config" = "list" # Parameters to create the hmln
                         )                 # representation of a yaml file
                       )
@@ -93,7 +92,8 @@ hummus_object <- setClass(
     Class = "hummus_object",
     contains = "Seurat",
     slots = list(
-        "multilayer" = "multilayer"
+        "multilayer" = "multilayer",
+        "motifs_db" = "motifs_db"
     )
 )
 setMethod("show", "hummus_object",
@@ -195,20 +195,36 @@ setMethod("show", "hummus_object",
 #' @return TFs (vector(character)) - List of TFs expressed with motifs.
 #' @export
 #'
-get_tfs <- function(species = "human",
-                    genes,
-                    output_file,
-                    tf2motifs,
+get_tfs <- function(hummus,
+                    assay,
+                    store_tfs = TRUE,
+                    output_file = NULL,
                     verbose = 1) {
+  # Check if the assay is present in the seurat object
+  if (!assay %in% names(hummus@assays)) {
+    stop("The gene assay is not present in the seurat object")
+  }
 
-  tfs <- intersect(unique(as.character(tf2motifs$tf)), genes)
+  # Check if the hummsu object has motifs_db 
+  else if (is.null(hummus@motifs_db)) {
+    stop("The hummus object does not have a motifs_db slot")
+  }
 
-  if (verbose > 0){
+  expr_genes = rownames(hummus@assays[[assay]])
+  tfs <- intersect(unique(as.character(hummus@motifs_db@tf2motifs$tf)),
+                                       expr_genes)
+  if (verbose > 0) {
     print(paste(length(tfs), "TFs expressed"))
   }
 
-  write.table(tfs, output_file, # Store TFs
+  if (store_tfs) {
+    if (is.null(output_file)) {
+      stop("Please provide an output file name")
+    }
+    write.table(tfs, output_file, # Store TFs
               col.names = FALSE, row.names = FALSE, quote = FALSE, sep = "\t")
+  }
+
   return(tfs)
 }
 

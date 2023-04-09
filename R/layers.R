@@ -204,7 +204,8 @@ compute_atac_peak_network <- function(
     Anum <- round(cicero$coaccess[seq(1, dim(cicero)[1], 2)], 10)
     B <- as.character(cicero$Peak2[seq(2, dim(cicero)[1], 2)])
     Bnum <- round(cicero$coaccess[seq(2, dim(cicero)[1], 2)], 10)
-    #length(which(A==B & Anum==Bnum))  # Each edge appears twice with same coaccess score (rounded to 10 digits after comma)
+    # length(which(A==B & Anum==Bnum)) 
+    # Each edge appears twice with same coaccess score (rounded to 10 digits)
     cicero <- cicero[seq(1, dim(cicero)[1], 2), ] # Remove double edges
     cicero$temp <- NULL # Remove helper column
     cicero <- cicero[with(cicero, order(coaccess, decreasing = TRUE)), ]  # Sort
@@ -234,4 +235,3 @@ compute_atac_peak_network <- function(
     return("no peak network computed!")
   }
 }
-

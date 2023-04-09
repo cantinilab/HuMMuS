@@ -44,7 +44,8 @@ Imports:
     Signac,
     biovizBase,
     SingleCellExperiment,
-    cicero
+    cicero,
+    motifmatchr
 Suggests:
     doParallel,
     doRNG,

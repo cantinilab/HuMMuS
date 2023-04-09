@@ -4,7 +4,7 @@
 \name{hummus_object-class}
 \alias{hummus_object-class}
 \alias{hummus_object}
-\title{The SeuratPlus class}
+\title{The hummus_object class}
 \description{
 The SeuratPlus object is an extended \code{Seurat} object
 for the storage and analysis of a heterogeneous mutlilayer network
