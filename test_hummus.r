@@ -22,10 +22,10 @@ Signac::Annotation(seurat@assays$peaks) <- genome_annotations
 # Create hummus object
 hummus <- hummus_object(seurat)
 
-# Load TF motifs from JASPAR2020 and chromVARmotifs
+# Load TF motifs from JASPAR2020 and chromVARmotifs in hummus object
 hummus@motifs_db <- get_tf2motifs()
 
-# Compute and save peak-gene links
+# Add bipartite between rna-genes and peaks data to hummus object
 hummus@multilayer@bipartites$atac_rna <- bipartite_peaks2genes(
                       seurat_object = seurat,
                       gene_assay = "RNA",
@@ -33,19 +33,18 @@ hummus@multilayer@bipartites$atac_rna <- bipartite_peaks2genes(
                       store_bipartite = FALSE,
                       )
 
-
-
-# Get TFs expressed in scRNA-seq data and having known binding motifs
-tfs <- get_tfs(hummus, assay = "RNA", store_tfs = FALSE)
-
+# Add bipartite between tfs and peaks data to hummus object
+  #tfs are expressed tfs and
 hummus@multilayer@bipartites$tf_peaks <- bipartite_tfs2peaks(
-                      hummus_object = hummus,
-                      tf_gene_assay = "RNA",
-                      peak_assay = "peaks",
-                      genome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,
-                      store_bipartite = FALSE,
-                      )
+              hummus_object = hummus,
+              tf_expr_assay = "RNA",
+              peak_assay = "peaks",
+              tf_network_name = "TF_network",
+              genome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,
+              store_bipartite = FALSE,
+              )
 
+save_multilayer(hummus = hummus, "a")
 
 # Compute and save TF network
 #compute_TF_network(
@@ -67,3 +66,8 @@ hummus@multilayer@bipartites$tf_peaks <- bipartite_tfs2peaks(
   #    output_file = "data/real_example/multilayer/multiplex/hESC_Chen_ATAC_network.tsv",
    #   genome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,
     #  verbose = 1)
+
+    for (i in length(names(c())))
+    {
+      print(i)
+    }
