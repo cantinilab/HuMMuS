@@ -59,31 +59,88 @@ compute_TF_network <- function(organism=9606,
 #' @export
 #'
 #' @examples TO DO. Same than UNIT test.
-compute_gene_network <- function(scRNA, tfs, method="GENIE3", store_network=TRUE, output_file, threshold=0.0, number_cores=1, verbose=1){
-  if(method=="GENIE3"){
-    a = Sys.time()
-    weightMat = GENIE3::GENIE3(as.matrix(scRNA), regulators = tfs, nCores=number_cores)   # Infer network
+compute_gene_network <- function(hummus,
+                                 gene_assay = "RNA",
+                                 tfs = NULL,
+                                 method = "GENIE3",
+                                 store_network = FALSE,
+                                 output_file,
+                                 threshold = 0.0,
+                                 number_cores = 1,
+                                 verbose = 1,
+                                 multiplex_name = NULL) {
+  if (method == "GENIE3") {
+    # Get tfs list
+    if (verbose > 0 && is.null(tfs)) {
+      print("No TFs list provided, fetching from hummus object...")
+    }
+    tfs <- get_tfs(hummus = hummus,
+            assay = gene_assay,
+            store_tfs = FALSE,
+            output_file = NULL,
+            verbose = verbose)
+
+    # Compute gene network
+    if (verbose > 0) {
+      print("Computing gene network...")
+      a <- Sys.time()
+    }
+    # infer network
+    weightMat <- GENIE3::GENIE3(as.matrix(hummus[[gene_assay]]@counts),
+                               regulators = tfs,
+                               nCores = number_cores)
 
     if (verbose > 0) {
       print(paste("Gene network construction time:", Sys.time() - a))
     }
-
-    linkList <- GENIE3::getLinkList(weightMat)     # Get edge list
+    # get edge list
+    linkList <- GENIE3::getLinkList(weightMat)
     gene_network <- linkList[which(linkList$weight > threshold), ]
 
-    if (store_network == TRUE) {
-      write.table(gene_network,
-                  output_file,  # Store edgelist
-                  col.names = FALSE,
-                  row.names = FALSE,
-                  quote = FALSE,
-                  sep = "\t")
-    }
 
-    return(gene_network)  # Return edges with weight > 0
-  } else {
-    return("no gene network computed!")
+    features <- unique(c(unique(gene_network$regulatoryGene),
+                      unique(gene_network$targetGene)))
+
+  # Save gene network
+  if (store_network) {
+    if (is.null(output_file)) {
+      stop("Please provide an output file name if you want to store the network.")
+    }
+    write.table(gene_network,
+                output_file,
+                col.names = TRUE,
+                row.names = FALSE,
+                quote = FALSE,
+                sep = "\t")
   }
+
+  # TODO : add other methods
+  } else {
+    stop(cat("Method not implemented yet, choose between GENIE3 and..",
+    "that's it for now.\n but you can always compute the network",
+    "independently and add it to the hummus object."))
+  }
+
+  # Check if multiplex name provided
+  if (is.null(multiplex_name)) {
+    multiplex_name <- gene_assay
+  }
+  # Create a new multiplex of the hummus multilayer if does not exist already
+  if (is.null(hummus@multilayer@multiplex[[multiplex_name]])) {
+    hummus@multilayer@multiplex[[multiplex_name]] <- new("multiplex")
+    hummus@multilayer@multiplex[[multiplex_name]] <-
+              add_network(hummus@multilayer@multiplex[[multiplex_name]],
+                          network = gene_network,
+                          network_name = paste0(multiplex_name, "_", method))
+  } else {
+    # Add network to existing multiplex if exists already
+    hummus <- add_network(hummus,
+                        multiplex_name = multiplex_name,
+                        network = gene_network,
+                        network_name = paste0(multiplex_name, "_", method))
+  }
+  # Add the network to a multiplex of the hummus multilayer
+  return(hummus)
 }
 
 #' Compute peak network from scATAC-seq data
@@ -130,6 +187,10 @@ compute_atac_peak_network <- function(
     ) {
 
   if (method=="cicero") {
+      if (!requireNamespace("cicero", quietly = TRUE)) {
+        stop("Please install cicero.\n",
+         "https://cole-trapnell-lab.github.io/cicero-release/docs_m3/")
+      }
     int_elementMetadata <- SingleCellExperiment::int_elementMetadata
 
   # obtain chromosome sizes
