@@ -1,32 +1,3 @@
-#' @title Motifs database class
-#' MotifsDatabase object stores motifs(PFM matrices)
-#' and tf2motifs (TF to motifs names mapping) data.
-#'
-#' @slot motifs (TFBSTools::PWMatrixList) - PFM matrices.
-#' @slot tf2motifs (data.frame) - TF to motif names mapping. Columns: motif, tf.
-#'
-#' @name  motifs_db-class
-#' @rdname motifs_db-class
-#' @exportClass motifs_db
-motifs_db <- setClass("motifs_db",
-                           representation(
-                             motifs = "PWMatrixList",
-                             tf2motifs = "data.frame",
-                             tfs = "NULL"
-                           ))
-setMethod("show", "motifs_db",
-  function(object) {
-    cat(
-      paste("Motifs database object with :\n- ",
-          length(object@motifs), "motifs\n- ",
-          length(unique(object@tf2motifs$tf)), " TFs\n- ",
-          nrow(object@tf2motifs), "TF to motif names mapping"
-          )
-      )
-  })
-
-
-
 #' @title Extract TF names from scRNA data and tf2motifs
 #'
 #' @param species (character) - Species name. Default: "human".
