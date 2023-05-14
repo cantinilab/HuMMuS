@@ -38,6 +38,10 @@ bipartite_tfs2peaks <- function(
   store_bipartite = FALSE,
   output_file = NULL,
   verbose = 1) {
+
+  if (verbose > 0) {
+    cat("Computing TF-peak bipartite\n")
+  }
   # Check if tf_gene_assay is NULL
   if (!is.null(tf_expr_assay)) {
     # Check if the gene assay is present in the seurat object
@@ -45,7 +49,10 @@ bipartite_tfs2peaks <- function(
       stop("The gene assay is not present in the seurat object")
     }
     # Get TFs expressed in  assay AND having known binding motifs
-    tfs_use <- get_tfs(hummus_object, assay = tf_expr_assay, store_tfs = FALSE)
+    tfs_use <- get_tfs(hummus_object,
+                       assay = tf_expr_assay,
+                       store_tfs = FALSE,
+                       verbose=verbose)
   }
   else { # No filtering on expression assay, use all TFs
     tfs_use <- unique(hummus_object@motifs_db@tf2motifs$tf)
@@ -77,7 +84,7 @@ bipartite_tfs2peaks <- function(
   # https://github.com/quadbiolab/Pando/blob/main/R/regions.R
   # Add TF info for motifs
   if (verbose > 0) {
-    print("Adding TF info", verbose = verbose)
+    cat("\tAdding TF info\n")
   }
 
   # Spread dataframe to sparse matrix
@@ -121,7 +128,9 @@ bipartite_tfs2peaks <- function(
                 quote = FALSE,
                 sep = "\t")
   }
-  print("Returning TF-peak links as bipartite object")
+  if (verbose > 0) {
+    cat("\tReturning TF-peak links as bipartite object\n")
+  }
   # Return TF-peak links
 
   # Set default names for the networks if not provided
@@ -242,7 +251,6 @@ bipartite_peaks2genes <- function(
     peak_network_name <- peak_assay
   }
 
-  print(class(peaks2genes))
   # Return atac-rna bipartite
   bipartite_atac_rna <- new("bipartite",
                            "network" = peaks2genes,

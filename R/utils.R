@@ -14,7 +14,7 @@ get_tfs <- function(hummus,
                     assay,
                     store_tfs = TRUE,
                     output_file = NULL,
-                    verbose = 1) {
+                    verbose = 0) {
   # Check if the assay is present in the seurat object
   if (!assay %in% names(hummus@assays)) {
     stop("The gene assay is not present in the seurat object")
@@ -29,7 +29,7 @@ get_tfs <- function(hummus,
   tfs <- intersect(unique(as.character(hummus@motifs_db@tf2motifs$tf)),
                                        expr_genes)
   if (verbose > 0) {
-    print(paste(length(tfs), "TFs expressed"))
+    cat("\t", length(tfs), "TFs expressed\n")
   }
 
   if (store_tfs) {

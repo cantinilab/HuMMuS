@@ -13,3 +13,9 @@ b <- lapply(hummus@multilayer@bipartites, function(x) list("multiplex_right"=x@m
 formatted_layers <- hummuspy$config$group_per_layer(g)
 
 config = hummuspy$config$general_config(formatted_layers, b, bipartites_type = c('00', '00'))
+
+config = hummuspy$config$setup_proba_config(config, list(0,1,0), list(list(1/3,1/3,1/3),
+                                                                 list("1/3","1/3","1/3"),
+                                                                 list("1/3","1/3","1/3")))
+
+hummuspy$config$save_config(config, "a/config.yaml")

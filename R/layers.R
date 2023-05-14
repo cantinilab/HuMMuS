@@ -15,22 +15,85 @@
 #' @export
 #'
 #' @examples TO DO. Same than UNIT test.
-compute_TF_network <- function(organism=9606,
-                               tfs=NA, store_network=TRUE, output_file, source_target='AND'){
+compute_tf_network <- function(hummus = null, # Hummus object
+                               organism = 9606, # Human by default
+                               tfs = NA, # List of tfs considered.
+                               gene_assay = NULL, # Name of the assay to get tfs from
+                                                  # if tfs is not provided
+                               store_network = FALSE, # Save the network on disk (TRUE, default)
+                               output_file = NULL, # Name of the output_file (if store_network == TRUE)
+                               source_target = "AND", # 'AND' | 'OR'
+                               only_expressed = TRUE, # TRUE | FALSE
+                               multiplex_name = NULL, # Name of the multiplex to add the network to
+                               tf_network_name = "TF_network", # Name of the network in the multiplex
+                               verbose = 1) {
 
-   TF_PPI <- OmnipathR::import_post_translational_interactions(
+  if (verbose > 0) {
+    cat("Computing TF network...\n")
+    a <- Sys.time()
+  }
+  TF_PPI <- OmnipathR::import_post_translational_interactions(
     organism = organism, partners = tfs, source_target = source_target
   )
 
-  Network_TF = TF_PPI[, c(3, 4)]
+  if (!is.null(gene_assay)) {
+    tfs <- get_tfs(hummus = hummus,
+            assay = gene_assay,
+            store_tfs = FALSE,
+            output_file = NULL,
+            verbose = verbose)
+  }
+  # add filtering if element is not a TF expressed in the dataset
+  if (source_target == "AND") {
+    TF_PPI <- TF_PPI[which(TF_PPI$source %in% tfs &
+                           TF_PPI$target %in% tfs), ]
+  } else if (source_target == "OR") {
+    TF_PPI <- TF_PPI[which(TF_PPI$source %in% tfs |
+                           TF_PPI$target %in% tfs), ]
+  }
 
-  if (store_network==TRUE){
-    write.table(Network_TF, output_file,                                                  # Store edgelist
+  Network_TF <- TF_PPI[, c(3, 4)]
+
+  if (verbose > 0) {
+    cat("\tTF network construction time:", Sys.time() - a, "\n")
+  }
+
+  if (store_network == TRUE) {
+    if (verbose > 0) {
+      cat("\tStoring TF network in file : ", output_file, "\n")
+    }
+    if (is.null(output_file)) {
+      stop("\tPlease provide an output file name if you want to store the network.\n")
+    }
+    write.table(Network_TF, output_file, # Store edgelist
                 col.names = FALSE, row.names = FALSE, quote = FALSE, sep = "\t")
   }
 
-  return(Network_TF)
+  if (is.null(hummus)) {
+    cat('\tno hummus object provided\n')
+    return(Network_TF)
+  } else if (is.null(hummus@multilayer@multiplex[[multiplex_name]])) {
+    if (verbose > 0) {
+      cat("\tCreating new multiplex : ", multiplex_name, "\n")
+    }
+    hummus@multilayer@multiplex[[multiplex_name]] <- new("multiplex")
+    hummus@multilayer@multiplex[[multiplex_name]] <- add_network(
+                    hummus@multilayer@multiplex[[multiplex_name]],
+                    network = Network_TF,
+                    network_name = tf_network_name)
+  } else {
+    if (verbose > 0) {
+      cat("\tAdding network to existing multiplex : ", multiplex_name, "\n")
+    }
+    hummus <- add_network(hummus,
+                          multiplex_name = multiplex_name,
+                          network = Network_TF,
+                          network_name = tf_network_name)
+  }
+
+  return(hummus)
 }
+
 
 #' Compute gene netwok from scRNA-seq data
 #'
@@ -70,9 +133,13 @@ compute_gene_network <- function(hummus,
                                  verbose = 1,
                                  multiplex_name = NULL) {
   if (method == "GENIE3") {
+    if (verbose > 0) {
+      cat("Computing gene network with ", method, " ...\n")
+      a <- Sys.time()
+    }
     # Get tfs list
     if (verbose > 0 && is.null(tfs)) {
-      print("No TFs list provided, fetching from hummus object...")
+      cat("\tNo TFs list provided, fetching from hummus object...\n")
     }
     tfs <- get_tfs(hummus = hummus,
             assay = gene_assay,
@@ -80,18 +147,13 @@ compute_gene_network <- function(hummus,
             output_file = NULL,
             verbose = verbose)
 
-    # Compute gene network
-    if (verbose > 0) {
-      print("Computing gene network...")
-      a <- Sys.time()
-    }
     # infer network
     weightMat <- GENIE3::GENIE3(as.matrix(hummus[[gene_assay]]@counts),
                                regulators = tfs,
                                nCores = number_cores)
 
     if (verbose > 0) {
-      print(paste("Gene network construction time:", Sys.time() - a))
+      cat("\tGene network construction time:", Sys.time() - a, "\n")
     }
     # get edge list
     linkList <- GENIE3::getLinkList(weightMat)
@@ -105,6 +167,9 @@ compute_gene_network <- function(hummus,
   if (store_network) {
     if (is.null(output_file)) {
       stop("Please provide an output file name if you want to store the network.")
+    }
+    if (verbose > 0) {
+      cat("\tStoring gene network in file : ", output_file, "\n")
     }
     write.table(gene_network,
                 output_file,
@@ -127,19 +192,25 @@ compute_gene_network <- function(hummus,
   }
   # Create a new multiplex of the hummus multilayer if does not exist already
   if (is.null(hummus@multilayer@multiplex[[multiplex_name]])) {
+    if (verbose > 0) {
+      cat("\tCreating new multiplex : ", multiplex_name, "\n")
+    }
     hummus@multilayer@multiplex[[multiplex_name]] <- new("multiplex")
     hummus@multilayer@multiplex[[multiplex_name]] <-
               add_network(hummus@multilayer@multiplex[[multiplex_name]],
                           network = gene_network,
                           network_name = paste0(multiplex_name, "_", method))
-  } else {
+  } else {paste
+    if (verbose > 0) {
+      cat("\tAdding network to existing multiplex : ", multiplex_name, "\n")
+    }
     # Add network to existing multiplex if exists already
     hummus <- add_network(hummus,
                         multiplex_name = multiplex_name,
                         network = gene_network,
                         network_name = paste0(multiplex_name, "_", method))
   }
-  # Add the network to a multiplex of the hummus multilayer
+  # Return hummus object
   return(hummus)
 }
 
@@ -232,7 +303,7 @@ compute_atac_peak_network <- function(
                          sample_num = sample_num) # Default = 100
     print("test 3")
     if (verbose > 0) {
-      print(paste("Peak network construction time:", Sys.time() - a))
+      cat("Peak network construction time:", Sys.time() - a)
       }
     if (store_network ){
       write.table(cicero,
@@ -278,7 +349,7 @@ compute_atac_peak_network <- function(
     # Remove edges with coaccess score <= threshold
 
     if (verbose > 0) {
-      print(paste(dim(peak_network)[1], "peak edges with weight > ", as.string(threshold)))}
+      cat(dim(peak_network)[1], "peak edges with weight > ", as.string(threshold))}
 
     if (store_network) {
       write.table(peak_network,

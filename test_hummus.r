@@ -14,8 +14,8 @@ hummus <- hummus_object(seurat)
 
    #### Add annotations to hummus object
 # Fetch genome annotations
-genome_annotations <- get_genome_annotations(
-  ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
+#genome_annotations <- get_genome_annotations(
+ # ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
 # Add genome annotations to seurat object
 Signac::Annotation(hummus@assays$peaks) <- genome_annotations
 # Load TF motifs from JASPAR2020 and chromVARmotifs in hummus object
@@ -40,14 +40,30 @@ hummus@multilayer@bipartites$tf_peaks <- bipartite_tfs2peaks(
               )
 
    #### Compute layer networks and add it to hummus object
+hummus <- compute_tf_network(hummus,
+                            gene_assay = "RNA",
+                            verbose = 1,
+                            multiplex_name = "TF",
+                            )
+
+
 # Compute and save gene network from scRNA-seq w/ GENIE3
 hummus <- compute_gene_network(hummus,
                               gene_assay = "RNA",
                               method = "GENIE3",
                               verbose = 1,
                               number_cores = 5,
-                              store_network=TRUE,
+                              store_network = TRUE,
                               output_file = "gene_network.tsv")
+
+
+hummus <- compute_gene_network(hummus,
+                              gene_assay = "RNA",
+                              method = "GENIE3",
+                              verbose = 1,
+                              number_cores = 5,
+                              multiplex_name = "peak_network",
+                              )
 
 # Save the mulilayer in a classic hierarchical structure
 save_multilayer(hummus = hummus, "a")

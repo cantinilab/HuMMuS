@@ -101,6 +101,9 @@ def setup_proba_config(
     """ Setup the RWR probability for the exploration of hummus networks
     with the given eta and lambda values. """
 
+    assert len(config['multiplex']) == len(eta),\
+    'eta (length of {}) should be the same length as the number of layers ({})'.format()
+    
     config['eta'] = eta
     config['lambda'] = lamb
 
