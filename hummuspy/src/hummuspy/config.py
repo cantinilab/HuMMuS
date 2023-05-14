@@ -40,14 +40,15 @@ def group_per_layer(
 
 
 def general_config(
-    multiplexes: typing.Union[dict[dict[str]]],
-    bipartites: typing.Union[str, list[str], dict[str]],
-    seed_path: str = 'seeds/seeds.txt',
-    folder_multiplexes = 'multiplex',
-    folder_bipartites = 'bipartite',
-    bipartites_type: typing.Union[str, list[str], dict[str]] = 'undirected',
-    self_loops = 0,
-    restart_prob = 0.7,):
+        multiplexes: dict[dict[str]],
+        bipartites: typing.Union[str, list[str], dict[str]],
+        seed_path: str = 'seeds/seeds.txt',
+        folder_multiplexes='multiplex',
+        folder_bipartites='bipartite',
+        bipartites_type: typing.Union[str, list[str], dict[str]] = 'undirected',
+        self_loops=0,
+        restart_prob=0.7
+        ):
 
     """Create a very general config file for the hummus pipeline."""
     config = dict()
@@ -94,9 +95,9 @@ def save_config(config, filename):
 
 
 def setup_proba_config(
-    config: dict,
-    eta: list[float],
-    lamb: list[list[float]]):
+        config: dict,
+        eta: list[float],
+        lamb: list[list[float]]):
     """ Setup the RWR probability for the exploration of hummus networks
     with the given eta and lambda values. """
 
