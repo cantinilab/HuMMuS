@@ -102,7 +102,8 @@ def setup_proba_config(
     with the given eta and lambda values. """
 
     assert len(config['multiplex']) == len(eta),\
-    'eta (length of {}) should be the same length as the number of layers ({})'.format()
+    'eta (length of {}) should be the same length as the number of layers ({})'\
+        .format(len(eta), len(config['multiplex']))
     
     config['eta'] = eta
     config['lambda'] = lamb

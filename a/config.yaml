@@ -7,20 +7,8 @@ bipartite:
     graph_type: '00'
     source: peaks
     target: TF_network
-eta:
-- 0.0
-- 1.0
-- 0.0
-lambda:
-- - 0.3333333333333333
-  - 0.3333333333333333
-  - 0.3333333333333333
-- - 1/3
-  - 1/3
-  - 1/3
-- - 1/3
-  - 1/3
-  - 1/3
+eta: null
+lambda: null
 multiplex:
   RNA:
     graph_type: '00'
@@ -35,6 +23,41 @@ multiplex:
     - multiplex/RNA/I
     - multiplex/RNA/E
     - multiplex/RNA/3
+  TF:
+    graph_type: '00'
+    layers:
+    - multiplex/TF/T
+    - multiplex/TF/F
+    - multiplex/TF/_
+    - multiplex/TF/n
+    - multiplex/TF/e
+    - multiplex/TF/t
+    - multiplex/TF/w
+    - multiplex/TF/o
+    - multiplex/TF/r
+    - multiplex/TF/k
+  peak_network:
+    graph_type: '00'
+    layers:
+    - multiplex/peak_network/p
+    - multiplex/peak_network/e
+    - multiplex/peak_network/a
+    - multiplex/peak_network/k
+    - multiplex/peak_network/_
+    - multiplex/peak_network/n
+    - multiplex/peak_network/e
+    - multiplex/peak_network/t
+    - multiplex/peak_network/w
+    - multiplex/peak_network/o
+    - multiplex/peak_network/r
+    - multiplex/peak_network/k
+    - multiplex/peak_network/_
+    - multiplex/peak_network/G
+    - multiplex/peak_network/E
+    - multiplex/peak_network/N
+    - multiplex/peak_network/I
+    - multiplex/peak_network/E
+    - multiplex/peak_network/3
 r: 0.7
 seed: seeds/seeds.txt
 self_loops: 0

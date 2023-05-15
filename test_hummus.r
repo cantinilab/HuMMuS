@@ -9,13 +9,17 @@ scATAC <- scATAC[1:1000, ]
 seurat <- SeuratObject::CreateSeuratObject(scRNA)
 # Add scATAC-seq data to seurat object
 seurat[["peaks"]] <- Signac::CreateChromatinAssay(scATAC, sep = c(":", "-"))
-# Create hummus object
+
+
+###############################################
+# Create hummus object from seurat object     #
+###############################################
 hummus <- hummus_object(seurat)
 
    #### Add annotations to hummus object
 # Fetch genome annotations
-#genome_annotations <- get_genome_annotations(
- # ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
+genome_annotations <- get_genome_annotations(
+  ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
 # Add genome annotations to seurat object
 Signac::Annotation(hummus@assays$peaks) <- genome_annotations
 # Load TF motifs from JASPAR2020 and chromVARmotifs in hummus object
@@ -77,6 +81,11 @@ save_multilayer(hummus = hummus, "a")
     #    #"atac_network"
   #  "seeds"
   #  "config"
+
+
+
+
+
 
 
 
