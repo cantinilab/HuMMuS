@@ -43,7 +43,7 @@ hummus@multilayer@bipartites$tf_peaks <- bipartite_tfs2peaks(
               genome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,
               )
 
-   #### Compute layer networks and add it to hummus object
+# Compute layer networks and add it to hummus object
 hummus <- compute_tf_network(hummus,
                             gene_assay = "RNA",
                             verbose = 1,
