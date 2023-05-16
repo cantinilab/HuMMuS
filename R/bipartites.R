@@ -35,7 +35,7 @@ bipartite_tfs2peaks <- function(
   tf_network_name = NULL,
   peak_network_name = NULL,
   genome,
-  store_bipartite = FALSE,
+  store_network = FALSE,
   output_file = NULL,
   verbose = 1) {
 
@@ -117,17 +117,11 @@ bipartite_tfs2peaks <- function(
   colnames(tfs2peaks) <- c("peak", "TF")     # set column names
 
   # Save TF-peak links
-  if (store_bipartite) {
-    if (is.null(output_file)) {
-      stop("Please provide an output file name")
-    }
-    write.table(tfs2peaks,
-                output_file,
-                col.names = TRUE,
-                row.names = FALSE,
-                quote = FALSE,
-                sep = "\t")
-  }
+  store_network(network = tfs2peaks,
+                store_network = store_network,
+                output_file = output_file,
+                verbose = verbose)
+
   if (verbose > 0) {
     cat("\tReturning TF-peak links as bipartite object\n")
   }
@@ -188,7 +182,7 @@ bipartite_peaks2genes <- function(
   upstream = 500,
   downstream = 500,
   only_tss = TRUE,
-  store_bipartite = FALSE,
+  store_network = FALSE,
   output_file = NULL) {
   # Check if the gene assay is present in the seurat object
   if (!gene_assay %in% names(seurat_object@assays)) {
@@ -232,17 +226,13 @@ bipartite_peaks2genes <- function(
                              colnames(peaks2genes))[as.vector(peaks2genes > 0), ]
   colnames(peaks2genes) <- c("gene", "peak") # set column names
 
-  if (store_bipartite) {
-    if (is.null(output_file)) {
-      stop("Please provide an output file name")
-    }
-    write.table(peaks2genes,
-                output_file,
-                col.names = TRUE,
-                row.names = FALSE,
-                quote = FALSE,
-                sep = "\t")
-  }
+
+  # Save peak-gene links
+  store_network(network = peaks2genes,
+                store_network = store_network,
+                output_file = output_file,
+                verbose = 1)
+
   # Set default names for the networks if not provided
   if (is.null(gene_network_name)) {
     gene_network_name <- gene_assay

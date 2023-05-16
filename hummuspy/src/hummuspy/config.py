@@ -6,7 +6,7 @@ def make_values_list(values, types=(str, bool, int, float)):
     """Transform layer type to be sure a list of values is returned."""
     if type(values) == list:
         return values
-    elif type(values)==dict:
+    elif type(values) ==dict:
         return list(values.values())
     elif type(values) in types:
         return [values]

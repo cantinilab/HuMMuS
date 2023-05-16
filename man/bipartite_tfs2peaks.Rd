@@ -5,20 +5,30 @@
 \title{Compute links between TFs and DNA regions}
 \usage{
 bipartite_tfs2peaks(
-  tfs,
-  peaks,
-  peak_sep1 = ":",
-  peak_sep2 = "-",
+  hummus_object,
+  tf_expr_assay = "RNA",
+  peak_assay = "peaks",
+  tf_network_name = NULL,
+  peak_network_name = NULL,
   genome,
-  gene.range,
-  motifs,
-  tf2motifs,
-  store_bipartite = TRUE,
-  output_file = None,
+  store_bipartite = FALSE,
+  output_file = NULL,
   verbose = 1
 )
 }
 \arguments{
+\item{genome}{(BSGenome) - Genome sequences on which motifs positions
+will be searched for.}
+
+\item{store_bipartite}{(bool) - Save the bipartite directly
+(\code{TRUE}, default) or return without saving on disk (\code{FALSE}).}
+
+\item{output_file}{(character) - Name of the output_file
+(if store_bipartite == \code{TRUE}).}
+
+\item{verbose}{(integer) Display function messages.
+Set to 0 for no message displayed, >= 1 for more details.}
+
 \item{tfs}{vector(character) - List of tfs considered.}
 
 \item{peaks}{vector(character) - List of peaks.}
@@ -29,24 +39,12 @@ and starting coordinates (e.g. : chr1/100_1000 --> sep1='/').}
 \item{peak_sep2}{(character) - Separator between chromosme number
 and starting coordinates (e.g. : chr1/100_1000 --> sep1='_').}
 
-\item{genome}{(BSGenome) - Genome sequences on which motifs positions
-will be searched for.}
-
 \item{gene.range}{(gene.range object) - TO DO.}
 
 \item{motifs}{(PWMatrixList) List of PWMatrix (PWMs of motifs).}
 
 \item{tf2motifs}{(data.frame) Corresponding table between PWMatrix names
 and binding TFs.}
-
-\item{store_bipartite}{(bool) - Save the bipartite directly
-(\code{TRUE}, default) or return without saving on disk (\code{FALSE}).}
-
-\item{output_file}{(character) - Name of the output_file
-(if store_bipartite == \code{TRUE}).}
-
-\item{verbose}{(integer) Display function messages.
-Set to 0 for no message displayed, >= 1 for more details.}
 }
 \value{
 (data.frame) Return list of the links betweeen TFs and peaks.

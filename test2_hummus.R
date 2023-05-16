@@ -50,7 +50,7 @@ create_config <- function(
     }
     names(multiplex_dictionary[[multiplex]]) <- names(hummus_object@multilayer@multiplex[[multiplex]]@networks)
   }
-  print(multiplex_dictionary)
+
   # Create a named list containing the bipartites infos
   # formatted for hummuspy config funtions
   # each element of the list is a list containing
@@ -61,6 +61,7 @@ create_config <- function(
 
   #  Reformatting the list to be used in hummuspy config functions
   formatted_layers <- hummuspy$config$group_per_layer(multiplex_dictionary)
+  print(formatted_layers)
 
   # Initialize the config object with hummus object
   # multiple layers and bipartites infos

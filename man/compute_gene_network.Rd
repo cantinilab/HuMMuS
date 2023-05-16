@@ -5,19 +5,19 @@
 \title{Compute gene netwok from scRNA-seq data}
 \usage{
 compute_gene_network(
-  scRNA,
-  tfs,
+  hummus,
+  gene_assay = "RNA",
+  tfs = NULL,
   method = "GENIE3",
-  store_network = TRUE,
+  store_network = FALSE,
   output_file,
   threshold = 0,
   number_cores = 1,
-  verbose = 1
+  verbose = 1,
+  multiplex_name = NULL
 )
 }
 \arguments{
-\item{scRNA}{(data.frame) - Expression matrix (cells*genes)}
-
 \item{tfs}{vector(character) - List of tfs considered.}
 
 \item{method}{(character) - Method used to infer network edges.
@@ -35,6 +35,8 @@ default) or return without saving on disk (\code{FALSE}).}
 \item{number_cores}{(interger, default 1) - Number of thread that should be used for the parallelizable methods.}
 
 \item{verbose}{(integer) - Display function messages. Set to 0 for no message displayed, >= 1 for more details.}
+
+\item{scRNA}{(data.frame) - Expression matrix (cells*genes)}
 }
 \value{
 (data.frame) - Return list of network interactions between genes

@@ -14,7 +14,7 @@ bipartite_peaks2genes(
   upstream = 500,
   downstream = 500,
   only_tss = TRUE,
-  store_bipartite = TRUE,
+  store_bipartite = FALSE,
   output_file = NULL
 )
 }

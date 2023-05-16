@@ -6,7 +6,7 @@
 \usage{
 compute_atac_peak_network(
   scATAC,
-  genome = BSgenome.Hsapiens.UCSC.hg38,
+  genome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,
   method = "cicero",
   store_network = TRUE,
   output_file,

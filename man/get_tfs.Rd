@@ -4,19 +4,19 @@
 \alias{get_tfs}
 \title{Extract TF names from scRNA data and tf2motifs}
 \usage{
-get_tfs(species = "human", genes, output_file, tf2motifs, verbose = 1)
+get_tfs(hummus, assay, store_tfs = TRUE, output_file = NULL, verbose = 0)
 }
 \arguments{
+\item{output_file}{(character) - Path to output file.}
+
+\item{verbose}{(integer) - Verbosity level. Default: 1.}
+
 \item{species}{(character) - Species name. Default: "human".}
 
 \item{genes}{(vector(character)) - List of expressed genes.}
 
-\item{output_file}{(character) - Path to output file.}
-
 \item{tf2motifs}{(data.frame) - TF to motifs names mapping.
 Columns: motif, tf.}
-
-\item{verbose}{(integer) - Verbosity level. Default: 1.}
 }
 \value{
 TFs (vector(character)) - List of TFs expressed with motifs.
