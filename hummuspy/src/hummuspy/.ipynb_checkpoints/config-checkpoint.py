@@ -11,22 +11,7 @@ import networkx as nx
 def make_values_list(
         values,
         types: typing.Union[str, bool, int, float]):
-    """Transform layer type to be sure a list of values is returned.
-    Parameters
-    ----------
-    values: list, dict, str, bool, int, float
-        The values to transform into a list.
-    types: list, dict, str, bool, int, float
-        The types of the values to transform into a list.
-    Returns
-    -------
-    values: list
-        The values transformed into a list.
-    Raises
-    ------
-    TypeError if the values are not of the given types.
-
-    """
+    """Transform layer type to be sure a list of values is returned."""
     if type(values) == list:
         return values
     elif type(values) == dict:
@@ -175,30 +160,7 @@ def setup_proba_config(
     return config
 
 
-##############################
-# Check proba transitions    #
-##############################
 def get_max_lamb(config):
-    """Calculate the maximum lamb matrix according to bipartites
-    indicated in the config in input.
-    Bipartites are used to know which layers can be connected to each other.
-
-    Parameters
-    ----------
-    config: dict
-        The config dictionary.
-
-    Returns
-    -------
-    max_lamb: pandas.DataFrame
-        The maximum lamb matrix according to bipartites.
-        Structure:
-          pd.DataFrame([[0.5, 0.5, 0],
-                        [1/3, 1/3, 1/3],
-                        [0, 0.5, 0.5]],
-                        index = ['TF', 'Peak', 'RNA'],
-                        columns = ['TF', 'Peak', 'RNA'])
-    """
     # Get layer names connected by bipartites
     positions_bipartites = [(config['bipartite'][bipartite]['source'],
                              config['bipartite'][bipartite]['target'])
@@ -259,9 +221,6 @@ def check_lamb(lamb, config):
         return True
 
 
-##############################
-# Draw proba transitions     #
-##############################
 def draw_lamb(df):
     """Draw the lamb matrix as a directed graph (networkx.DiGraph).
     Parameters
@@ -279,10 +238,8 @@ def draw_lamb(df):
     None
 
     """
-    # Create a subplot that we'll use to draw the graph
     fig, ax = plt.subplots()
 
-    # Initialise a directed graph from the lamb matrix
     G = nx.from_pandas_adjacency(df-np.eye(len(df))*df,
                                  create_using=nx.DiGraph())
     pos = {list(G.nodes)[-i-1]: np.array((0, i))
