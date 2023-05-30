@@ -3,38 +3,26 @@ bipartite:
     graph_type: '00'
     source: RNA
     target: peaks
-  bipartite/tf_peaks:
+  bipartite/tf_peak:
     graph_type: '00'
     source: peaks
     target: TF_network
-eta:
-- 0.0
-- 1.0
-- 0.0
-lambda:
-- - 0.3333333333333333
-  - 0.3333333333333333
-  - 0.3333333333333333
-- - 1/3
-  - 1/3
-  - 1/3
-- - 1/3
-  - 1/3
-  - 1/3
 multiplex:
   RNA:
-    graph_type: '00'
+    graph_type:
+    - '10'
     layers:
-    - multiplex/RNA/R
-    - multiplex/RNA/N
-    - multiplex/RNA/A
-    - multiplex/RNA/_
-    - multiplex/RNA/G
-    - multiplex/RNA/E
-    - multiplex/RNA/N
-    - multiplex/RNA/I
-    - multiplex/RNA/E
-    - multiplex/RNA/3
+    - multiplex/RNA/RNA_GENIE3.tsv
+  TF:
+    graph_type:
+    - '00'
+    layers:
+    - multiplex/TF/TF_network.tsv
+  peaks:
+    graph_type:
+    - '10'
+    layers:
+    - multiplex/peaks/peak_network_cicero.tsv
 r: 0.7
 seed: seeds/seeds.txt
 self_loops: 0

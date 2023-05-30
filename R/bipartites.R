@@ -37,7 +37,8 @@ bipartite_tfs2peaks <- function(
   genome,
   store_network = FALSE,
   output_file = NULL,
-  verbose = 1) {
+  verbose = 1,
+  bipartite_name = "tf_peak") {
 
   if (verbose > 0) {
     cat("Computing TF-peak bipartite\n")
@@ -129,17 +130,19 @@ bipartite_tfs2peaks <- function(
 
   # Set default names for the networks if not provided
   if (is.null(tf_network_name)) {
+    cat('no TF layer name provided, using tf_expr_assay name\n')
     tf_network_name <- tf_expr_assay
   }
   if (is.null(peak_network_name)) {
     peak_network_name <- peak_assay
   }
 
-  bipartite_tf_peak <- new("bipartite",
+  # Return atac-rna bipartite
+  hummus_object@multilayer@bipartites[[bipartite_name]] <- new("bipartite",
                            "network" = tfs2peaks,
                            "multiplex_left" = peak_network_name,
                            "multiplex_right" = tf_network_name)
-  return(bipartite_tf_peak) # Return TF-peak bipartite object
+  return(hummus_object) # Return TF-peak bipartite object
 }
 
 
@@ -173,7 +176,7 @@ bipartite_tfs2peaks <- function(
 #'
 #' @examples
 bipartite_peaks2genes <- function(
-  seurat_object,
+  hummus_object,
   gene_assay = 'RNA',
   peak_assay = 'peaks',
   gene_network_name = NULL,
@@ -183,31 +186,32 @@ bipartite_peaks2genes <- function(
   downstream = 500,
   only_tss = TRUE,
   store_network = FALSE,
-  output_file = NULL) {
-  # Check if the gene assay is present in the seurat object
-  if (!gene_assay %in% names(seurat_object@assays)) {
-    stop("The gene assay is not present in the seurat object")
+  output_file = NULL,
+  bipartite_name = "atac_rna") {
+  # Check if the gene assay is present in the hummus object
+  if (!gene_assay %in% names(hummus_object@assays)) {
+    stop("The gene assay is not present in the hummus object")
   }
-  # Check if the peak assay is present in the seurat object
-  else if (!peak_assay %in% names(seurat_object@assays)) {
-    stop("The peak assay is not present in the seurat object")
+  # Check if the peak assay is present in the hummus object
+  else if (!peak_assay %in% names(hummus_object@assays)) {
+    stop("The peak assay is not present in the hummus object")
   }
   # Check if the peak assay is a ChromatinAssay object
-  else if (!inherits(seurat_object@assays[[peak_assay]],
+  else if (!inherits(hummus_object@assays[[peak_assay]],
                      "ChromatinAssay")) {
     stop("The peak assay is not a ChromatinAssay object 
     or does not have annotations (gene.range object))")
   }
   # Check if the peak assay has gene.range annotations
-  else if (is.null(Signac::Annotation(seurat_object[[peak_assay]]))) {
+  else if (is.null(Signac::Annotation(hummus_object[[peak_assay]]))) {
       stop("The peak assay does not have annotations (gene.range object)")
   }
 
   # Find candidate regions near gene bodies
   peaks_near_genes <- find_peaks_near_genes(
-                        peaks = seurat_object[[peak_assay]]@ranges,
+                        peaks = hummus_object[[peak_assay]]@ranges,
                         method = peak_to_gene_method,
-                        genes = Signac::Annotation(seurat_object[[peak_assay]]),
+                        genes = Signac::Annotation(hummus_object[[peak_assay]]),
                         upstream = upstream,
                         downstream = downstream,
                         only_tss = only_tss)
@@ -217,7 +221,7 @@ bipartite_peaks2genes <- function(
                                  fun = "sum")
   # Keep only the genes that are in our scRNA-seq dataset
   peaks2genes <- peaks2genes[rownames(peaks2genes) 
-                 %in% rownames(seurat_object@assays[[gene_assay]]), ]
+                 %in% rownames(hummus_object@assays[[gene_assay]]), ]
   # Remove rows/cols with only zeros
   peaks2genes <- peaks2genes[Matrix::rowSums(peaks2genes) != 0,
                              Matrix::colSums(peaks2genes) != 0]
@@ -242,11 +246,12 @@ bipartite_peaks2genes <- function(
   }
 
   # Return atac-rna bipartite
-  bipartite_atac_rna <- new("bipartite",
+  bipartite_atac_rna <- 
+  hummus_object@multilayer@bipartites[[bipartite_name]] <- new("bipartite",
                            "network" = peaks2genes,
                            "multiplex_left" = gene_network_name,
                            "multiplex_right" = peak_network_name)
-  return(bipartite_atac_rna)
+  return(hummus_object)
 }
 
 #' @title Associate peaks to genes based on distance to TSS (or gene body)

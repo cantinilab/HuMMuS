@@ -53,16 +53,11 @@ run_cicero_wrapper <- function(
                                   summary_stats = NULL,         # Default
                                   size_factor_normalize = TRUE, # Default
                                   silent = FALSE)               # Default
-    a = Sys.time()
     cicero <- cicero::run_cicero(cds = cicero_cds,                                   # Infer peak-links
                          genomic_coords = chromosome_sizes,
                          window = window,             # Default = 5e+05
                          silent = FALSE,             # Default = FALSE
                          sample_num = sample_num) # Default = 100
-
-    if (verbose > 0) {
-      cat("Peak network construction time:", Sys.time() - a)
-      }
 
     # Remove NAs, double edges, and edges with coaccess score <=0
     # Check for coaccess = NA
@@ -100,7 +95,7 @@ run_cicero_wrapper <- function(
     # Remove edges with coaccess score <= threshold
 
     if (verbose > 0) {
-      cat(dim(peak_network)[1], "peak edges with a coaccess score >",
+      cat("\n", dim(peak_network)[1], "peak edges with a coaccess score >",
           threshold, "were found.\n")
     }
 

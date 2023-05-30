@@ -126,12 +126,12 @@ multilayer <- setClass(Class = "multilayer",
 setMethod("show", "multilayer",
   function(object) {
     cat(
-      paste("Multilayer network of ",
+      paste("Multilayer network containing ",
       length(object@bipartites), " bipartite networks and ",
       length(object@multiplex), " multiplex networks.\n",
-      "\n- Multiplex networks names: ", paste(names(object@multiplex),
+      "\n- Multiplex names: ", paste(names(object@multiplex),
                                           collapse = ", "),
-      "\n- Bipartite networks names: ", paste(names(object@bipartites),
+      "\n- Bipartite names: ", paste(names(object@bipartites),
                                           collapse = ", "), "\n"
       )
     )
@@ -170,15 +170,9 @@ setMethod("show", "hummus_object",
     ))
     num.assays <- length(x = assays)
 
-    cat(
-      paste("Hummus object containing a multilayer object :",
-      "\n- Multiplex networks names: ",
-      paste(names(object@multilayer@multiplex),
-                  ollapse = ", "),
-      "\n- Bipartite networks names: ",
-      paste(names(object@multilayer@bipartites),
-                  collapse = ", "), "\n")
-    )
+    cat("Hummus object containing a multilayer object :\n")
+    show(object@multilayer)
+    cat('\n\nAnd a Seurat object :\n\n')
     cat(
       nfeatures,
       "features across",
@@ -245,14 +239,15 @@ setMethod("show", "hummus_object",
 save_multilayer <- function(
     hummus,
     folder_name,
-    verbose = TRUE) {
+    verbose = TRUE,
+    suffix = ".tsv") {
 
   multiplex_folder <- "multiplex"
-  bipartite_folder <- "bipartites"
-  seed_folder      <- "seeds"
+  bipartite_folder <- "bipartite"
+  seed_folder      <- "seed"
   config_folder    <- "config"
 
-  dir.create("folder_name")
+  dir.create(folder_name)
   dir.create(paste0(folder_name, "/", multiplex_folder))
   dir.create(paste0(folder_name, "/", bipartite_folder))
   dir.create(paste0(folder_name, "/", seed_folder))
@@ -269,7 +264,7 @@ save_multilayer <- function(
             col.names = FALSE, row.names = FALSE, quote = FALSE, sep = "\t",
              file = paste0(folder_name, "/",
                            multiplex_folder, "/",
-                           multiplex_name, "/", network_name, ".tsv"))
+                           multiplex_name, "/", network_name, suffix))
     }
   }
   # save bipartite networks

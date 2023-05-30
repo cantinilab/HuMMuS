@@ -88,9 +88,9 @@ def compute_multiple_RandomWalk(
                                            seeds,
                                            config_folder,
                                            spec_layer_result_saved)
-                                                for seeds in tqdm(list_seeds,
-                                                                  position=0,
-                                                                  leave=True))
+                                          for seeds in tqdm(list_seeds,
+                                                            position=0,
+                                                            leave=True))
     ranking_all_dfs = pd.concat([ranking_all_dfs]+l_ranking_df)
     ranking_all_dfs = ranking_all_dfs.sort_values(by='score')
 
@@ -173,13 +173,13 @@ def compute_RandomWalk(
         seeds_filename = '_'.join(seeds)
 
     # write seeds file
-    with open(multilayer_f+'/seeds/'+seeds_filename+'.txt', 'w') as f:
+    with open(multilayer_f+'/seed/'+seeds_filename+'.txt', 'w') as f:
         f.write('\n'.join(seeds)+'\n')
 
     # config file personalised with seed file
     with open(multilayer_f+'/{}/'.format(config_folder)+config_name, 'r') as f:
         config = yaml.load(f, Loader=yaml.BaseLoader)
-        config['seed'] = 'seeds/'+seeds_filename+'.txt'
+        config['seed'] = 'seed/'+seeds_filename+'.txt'
     with open(multilayer_f+'/{}/'.format(config_folder)
               + seeds_filename + '_' + config_name, 'w') as f:
         yaml.dump(config, f)
@@ -207,8 +207,8 @@ def compute_RandomWalk(
 def define_grn(
         multilayer_f,
         config,
-        gene_list='all',
-        tf_list='all',
+        gene_list=None,
+        tf_list=None,
         config_name='grn_hummuspy.config.yml',
         config_folder='config',
         tf_multiplex: str = 'TF',
@@ -288,7 +288,7 @@ def define_grn(
     config_path = multilayer_f+'/'+config_folder+'/'+config_name
     hummuspy.config.save_config(config, config_path)
 
-    if gene_list == 'all':
+    if gene_list is None:
         gene_list = []
         for layer in config['multiplex'][rna_multiplex]['layers']:
             df_layer = pd.read_csv(multilayer_f+'/'+layer,
@@ -316,7 +316,7 @@ def define_grn(
     del df['target']
     del df['seed']
 
-    if tf_list == 'all':
+    if tf_list is None:
         tf_list = []
         for layer in config['multiplex'][tf_multiplex]['layers']:
             df_layer = pd.read_csv(multilayer_f+'/'+layer,
@@ -328,6 +328,182 @@ def define_grn(
                                           np.unique(df_layer[1].values)])
             tf_list = np.unique(np.concatenate([tf_list,
                                                 layer_nodes]))
+
+    # Add normalisation ?
+    df = df[df['tf'].isin(tf_list)]
+
+    if save is True:
+        assert output_f is not None, 'You need to provide an output_f name ' +\
+            'to save the GRN result'
+        df.sort_values(by='score').to_csv(output_f,
+                                          sep='\t',
+                                          index=False,
+                                          header=True)
+    if return_df:
+        return df
+
+
+def define_grn_for_R(
+        multilayer_f,
+        multiplexes_list,
+        bipartites_list,
+        folder_multiplexes='multiplex',
+        folder_bipartites='bipartite',
+        gene_list=None,
+        tf_list=None,
+        config_filename='grn_hummuspy.config.yml',
+        config_folder='config',
+        tf_multiplex: str = 'TF',
+        peak_multiplex: str = 'peaks',
+        rna_multiplex: str = 'RNA',
+        update_config=True,
+        save=False,
+        return_df=True,
+        output_f=None,
+        njobs=1):
+    """Define a GRN from a multilayer network and a config file.
+    Random walks are computed for each gene in the gene list and we keep
+    the probability to reach each TF in the TF list.
+    You can provide a list of genes and TFs to restrict the GRN.
+    You can choose to save the result in a file and/or return it.
+
+
+
+    Parameters
+    ----------
+    multilayer_f : str
+        Path to the multilayer folder.
+    config : dict
+        Config dictionnary.
+    gene_list : list, optional
+        List of genes. The default is 'all'.
+    tf_list : list, optional
+        List of TFs. The default is 'all'.
+    config_name : str, optional
+        Name of the config file. The default is 'grn_hummuspy.config.yml'.
+    config_folder : str, optional
+        Name of the config folder. The default is 'config'.
+    tf_multiplex : str, optional
+        Name of the TF multiplex. The default is 'TF'.
+    peak_multiplex : str, optional
+        Name of the peak multiplex. The default is 'peaks'.
+    rna_multiplex : str, optional
+        Name of the RNA multiplex. The default is 'RNA'.
+    update_config : bool, optional
+        Update the config file. The default is True.
+    save : bool, optional
+        Save the result. The default is False.
+    return_df : bool, optional
+        Return the result. The default is True.
+    output_f : str, optional
+        Name of the output file. The default is None.
+    njobs : int, optional
+        Number of jobs. The default is 1.
+
+    Returns
+    -------
+    df : pd.DataFrame
+        Dataframe containing the random walks's results that defines the GRN.
+        Columns:
+            layer : str
+                Name of the target layer.
+
+            path_layer : str
+                Name of the layer of the path.
+            score : float
+                Score of the random walk.
+            gene : str
+                Name of the gene-seed.
+            tf : str
+                Name of the TF-target.
+
+    """
+
+    njobs = int(njobs)
+    print('multiplexes_list : ', multiplexes_list)
+    print('bipartites_list : ', bipartites_list)
+    print('folder_multiplexes : ', folder_multiplexes)
+    print('folder_bipartites : ', folder_bipartites)
+    print('gene_list : ', gene_list)
+    print('tf_list : ', tf_list)
+    print('config_filename : ', config_filename)
+    print('config_folder : ', config_folder)
+    print('tf_multiplex : ', tf_multiplex)
+    print('peak_multiplex : ', peak_multiplex)
+    print('rna_multiplex : ', rna_multiplex)
+    print('update_config : ', update_config)
+    print('save : ', save)
+    print('return_df : ', return_df)
+    print('output_f : ', output_f)
+    print('njobs : ', njobs)
+
+    # Create general config file
+    config = hummuspy.config.general_config(
+        multiplexes=multiplexes_list,
+        bipartites=bipartites_list,
+        folder_multiplexes=folder_multiplexes,
+        folder_bipartites=folder_bipartites,
+        suffix='.tsv',
+        self_loops=0,
+        restart_prob=0.7,
+        bipartites_type=('00', '00'),
+        save_configfile=False,
+        config_filename=config_filename)
+
+    # store mutliplex already because it will be when saving yaml file,
+    # while eta and lambda won't.
+    config['multiplex'] = {k: config['multiplex'][k]
+                           for k in sorted(config['multiplex'].keys())}
+
+    if update_config:
+        eta = hummuspy.config.get_classic_grn_eta(config)
+        lamb = hummuspy.config.get_classic_grn_lamb(config, draw=False)
+        config = hummuspy.config.setup_proba_config(config, eta, lamb)
+    config_path = multilayer_f+'/'+config_folder+'/'+config_filename
+    hummuspy.config.save_config(config, config_path)
+
+    if gene_list is None:
+        gene_list = []
+        for layer_filename in config['multiplex'][rna_multiplex]['layers']:
+            df_layer = pd.read_csv(multilayer_f+'/'+layer_filename,
+                                   sep='\t',
+                                   header=None,
+                                   index_col=None)
+
+            layer_nodes = np.concatenate([np.unique(df_layer[0].values),
+                                          np.unique(df_layer[1].values)])
+            gene_list = np.unique(np.concatenate([gene_list,
+                                                  layer_nodes]))
+
+        print('seeds : ', ', '.join(gene_list[:10]), ' ...')
+    df = compute_multiple_RandomWalk(multilayer_f,
+                                     config_name=config_filename,
+                                     output_f=output_f,
+                                     list_seeds=gene_list,
+                                     config_folder=config_folder,
+                                     save=False,
+                                     return_df=return_df,
+                                     spec_layer_result_saved=tf_multiplex,
+                                     njobs=njobs)
+
+    df['gene'] = df['seed']
+    df['tf'] = df['target']
+    del df['target']
+    del df['seed']
+
+    if tf_list is None:
+        tf_list = []
+        for layer in config['multiplex'][tf_multiplex]['layers']:
+            df_layer = pd.read_csv(multilayer_f+'/'+layer,
+                                   sep='\t',
+                                   header=None,
+                                   index_col=None)
+
+            layer_nodes = np.concatenate([np.unique(df_layer[0].values),
+                                          np.unique(df_layer[1].values)])
+            tf_list = np.unique(np.concatenate([tf_list,
+                                                layer_nodes]))
+        tf_list = tf_list[tf_list != 'fake_node']
 
     # Add normalisation ?
     df = df[df['tf'].isin(tf_list)]

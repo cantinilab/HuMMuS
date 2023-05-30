@@ -11,26 +11,34 @@
 #' @export
 #'
 get_tfs <- function(hummus,
-                    assay,
+                    assay = NULL,
                     store_tfs = TRUE,
                     output_file = NULL,
                     verbose = 0) {
-  # Check if the assay is present in the seurat object
-  if (!assay %in% names(hummus@assays)) {
-    stop("The gene assay is not present in the seurat object")
-  }
-
   # Check if the hummsu object has motifs_db 
-  else if (is.null(hummus@motifs_db)) {
+  if (is.null(hummus@motifs_db)) {
     stop("The hummus object does not have a motifs_db slot")
   }
 
+  if (! is.null(assay)) {
+  # Check if the assay is present in the seurat object
+    if (!assay %in% names(hummus@assays)) {
+        stop("The gene assay is not present in the seurat object")
+    }
   expr_genes <- rownames(hummus@assays[[assay]])
   tfs <- intersect(unique(as.character(hummus@motifs_db@tf2motifs$tf)),
                                        expr_genes)
   if (verbose > 0) {
     cat("\t", length(tfs), "TFs expressed\n")
+    }
   }
+  else {
+    tfs <- unique(as.character(hummus@motifs_db@tf2motifs$tf))
+    if (verbose > 0) {
+      cat("\t", length(tfs), "TFs with motif. No check if expressed or not.\n")
+    }
+  }
+
 
   if (store_tfs) {
     if (is.null(output_file)) {
@@ -153,13 +161,16 @@ dMcast <- function(
     brokenNames <- grep('paste(', colnames(result), fixed = TRUE)
     colnames(result)[brokenNames] <- lapply(colnames(result)[brokenNames], function (x) {
         x <- gsub('paste(', replacement='', x=x, fixed = TRUE)
-        x <- gsub(pattern=', ', replacement='_', x=x, fixed=TRUE)
-        x <- gsub(pattern='_sep = \"_\")', replacement='', x=x, fixed=TRUE)
+        x <- gsub(pattern = ', ', replacement='_', x=x, fixed=TRUE)
+        x <- gsub(pattern = '_sep = \"_\")',
+                  replacement = "",
+                  x = x,
+                  fixed = TRUE)
         return(x)
     })
 
-    result <- result*values
-    if(isTRUE(response>0))
+    result <- result * values
+    if(isTRUE(response > 0))
     {
         responses=all.vars(terms(as.formula(paste(response,'~0'))))
         result <- fast_aggregate(result, data[, responses,drop=FALSE], fun=fun.aggregate)

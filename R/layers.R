@@ -36,13 +36,12 @@ compute_tf_network <- function(hummus = null, # Hummus object
     organism = organism, partners = tfs, source_target = source_target
   )
 
-  if (!is.null(gene_assay)) {
-    tfs <- get_tfs(hummus = hummus,
+  tfs <- get_tfs(hummus = hummus,
             assay = gene_assay,
             store_tfs = FALSE,
             output_file = NULL,
             verbose = verbose)
-  }
+
   # add filtering if element is not a TF expressed in the dataset
   if (source_target == "AND") {
     TF_PPI <- TF_PPI[which(TF_PPI$source %in% tfs &
@@ -56,7 +55,21 @@ compute_tf_network <- function(hummus = null, # Hummus object
   if (verbose > 0) {
     cat("\tTF network construction time:", Sys.time() - a, "\n")
   }
+  tf_network <- as.data.frame(tf_network)
 
+  if (nrow(tf_network) == 0) {
+    cat("No TF-TF edges from Omnipath for the given parameters.\n
+        You can try to change the source_target parameter to 'OR' to get
+        TF-other protein interactions.\n Or try to import a network 
+        computed externally.\n Right now, a network with all TFs connected
+        to a fake node is created, for HuMMuS analysis.\n It has no biological
+        meaning but will allow to run the pipeline as if no edges were present.
+        \n")
+    FAKE_NODE <- "fake_node"
+    for (tf in tfs) {
+      tf_network <- rbind(tf_network, data.frame(source = tf, target = FAKE_NODE))
+    }
+  }
   # Save gene network
   store_network(network = tf_network,
                 store_network = store_network,
@@ -67,6 +80,8 @@ compute_tf_network <- function(hummus = null, # Hummus object
                         multiplex_name = multiplex_name,
                         network = tf_network,
                         network_name = tf_network_name,
+                        weighted = FALSE,
+                        directed = FALSE,
                         verbose = verbose)
 
   return(hummus)
@@ -111,10 +126,10 @@ compute_gene_network <- function(hummus,
                                  verbose = 1,
                                  multiplex_name = NULL,
                                  network_name = NULL) {
+  a <- Sys.time()
   if (method == "GENIE3") {
     if (verbose > 0) {
       cat("Computing gene network with ", method, " ...\n")
-      a <- Sys.time()
     }
     # Get tfs list
     if (verbose > 0 && is.null(tfs)) {
@@ -131,9 +146,6 @@ compute_gene_network <- function(hummus,
                                regulators = tfs,
                                nCores = number_cores)
 
-    if (verbose > 0) {
-      cat("\tGene network construction time:", Sys.time() - a, "\n")
-    }
     # get edge list
     linkList <- GENIE3::getLinkList(weightMat)
     gene_network <- linkList[which(linkList$weight > threshold), ]
@@ -144,6 +156,9 @@ compute_gene_network <- function(hummus,
     stop(cat("Method not implemented yet, choose between GENIE3 and..",
     "that's it for now.\n but you can always compute the network",
     "independently and add it to the hummus object."))
+  }
+  if (verbose > 0) {
+      cat("\tGene network construction time:", Sys.time() - a, "\n")
   }
 
   # Save gene network
@@ -163,6 +178,8 @@ compute_gene_network <- function(hummus,
                         multiplex_name = multiplex_name,
                         network = gene_network,
                         network_name = network_name,
+                        weighted = TRUE,
+                        directed = FALSE,
                         verbose = verbose)
 
   # Return hummus object
@@ -203,7 +220,7 @@ compute_atac_peak_network <- function(
     atac_assay = "peaks",
     genome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,
     method = "cicero",
-    store_network = TRUE,
+    store_network = FALSE,
     output_file = NULL,
     threshold = 0.0,
     number_cells_per_clusters = 50,
@@ -214,7 +231,8 @@ compute_atac_peak_network <- function(
     reduction_method = "UMAP",
     multiplex_name = NULL,
     network_name = NULL) {
-
+    
+  a <- Sys.time()
   if (method == "cicero") {
       if (!requireNamespace("cicero", quietly = TRUE)) {
         stop("Please install cicero.\n",
@@ -238,6 +256,9 @@ compute_atac_peak_network <- function(
     "that's it for now.\n but you can always compute the network",
     "independently and add it to the hummus object manually."))
   }
+  if (verbose > 0) {
+    cat("Peak network construction time:", Sys.time() - a)
+  }
   store_network(network = atac_peak_network,
                 store_network = store_network,
                 output_file = output_file,
@@ -256,8 +277,8 @@ compute_atac_peak_network <- function(
     network = atac_peak_network,
     network_name = network_name,
     multiplex_name = multiplex_name,
-    directed = FALSE,
     weighted = TRUE,
+    directed = FALSE,
     verbose = verbose)
 
 }
