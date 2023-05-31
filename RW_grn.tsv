@@ -1,5 +1,0 @@
-layer	target	path_layer	score	tf	seed
-layers/layers_rna	'11'	layers/layers_rna/rna_network	3.80067417219777e-05		'1'
-layers/layers_rna	'12'	layers/layers_rna/rna_network	0.0002533782517812907		'1'
-layers/layers_rna	'10'	layers/layers_rna/rna_network	0.0032263498258834357		'1'
-layers/layers_rna	'9'	layers/layers_rna/rna_network	0.012519982203559009		'1'
