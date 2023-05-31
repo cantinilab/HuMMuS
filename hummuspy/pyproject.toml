@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hummuspy"
-version = "0.0.23"
+version = "0.0.26"
 description = "HuMMuS is a novel method for the inference of regulatory mechanisms from multi-omics data with any type and number of omics, thorugh a heterogeneous multilayer networks framework."
 authors = ["Rémi Trimbour <remi.trimbour@pasteur.fr>"]
 license = "GPL-3.0-only"
@@ -14,6 +14,7 @@ tqdm = "^4.65.0"
 numpy = "^1.24.2"
 pandas = "^2.0.0"
 pyyaml = "^6.0"
+matplotlib = "^3.4.3"
 
 [build-system]
 requires = ["poetry-core"]

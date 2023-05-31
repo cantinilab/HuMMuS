@@ -1,19 +1,36 @@
-import typing
+from typing import Union
 import yaml
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
 import networkx as nx
 
 
 def make_values_list(
         values,
-        types: typing.Union[str, bool, int, float]):
-    """Transform layer type to be sure a list of values is returned."""
+        types: Union[str, bool, int, float] = (str, bool, int, float)):
+    """Transform layer type to be sure a list of values is returned.
+    Parameters
+    ----------
+    values: list, dict, str, bool, int, float
+        The values to transform into a list.
+    types: list, dict, str, bool, int, float
+        The types of the values to transform into a list.
+    Returns
+    -------
+    values: list
+        The values transformed into a list.
+    Raises
+    ------
+    TypeError if the values are not of the given types.
+
+    """
+    types = list(types)
     if type(values) == list:
         return values
+    elif type(values) == tuple:
+        return list(values)
     elif type(values) == dict:
         return list(values.values())
     elif type(values) in types:
@@ -67,6 +84,158 @@ def group_per_layer(
     return multiplex_organised
 
 
+def general_config(
+        multiplexes: dict[dict[str]],
+        bipartites: Union[str, list[str], dict[str]],
+        seed_path: str = 'seeds/seeds.txt',
+        folder_multiplexes='multiplex',
+        folder_bipartites='bipartite',
+        self_loops=0,
+        restart_prob=0.7,
+        bipartites_type: Union[str, list[str], dict[str]] = ('00', '00'),
+        save_configfile: bool = True,
+        config_filename: str = 'config.yaml',
+        suffix='.tsv'):
+
+    """Create a very general config file for the hummus pipeline.
+    The config file is a dictionary that can be saved as a yaml file.
+    The config file is organised as follows:
+    config = {'multiplex': {'multiplex1': {'layers': [layer1, layer2, ...],
+                                           'graph_type': [graph_type1, ...]},
+                            'multiplex2': {'layers': [layer1, layer2, ...],
+                                           'graph_type': [graph_type1, ...]},
+                            ...},
+              'bipartite': {'bipartite1': {'source': multiplex1,
+                                           'target': multiplex2},
+                            'bipartite2': {'source': multiplex1,
+                                           'target': multiplex2},
+                                           ...},
+               'seed': seed_path,
+               'self_loops': self_loops,
+               'r': restart_prob}
+
+    Parameters
+    ----------
+    multiplexes: dict
+        Dictionary of multiplexes obtained from hummus R objects.
+        Structure:
+        {multiplex1: {layer1: graph_type1, layer2: graph_type2, ...},
+        multiplex2: {layer1: graph_type1, layer2: graph_type2, ...},
+        ...}
+    bipartites: str, list[str], dict[str]
+        The names of the bipartites.
+        If str, the name of the bipartite.
+        If list[str], the names of the bipartites.
+        If dict[str], the names of the bipartites as keys and
+        the type of the bipartites as values.
+        e.g.: bipartites = {'bipartite1': {multiplex_right: multiplex1,
+                                           multiplex_left: multiplex2},
+                            'bipartite2': {multiplex_right: multiplex1,
+                                           multiplex_left: multiplex2}}
+    seed_path: str
+        The path to the seed file.
+    folder_multiplexes: str
+        The folder where the multiplexes are located.
+    folder_bipartites: str
+        The folder where the bipartites are located.
+    self_loops: int
+        The number of self loops to add to the multiplexes.
+    restart_prob: float
+        The restart probability for the RWR.
+    bipartites_type: str, list[str], dict[str]
+        The type of the bipartites.
+        If str, the type of the bipartite.
+        If list[str], the types of the bipartites.
+        If dict[str], the names of the bipartites as keys and
+        the type of the bipartites as values.
+        e.g.: bipartites_type = {'bipartite1': '00',
+                                 'bipartite2': '00'}
+    save_configfile: bool
+        If True, save the config file as a yaml file.
+    config_filename: str
+        The name of the config file to save.
+    suffix: str
+        The suffix of the multiplex and bipartite files.
+
+    Returns
+    -------
+    config: dict
+        The config dictionary.
+
+    e.g.:
+    config = {
+            'multiplex': {
+                'RNA': {'layers': ['multiplex/RNA/RNA_GENIE3.tsv'],
+                        'graph_type': ['00']},
+                'TF': {'layers': ['multiplex/TF/TF_network.tsv'],
+                       'graph_type': ['00']},
+                'peaks': {'layers': ['multiplex/peaks/peak_network_G3.tsv'],
+                          'graph_type': ['00']}},
+            'bipartite': {'bipartite/RNA_peak': {'source': 'peaks',
+                                                 'target': 'TF',
+                                                 'graph_type': '00'},
+                          'bipartite/TF_peak': {'source': 'peaks',
+                                                'target': 'RNA',
+                                                'graph_type': '00'}},
+            'seed': 'seeds/seeds.txt',
+            'self_loops': 0,
+            'r': 0.7,
+            'eta': [1, 0, 0],
+            'lambda':  [[0.5, 0.0, 0.5],
+                        [0.0, 0.5, 0.5],
+                        [1/3, 1/3, 1/3]]}
+
+    Raises
+    ------
+    AssertionError if the length of eta is not equal to the number of layers.
+    """
+
+    multiplexes = group_per_layer(multiplexes)
+
+    config = dict()
+    config['multiplex'] = dict()
+    config['bipartite'] = dict()
+    config['seed'] = seed_path
+    config['self_loops'] = self_loops
+
+    # We add the multiplexes to the config
+    for multiplex_name in multiplexes:
+        # If folder_multiplexes is None, use the multiplex name as folder name
+        config['multiplex'][multiplex_name] = dict()
+        config['multiplex'][multiplex_name]['layers'] =\
+            [(folder_multiplexes+'/'+multiplex_name+'/'+layer+suffix)
+             .replace('//', '/')
+             for layer in multiplexes[multiplex_name]['layers']]
+        config['multiplex'][multiplex_name]['graph_type'] =\
+            multiplexes[multiplex_name]['graph_type']
+
+    # if type of bipartites not associated to their names already,
+    # we create a dict with the same order as the bipartites
+    bipartites_type = make_values_list(bipartites_type)
+    if type(bipartites_type) == list:
+        temp = dict()
+        for i in range(len(bipartites)):
+            temp[list(bipartites.keys())[i]] = bipartites_type[i]
+        bipartites_type = temp
+
+    # we add the bipartites
+    for bipartite in bipartites:
+        bipartite_loc = folder_bipartites+'/'+bipartite
+        config['bipartite'][bipartite_loc] = dict()
+        config['bipartite'][bipartite_loc]['source'] = \
+            bipartites[bipartite]['multiplex_left']
+        config['bipartite'][bipartite_loc]['target'] = \
+            bipartites[bipartite]['multiplex_right']
+        config['bipartite'][bipartite_loc]['graph_type'] = \
+            bipartites_type[bipartite]
+    config['r'] = restart_prob
+
+    if save_configfile is True:
+        save_config(config, config_filename)
+
+    return config
+
+
 def save_config(config, filename):
     """ Save the config dictionary as a yaml file.
     The parser used is the default one of yaml python package.
@@ -89,7 +258,7 @@ def save_config(config, filename):
 
 def setup_proba_config(
         config: dict,
-        eta: typing.Union[list[float], pd.Series, np.ndarray],
+        eta: Union[list[float], pd.Series, np.ndarray],
         lamb: pd.DataFrame):
     """ Setup the RWR probability for the exploration of hummus networks
     with the given eta and lambda values.
@@ -160,7 +329,219 @@ def setup_proba_config(
     return config
 
 
-def get_max_lamb(config):
+def initialise_lamb(config,
+                    tf_multiplex='TF',
+                    peak_multiplex='peaks',
+                    rna_multiplex='RNA',
+                    value=1):
+
+    for multiplex in [tf_multiplex, peak_multiplex, rna_multiplex]:
+        assert multiplex in config['multiplex'].keys(),\
+            "The multiplex {}".format(multiplex) +\
+            " is not in the config file provided"
+
+    ordered_multiplexes = config['multiplex'].keys()
+
+    if value == 1:
+        array = np.ones((3, 3))
+    elif value == 0:
+        array = np.zeros((3, 3))
+    else:
+        raise ValueError('value param of initialise_lamb should be 1 or 0')
+
+    lamb = pd.DataFrame(array,
+                        index=ordered_multiplexes,
+                        columns=ordered_multiplexes)
+    return lamb
+
+
+def get_single_layer_eta(config, starting_multiplex='RNA'):
+
+    ordered_multiplex = config['multiplex'].keys()
+    assert starting_multiplex in ordered_multiplex,\
+        "It seems starting_multiplex not in config['multiplex']"
+
+    eta = [0 if multiplex != starting_multiplex else 1
+           for multiplex in ordered_multiplex]
+    return eta
+
+
+#############################
+# 1/4 Get GRN classic lamb  #
+#############################
+def get_grn_lamb(config,
+                 tf_multiplex='TF',
+                 peak_multiplex='peaks',
+                 rna_multiplex='RNA',
+                 draw=True
+                 ):
+
+    lamb = initialise_lamb(config,
+                           tf_multiplex,
+                           peak_multiplex,
+                           rna_multiplex,
+                           value=1)  # because enhancer lamb is mostly 1s
+
+    # Remove proba between TF and RNA layers
+    lamb.loc[tf_multiplex, rna_multiplex] = 0
+    lamb.loc[rna_multiplex, tf_multiplex] = 0
+    lamb = lamb.div(lamb.sum(axis=1),
+                    axis=0)
+
+    # max_lambd check to see
+    assert check_lamb(config=config, lamb=lamb), "There seem to be a " +\
+        "incoherence between bipartite source/targets and multiplex names" +\
+        "provided in get_classic_grn_lamb"
+
+    if draw is True:
+        to_draw_lamb = lamb.loc[[tf_multiplex, peak_multiplex, rna_multiplex],
+                                [tf_multiplex, peak_multiplex, rna_multiplex]]
+
+        draw_lamb(to_draw_lamb)
+
+    return lamb
+
+
+##################################
+# 2/4 Get enhancers classic lamb #
+##################################
+def get_enhancers_lamb(config,
+                       tf_multiplex='TF',
+                       peak_multiplex='peaks',
+                       rna_multiplex='RNA',
+                       draw=True
+                       ):
+
+    lamb = initialise_lamb(config,
+                           tf_multiplex,
+                           peak_multiplex,
+                           rna_multiplex,
+                           value=0)  # because enhancer lamb is mostly 0s
+    print(lamb)
+
+    # Add proba between peaks and RNA layers
+    lamb.loc[peak_multiplex, rna_multiplex] = 1
+    lamb.loc[peak_multiplex, peak_multiplex] = 1
+    lamb.loc[rna_multiplex, peak_multiplex] = 1
+    lamb = lamb.div(lamb.sum(axis=1),
+                    axis=0)
+    lamb = lamb.fillna(0)
+    print(lamb)
+
+    # max_lambd check to see
+    assert check_lamb(config=config, lamb=lamb), "There seem to be a " +\
+        "incoherence between bipartite source/targets and multiplex names" +\
+        "provided in get_classic_grn_lamb"
+
+    if draw is True:
+        to_draw_lamb = lamb.loc[[tf_multiplex, peak_multiplex, rna_multiplex],
+                                [tf_multiplex, peak_multiplex, rna_multiplex]]
+        draw_lamb(to_draw_lamb)
+
+    return lamb
+
+
+########################################
+# 3/4 Get binding regions classic lamb #
+########################################
+def get_binding_regions_lamb(config,
+                             tf_multiplex='TF',
+                             peak_multiplex='peaks',
+                             rna_multiplex='RNA',
+                             draw=True
+                             ):
+
+    lamb = initialise_lamb(config,
+                           tf_multiplex,
+                           peak_multiplex,
+                           rna_multiplex,
+                           value=0)  # because enhancer lamb is mostly 0s
+    print(lamb)
+
+    # Add proba between TF and peaks layers
+    lamb.loc[tf_multiplex, peak_multiplex] = 1
+    lamb.loc[peak_multiplex, peak_multiplex] = 1
+    lamb.loc[peak_multiplex, tf_multiplex] = 1
+    lamb = lamb.div(lamb.sum(axis=1),
+                    axis=0)
+    lamb = lamb.fillna(0)
+    print(lamb)
+
+    # max_lambd check to see
+    assert check_lamb(config=config, lamb=lamb), "There seem to be a " +\
+        "incoherence between bipartite source/targets and multiplex names" +\
+        "provided in get_classic_grn_lamb"
+
+    if draw is True:
+        to_draw_lamb = lamb.loc[[tf_multiplex, peak_multiplex, rna_multiplex],
+                                [tf_multiplex, peak_multiplex, rna_multiplex]]
+        draw_lamb(to_draw_lamb)
+
+    return lamb
+
+
+########################################
+# 4/4 Get binding regions classic lamb #
+########################################
+def get_target_genes_lamb(config,
+                          tf_multiplex='TF',
+                          peak_multiplex='peaks',
+                          rna_multiplex='RNA',
+                          draw=True
+                          ):
+
+    lamb = initialise_lamb(config,
+                           tf_multiplex,
+                           peak_multiplex,
+                           rna_multiplex,
+                           value=1)  # because enhancer lamb is mostly 0s
+    print(lamb)
+
+    # Remove proba between TF and RNA layers
+    lamb.loc[tf_multiplex, rna_multiplex] = 0
+    lamb.loc[rna_multiplex, tf_multiplex] = 0
+    lamb = lamb.div(lamb.sum(axis=1),
+                    axis=0)
+    lamb = lamb.fillna(0)
+    print(lamb)
+
+    # max_lambd check to see
+    assert check_lamb(config=config, lamb=lamb), "There seem to be a " +\
+        "incoherence between bipartite source/targets and multiplex names" +\
+        "provided in get_classic_grn_lamb"
+
+    if draw is True:
+        to_draw_lamb = lamb.loc[[tf_multiplex, peak_multiplex, rna_multiplex],
+                                [tf_multiplex, peak_multiplex, rna_multiplex]]
+        draw_lamb(to_draw_lamb)
+
+    return lamb
+
+
+##############################
+# Check proba transitions    #
+##############################
+def get_max_lamb(config, draw=False):
+    """Calculate the maximum lamb matrix according to bipartites
+    indicated in the config in input.
+    Bipartites are used to know which layers can be connected to each other.
+
+    Parameters
+    ----------
+    config: dict
+        The config dictionary.
+
+    Returns
+    -------
+    max_lamb: pandas.DataFrame
+        The maximum lamb matrix according to bipartites.
+        Structure:
+          pd.DataFrame([[0.5, 0.5, 0],
+                        [1/3, 1/3, 1/3],
+                        [0, 0.5, 0.5]],
+                        index = ['TF', 'Peak', 'RNA'],
+                        columns = ['TF', 'Peak', 'RNA'])
+    """
     # Get layer names connected by bipartites
     positions_bipartites = [(config['bipartite'][bipartite]['source'],
                              config['bipartite'][bipartite]['target'])
@@ -174,7 +555,8 @@ def get_max_lamb(config):
 
     # fill each position corresponding to bipartite options
     for position in positions_bipartites:
-        print(position[0], '<-->', position[1])
+        if draw is True:
+            print(position[0], '<-->', position[1])
         max_lamb.loc[position] = 1
     # Future : Since we can inverse source and target layers)
     # could be conditionned by bipartite directionality
@@ -187,7 +569,7 @@ def get_max_lamb(config):
     return max_lamb
 
 
-def check_lamb(lamb, config):
+def check_lamb(lamb, config, draw=False):
     """Check that lamb is a valid probability matrix according to bipartites
     indicated in the config in input.
     Bipartites are used to know which layers can be connected to each other.
@@ -207,7 +589,7 @@ def check_lamb(lamb, config):
     """
 
     # Calculate the maximum lamb matrix according to bipartites
-    max_lamb = (get_max_lamb(config) > 0).astype(int)
+    max_lamb = (get_max_lamb(config, draw=draw) > 0).astype(int)
 
     # Count number of locations where lamb has no non-zero value
     # and max_lamb is zero
@@ -221,66 +603,122 @@ def check_lamb(lamb, config):
         return True
 
 
+##############################
+# Draw proba transitions     #
+##############################
+
 def draw_lamb(df):
-    """Draw the lamb matrix as a directed graph (networkx.DiGraph).
+    """Draw the lamb matrix as a networkx graph.
+
     Parameters
     ----------
     df: pandas.DataFrame
         The lamb matrix.
-    e.g.:
-    df = pd.DataFrame([[0.5, 0.5, 0],
-                       [0.5, 0, 0.5],
-                       [0, 0.5, 0.5]],
-                       index = ['TF', 'Gene', 'Peak'],
-                       columns = ['TF', 'Gene', 'Peak'])
+        Structure:
+            pd.DataFrame([[0.5, 0.5, 0],
+                            [1/3, 1/3, 1/3],
+                            [0, 0.5, 0.5]],
+                            index = ['TF', 'Peak', 'RNA'],
+                            columns = ['TF', 'Peak', 'RNA'])
+
     Returns
     -------
     None
 
+    Examples
+    --------
+    >>> lamb = pd.DataFrame([[0.5, 0.5, 0],
+                                [1/3, 1/3, 1/3],
+                                [0, 0.5, 0.5]],
+                                index = ['TF', 'Peak', 'RNA'],
+                                columns = ['TF', 'Peak', 'RNA'])
+    >>> draw_lamb(lamb)
+
+    See Also
+    --------
+    draw_networkx
     """
+
+    # Create a figure and an axis
     fig, ax = plt.subplots()
 
-    G = nx.from_pandas_adjacency(df-np.eye(len(df))*df,
-                                 create_using=nx.DiGraph())
+    # Create a directed graph from the lamb matrix
+    G = nx.from_pandas_adjacency(df, create_using=nx.DiGraph())
     pos = {list(G.nodes)[-i-1]: np.array((0, i))
            for i in range(-len(G.nodes), 0)}
-    print(pos)
 
-    nx.draw_networkx(G, with_labels=True, pos=pos,
-                     node_size=1500, width=4, alpha=0.8, font_weight="bold",
-                     arrows=True, connectionstyle='arc3, rad = 0.8')
+    # Draw the graph without edge labels
+    nx.draw_networkx(G,
+                     with_labels=True,
+                     pos=pos,
+                     node_size=1500,
+                     width=4,
+                     alpha=0.8,
+                     font_weight="bold",
+                     arrows=True,
+                     connectionstyle='arc3, rad = 0.8')
 
+    # Get edge weights that will be used as edge labels
     edge_labels = nx.get_edge_attributes(G, 'weight')
+    # Round edge weights to 2 decimals
+    edge_labels = {k: round(v, 2) for k, v in edge_labels.items()}
 
+    # Separate self edges from non self edges
+    self_edges = {}
+    non_self_edges = {}
+    for edge in edge_labels.keys():
+        # If the edge is a self edge we add it to self_edges
+        if edge[0] == edge[1]:
+            self_edges[edge] = edge_labels[edge]
+        # If the edge is not a self edge we add it to non_self_edges
+        else:
+            non_self_edges[edge] = edge_labels[edge]
+
+    # Draw self edges labels
+    # We add 0.3 to the y coordinate to avoid overlapping with the node
+    pos_self_labels = {k: np.array([0, pos[k][1]+0.30]) for k in pos}
     my_draw_networkx_edge_labels(G,
-                                 pos,
-                                 edge_labels=edge_labels,
+                                 pos_self_labels,
+                                 edge_labels=self_edges,
                                  font_color='k',
                                  font_size=12,
-                                 label_pos=15,
+                                 label_pos=12,
                                  rad=0.8,
                                  rotate=False)
+
+    # Draw non self edges labels
+    my_draw_networkx_edge_labels(G,
+                                 pos,
+                                 edge_labels=non_self_edges,
+                                 font_color='k',
+                                 font_size=12,
+                                 label_pos=0,
+                                 rad=0.6,
+                                 rotate=False)
+
+    ax.set_ylim([list(pos.values())[0][1] - 0.5,
+                 list(pos.values())[-1][1] + 0.5])
     plt.show()
 
 
 def my_draw_networkx_edge_labels(
-        G,
-        pos,
-        edge_labels=None,
-        label_pos=0.5,
-        font_size=10,
-        font_color="k",
-        font_family="sans-serif",
-        font_weight="normal",
-        alpha=None,
-        bbox=None,
-        horizontalalignment="center",
-        verticalalignment="center",
-        ax=None,
-        rotate=True,
-        clip_on=True,
-        rad=0):
-
+    G,
+    pos,
+    edge_labels=None,
+    label_pos=0.5,
+    font_size=10,
+    font_color="k",
+    font_family="sans-serif",
+    font_weight="normal",
+    alpha=None,
+    bbox=None,
+    horizontalalignment="center",
+    verticalalignment="center",
+    ax=None,
+    rotate=True,
+    clip_on=True,
+    rad=0
+):
     """Draw edge labels.
 
     Parameters
@@ -322,7 +760,11 @@ def my_draw_networkx_edge_labels(
         Horizontal alignment {'center', 'right', 'left'}
 
     verticalalignment : string (default='center')
-        Vertical align. {'center','top','bottom','baseline','center_baseline'}
+        Vertical alignment {'center',
+                            'top',
+                            'bottom',
+                            'baseline',
+                            'center_baseline'}
 
     ax : Matplotlib Axes object, optional
         Draw the graph in the specified Matplotlib axes.
@@ -373,7 +815,8 @@ def my_draw_networkx_edge_labels(
         pos_2 = ax.transData.transform(np.array(pos[n2]))
         linear_mid = 0.5*pos_1 + 0.5*pos_2
         d_pos = pos_2 - pos_1
-        rotation_matrix = np.array([(0, 1), (-1, 0)])
+        rotation_matrix = np.array([(0, 1),
+                                    (-1, 0)])
         ctrl_1 = linear_mid + rad*rotation_matrix@d_pos
         ctrl_mid_1 = 0.5*pos_1 + 0.5*ctrl_1
         ctrl_mid_2 = 0.5*pos_2 + 0.5*ctrl_1

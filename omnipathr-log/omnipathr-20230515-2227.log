@@ -1,5 +1,0 @@
-[2023-05-15 22:27:46] [INFO]    [OmnipathR] Initialized cache: `/home/rtrimbou/.cache/OmnipathR`.
-[2023-05-15 22:27:46] [INFO]    [OmnipathR] Welcome to OmnipathR!
-[2023-05-15 22:29:11] [TRACE]   [OmnipathR] Loaded data from RDS `/home/rtrimbou/.cache/OmnipathR/8f81109124ed70555db4d6ae7359dcadda4d66e2-1.rds`.
-[2023-05-15 22:29:11] [INFO]    [OmnipathR] Loaded from cache: `https://omnipathdb.org/interactions?genesymbols=yes&datasets=omnipath,pathwayextra,kinaseextra,ligrecextra&organisms=9606&source_target=AND&fields=sources,references,curation_effort&license=academic`
-[2023-05-15 22:29:11] [SUCCESS] [OmnipathR] Loaded 134592 interactions from cache.

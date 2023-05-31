@@ -1,4 +1,9 @@
 devtools::load_all("../hummus_package")
+library(reticulate)
+use_condaenv("base")
+
+
+multilayer_folder <- "examples/multilayer_1"
    #### Create hummus object ####
 # Data
 scRNA <- read.table("data/real_example/hESC_Chen_scRNA.tsv")
@@ -69,10 +74,19 @@ hummus <- compute_atac_peak_network(hummus,
                                     store_network = FALSE)
 
 # Save the mulilayer in a classic hierarchical structure
-save_multilayer(hummus = hummus, "a")
+save_multilayer(hummus = hummus, multilayer_folder)
 
 cat("Total multilayer time construction : ", Sys.time() - aa, "\n")
 bb <- Sys.time() - aa
+
+# Define GRN
+grn <- define_grn(
+  hummus,
+  multilayer_f = multilayer_folder,
+  njobs = 5
+  )
+
+
 #"A" :
   #  "bipartite":
     #  "atac_rna.tsv"

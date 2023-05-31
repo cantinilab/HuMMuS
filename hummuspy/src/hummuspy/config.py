@@ -4,7 +4,6 @@ import yaml
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
 import networkx as nx
 
 
@@ -330,15 +329,11 @@ def setup_proba_config(
     return config
 
 
-#################################
-# Get GRN classic eta and lamb  #
-#################################
-def get_classic_grn_lamb(config,
-                         tf_multiplex='TF',
-                         peak_multiplex='peaks',
-                         rna_multiplex='RNA',
-                         draw=True
-                         ):
+def initialise_lamb(config,
+                    tf_multiplex='TF',
+                    peak_multiplex='peaks',
+                    rna_multiplex='RNA',
+                    value=1):
 
     for multiplex in [tf_multiplex, peak_multiplex, rna_multiplex]:
         assert multiplex in config['multiplex'].keys(),\
@@ -346,9 +341,47 @@ def get_classic_grn_lamb(config,
             " is not in the config file provided"
 
     ordered_multiplexes = config['multiplex'].keys()
-    lamb = pd.DataFrame(np.ones((3, 3)),
+
+    if value == 1:
+        array = np.ones((3, 3))
+    elif value == 0:
+        array = np.zeros((3, 3))
+    else:
+        raise ValueError('value param of initialise_lamb should be 1 or 0')
+
+    lamb = pd.DataFrame(array,
                         index=ordered_multiplexes,
                         columns=ordered_multiplexes)
+    return lamb
+
+
+def get_single_layer_eta(config, starting_multiplex='RNA'):
+
+    ordered_multiplex = config['multiplex'].keys()
+    assert starting_multiplex in ordered_multiplex,\
+        "It seems starting_multiplex not in config['multiplex']"
+
+    eta = [0 if multiplex != starting_multiplex else 1
+           for multiplex in ordered_multiplex]
+    return eta
+
+
+#############################
+# 1/4 Get GRN classic lamb  #
+#############################
+def get_grn_lamb(config,
+                 tf_multiplex='TF',
+                 peak_multiplex='peaks',
+                 rna_multiplex='RNA',
+                 draw=True
+                 ):
+
+    lamb = initialise_lamb(config,
+                           tf_multiplex,
+                           peak_multiplex,
+                           rna_multiplex,
+                           value=1)  # because enhancer lamb is mostly 1s
+
     # Remove proba between TF and RNA layers
     lamb.loc[tf_multiplex, rna_multiplex] = 0
     lamb.loc[rna_multiplex, tf_multiplex] = 0
@@ -369,16 +402,120 @@ def get_classic_grn_lamb(config,
     return lamb
 
 
-def get_classic_grn_eta(config,
-                        rna_multiplex='RNA'):
+##################################
+# 2/4 Get enhancers classic lamb #
+##################################
+def get_enhancers_lamb(config,
+                       tf_multiplex='TF',
+                       peak_multiplex='peaks',
+                       rna_multiplex='RNA',
+                       draw=True
+                       ):
 
-    ordered_multiplex = config['multiplex'].keys()
-    assert rna_multiplex in ordered_multiplex, "It seems rna_multiplex not " +\
-        "in config['multiplex']"
+    lamb = initialise_lamb(config,
+                           tf_multiplex,
+                           peak_multiplex,
+                           rna_multiplex,
+                           value=0)  # because enhancer lamb is mostly 0s
+    print(lamb)
 
-    eta = [0 if multiplex != rna_multiplex else 1
-           for multiplex in ordered_multiplex]
-    return eta
+    # Add proba between peaks and RNA layers
+    lamb.loc[peak_multiplex, rna_multiplex] = 1
+    lamb.loc[peak_multiplex, peak_multiplex] = 1
+    lamb.loc[rna_multiplex, peak_multiplex] = 1
+    lamb = lamb.div(lamb.sum(axis=1),
+                    axis=0)
+    lamb = lamb.fillna(0)
+    print(lamb)
+
+    # max_lambd check to see
+    assert check_lamb(config=config, lamb=lamb), "There seem to be a " +\
+        "incoherence between bipartite source/targets and multiplex names" +\
+        "provided in get_classic_grn_lamb"
+
+    if draw is True:
+        to_draw_lamb = lamb.loc[[tf_multiplex, peak_multiplex, rna_multiplex],
+                                [tf_multiplex, peak_multiplex, rna_multiplex]]
+        draw_lamb(to_draw_lamb)
+
+    return lamb
+
+
+########################################
+# 3/4 Get binding regions classic lamb #
+########################################
+def get_binding_regions_lamb(config,
+                             tf_multiplex='TF',
+                             peak_multiplex='peaks',
+                             rna_multiplex='RNA',
+                             draw=True
+                             ):
+
+    lamb = initialise_lamb(config,
+                           tf_multiplex,
+                           peak_multiplex,
+                           rna_multiplex,
+                           value=0)  # because enhancer lamb is mostly 0s
+    print(lamb)
+
+    # Add proba between TF and peaks layers
+    lamb.loc[tf_multiplex, peak_multiplex] = 1
+    lamb.loc[peak_multiplex, peak_multiplex] = 1
+    lamb.loc[peak_multiplex, tf_multiplex] = 1
+    lamb = lamb.div(lamb.sum(axis=1),
+                    axis=0)
+    lamb = lamb.fillna(0)
+    print(lamb)
+
+    # max_lambd check to see
+    assert check_lamb(config=config, lamb=lamb), "There seem to be a " +\
+        "incoherence between bipartite source/targets and multiplex names" +\
+        "provided in get_classic_grn_lamb"
+
+    if draw is True:
+        to_draw_lamb = lamb.loc[[tf_multiplex, peak_multiplex, rna_multiplex],
+                                [tf_multiplex, peak_multiplex, rna_multiplex]]
+        draw_lamb(to_draw_lamb)
+
+    return lamb
+
+
+########################################
+# 4/4 Get binding regions classic lamb #
+########################################
+def get_target_genes_lamb(config,
+                          tf_multiplex='TF',
+                          peak_multiplex='peaks',
+                          rna_multiplex='RNA',
+                          draw=True
+                          ):
+
+    lamb = initialise_lamb(config,
+                           tf_multiplex,
+                           peak_multiplex,
+                           rna_multiplex,
+                           value=1)  # because enhancer lamb is mostly 0s
+    print(lamb)
+
+    # Remove proba between TF and RNA layers
+    lamb.loc[tf_multiplex, rna_multiplex] = 0
+    lamb.loc[rna_multiplex, tf_multiplex] = 0
+    lamb = lamb.div(lamb.sum(axis=1),
+                    axis=0)
+    lamb = lamb.fillna(0)
+    print(lamb)
+
+    # max_lambd check to see
+    assert check_lamb(config=config, lamb=lamb), "There seem to be a " +\
+        "incoherence between bipartite source/targets and multiplex names" +\
+        "provided in get_classic_grn_lamb"
+
+    if draw is True:
+        to_draw_lamb = lamb.loc[[tf_multiplex, peak_multiplex, rna_multiplex],
+                                [tf_multiplex, peak_multiplex, rna_multiplex]]
+        draw_lamb(to_draw_lamb)
+
+    return lamb
 
 
 ##############################
