@@ -341,6 +341,7 @@ def define_grn_from_config(
                                           np.unique(df_layer[1].values)])
             tf_list = np.unique(np.concatenate([tf_list,
                                                 layer_nodes]))
+        tf_list = tf_list[tf_list!='fake_node']
 
     # Add normalisation ?
     df = df[df['tf'].isin(tf_list)]
@@ -511,6 +512,8 @@ def define_binding_regions_from_config(
                                           np.unique(df_layer[1].values)])
             tf_list = np.unique(np.concatenate([tf_list,
                                                 layer_nodes]))
+        tf_list = tf_list[tf_list!='fake_node']
+
 
     df = compute_multiple_RandomWalk(multilayer_f,
                                      config_name=config_name,
@@ -673,6 +676,7 @@ def define_target_genes_from_config(
                                           np.unique(df_layer[1].values)])
             tf_list = np.unique(np.concatenate([tf_list,
                                                 layer_nodes]))
+        tf_list = tf_list[tf_list!='fake_node']
 
     df = compute_multiple_RandomWalk(multilayer_f,
                                      config_name=config_name,
