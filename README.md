@@ -6,23 +6,19 @@
 HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory relationships.
 Beside classical Gene Regulatory Networks (GRN), HuMMus propose enhancer predictions, binding regions prediction and even broad communities detection.
 
-The simplest way of using HuMMuS is by combining scRNA-seq and scATAC-seq data: 
-
-## **scRNA + scATAC** 
-
+#### **scRNA + scATAC** 
 Like most of the current state-of-the-art method to infer Gene Regulatory Networks, we popose a minimal version of HuMMuS based on scRNA-seq + scATAC-seq data (paired or **unpaired**).
 
-## **Use of additional modalities**
+#### **Use of additional modalities**
 HuMMuS has been developed to be extendable to any additional biological modality of interest.
 It is then possible to add any additional network to an already existing modality (forming multiplex where the same nodes are connected through different networks (e.g. prior-knowledge network and data-driven network)) or from a new one (e.g. adding epigenetic or proteomic networks).
 
-_A future development of the package should also allow integration of personalised proteomics data to replace the general protein-protein interactions we are currently using._
 
 ## Installation
 
 HuMMuS is for now ready only in R but it requires some python dependencies (hummuspy).
 
-### Python hummuspy depencency
+### Python depencency : hummuspy
 Python package hummuspy should preferably be installed using pip (from the terminal in your conda environment for e.g)
 ```r
 pip install hummuspy
