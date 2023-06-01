@@ -2,11 +2,4 @@
 omnipath-log/
 b/
 a/
-test*
-RW_grn.tsv
-config*
-.Rproj.user
-*Rproj
-.ipynb_checkpoints
-test_hummuspy.ipynb
-.Rhistory
+temp
