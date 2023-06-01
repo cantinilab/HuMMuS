@@ -18,7 +18,7 @@ It is then possible to add any additional network to an already existing modalit
 
 HuMMuS is for now ready only in R but it requires some python dependencies (hummuspy).
 
-### Python depencency : hummuspy
+### Python HuMMuS depencency : hummuspy
 Python package hummuspy should preferably be installed using pip (from the terminal in your conda environment for e.g)
 ```r
 pip install hummuspy
