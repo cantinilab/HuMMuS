@@ -6,20 +6,62 @@
 HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory relationships.
 Beside classical Gene Regulatory Networks (GRN), HuMMus propose enhancer predictions, binding regions prediction and even broad communities detection.
 
-We propose two ways of using HuMMuS : 
+The simplest way of using HuMMuS is by combining scRNA-seq and scATAC-seq data: 
 
 ## **scRNA + scATAC** 
 
 Like most of the current state-of-the-art method to infer Gene Regulatory Networks, we popose a minimal version of HuMMuS based on scRNA-seq + scATAC-seq data (paired or **unpaired**).
 
-## **3 single-cell omics** : scRNA + scATAC + **scMethylation**
+## **Use of additional modalities**
 HuMMuS has been developed to be extendable to any additional biological modality of interest.
-We propose a standard adaptation of this framework to integration single-cell methylation.
+It is then possible to add any additional network to an already existing modality (forming multiplex where the same nodes are connected through different networks (e.g. prior-knowledge network and data-driven network)) or from a new one (e.g. adding epigenetic or proteomic networks).
+
+_A future development of the package should also allow integration of personalised proteomics data to replace the general protein-protein interactions we are currently using._
+
+## Installation
+
+HuMMuS is for now ready only in R but it requires some python dependencies (hummuspy).
+
+### Python hummuspy depencency
+Python package hummuspy should preferably be installed using pip (from the terminal in your conda environment for e.g)
+```r
+pip install hummuspy
+```
+
+Alternatively, you can also install it directly from R using the reticulate package:
+```r
+library(reticulate)
+py_install("hummuspy", envname = "r-reticulate", method="auto")
+```
+
+### HuMMuS R package
+Core R package can be installed directly from R:
+```r
+devtools::install_github("cantinilab/hummus") 
+```
+
+### Reticulate configuration
+Before running HuMMuS, you need to make sure 'reticulate' is using the correct python binary (or conda environment). You can precise it at the beginning of your code :
+```r
+library(reticulate)
+
+# Using a specific python binary
+use_python("/home/user/python", required=TRUE)
+
+# Using a specific conda environemnt
+env_name = "hummus_env"
+use_condaenv(env_name, required = TRUE)
+```
+
+For more details on hom to setup the reticulate connection,
+see: https://rstudio.github.io/reticulate
 
 
-_A future development of the package should also allow integration of personalised proteomics data to reploace the general protein-protein interactions we are currently using._
+## Tutorials/Vignettes
 
-## Introduction
+The tutorial and vignettes proposed will be listed here. For now, we propose a vignette to illustrate the most standard use of HuMMuS.
+* **Infer a gene regulatory network from unpaired/paired scRNA+scATAC data** The data correspond to a subset of the Chen dataset, which was part of the benchmark analysed in the [paper] __preprint_links__
+
 
 
 
