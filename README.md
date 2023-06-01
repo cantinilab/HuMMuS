@@ -22,12 +22,11 @@ HuMMuS is for now ready only in R but it requires some python dependencies (humm
 Python package hummuspy should preferably be installed using pip (from the terminal in your conda environment for e.g)
 ```r
 pip install hummuspy
-```
 
 Alternatively, you can also install it directly from R using the reticulate package:
-```r
 library(reticulate)
-py_install("hummuspy", envname = "r-reticulate", method="auto")
+envname = "hummus_env"
+py_install("hummuspy", envname = envname, method="auto")
 ```
 
 ### HuMMuS R package
@@ -45,8 +44,8 @@ library(reticulate)
 use_python("/home/user/python", required=TRUE)
 
 # Using a specific conda environemnt
-env_name = "hummus_env"
-use_condaenv(env_name, required = TRUE)
+envname = "hummus_env"
+use_condaenv(envname, required = TRUE)
 ```
 
 For more details on hom to setup the reticulate connection,
