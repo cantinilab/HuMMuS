@@ -9,34 +9,50 @@ compute_gene_network(
   gene_assay = "RNA",
   tfs = NULL,
   method = "GENIE3",
+  multiplex_name = NULL,
+  network_name = NULL,
   store_network = FALSE,
-  output_file,
+  output_file = NULL,
   threshold = 0,
   number_cores = 1,
-  verbose = 1,
-  multiplex_name = NULL
+  verbose = 1
 )
 }
 \arguments{
-\item{tfs}{vector(character) - List of tfs considered.}
+\item{hummus}{(hummus_object) - Hummus object}
+
+\item{gene_assay}{(character) - Name of the assay containing the gene
+expression data.}
+
+\item{tfs}{vector(character) - List of tfs considered. If NULL, all TFs with
+motifs in the hummus object are used.}
 
 \item{method}{(character) - Method used to infer network edges.
 \itemize{
-\item \code{'Genie3'} - TO DO.
+\item \code{'Genie3'} - Use tree random forest to infer regulatory networks.
+\item \code{'Other method'} - TO DO.
 }}
+
+\item{multiplex_name}{(character) - Name of the multiplex to add the network
+to. Default is \code{'RNA'}.}
+
+\item{network_name}{(character) - Name of the network in the multiplex to
+add the network to. Default is \code{'RNA_network'}.}
 
 \item{store_network}{(bool) - Save the network directly (\code{TRUE},
 default) or return without saving on disk (\code{FALSE}).}
 
-\item{output_file}{(character) - Name of the output_file (if store_network == \code{TRUE}).}
+\item{output_file}{(character) - Name of the output_file
+(if store_network == \code{TRUE}).}
 
-\item{threshold}{(interger, default 0) - Minimal threshold to select tf-gene edges.}
+\item{threshold}{(interger, default 0) - Minimal threshold
+to select tf-gene edges.}
 
-\item{number_cores}{(interger, default 1) - Number of thread that should be used for the parallelizable methods.}
+\item{number_cores}{(interger, default 1) - Number of thread that should be
+used for the parallelizable methods.}
 
-\item{verbose}{(integer) - Display function messages. Set to 0 for no message displayed, >= 1 for more details.}
-
-\item{scRNA}{(data.frame) - Expression matrix (cells*genes)}
+\item{verbose}{(integer) - Display function messages. Set to 0 for no
+message displayed, >= 1 for more details.}
 }
 \value{
 (data.frame) - Return list of network interactions between genes
@@ -56,5 +72,12 @@ https://bioconductor.org/packages/release/bioc/html/GENIE3.html
 }
 }
 \examples{
-TO DO. Same than UNIT test.
+hummus <- compute_gene_network(
+                               hummus,
+                               gene_assay = "RNA",
+                               method = "GENIE3",
+                               verbose = 1,
+                               number_cores = 8,
+                               store_network = FALSE)
+
 }

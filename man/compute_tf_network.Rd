@@ -2,7 +2,7 @@
 % Please edit documentation in R/layers.R
 \name{compute_tf_network}
 \alias{compute_tf_network}
-\title{Compute TF network}
+\title{Compute TF network and add it to hummus object}
 \usage{
 compute_tf_network(
   hummus = null,
@@ -12,32 +12,50 @@ compute_tf_network(
   store_network = FALSE,
   output_file = NULL,
   source_target = "AND",
-  only_expressed = TRUE,
-  multiplex_name = NULL,
+  multiplex_name = "TF",
   tf_network_name = "TF_network",
   verbose = 1
 )
 }
 \arguments{
-\item{organism}{(integer)  - Specie identifier from Omnipath to fetch specific interactions}
+\item{hummus}{(hummus_object) - Hummus object}
+
+\item{organism}{(integer)  - Specie identifier from Omnipath to fetch
+specific interactions}
 
 \item{tfs}{vector(character) - List of tfs considered.}
+
+\item{gene_assay}{(character) - Name of the assay to get tfs from if tfs is
+not provided. If NULL, all TFs with motifs in the hummus object are used.}
 
 \item{store_network}{(bool) - Save the network directly (\code{TRUE},
 default) or return without saving on disk (\code{FALSE}).}
 
-\item{output_file}{(character) - Name of the output_file (if store_network == \code{TRUE}).}
+\item{output_file}{(character) - Name of the output_file
+(if store_network == \code{TRUE}).}
 
 \item{source_target}{('AND'|'OR') - Fetch only the interactions involving
-two considered tfs (\code{'AND'}), or one considered tfs and any other element (\code{'OR'})}
+two considered tfs (\code{'AND', default}), or one considered tfs and any
+other element (\code{'OR'})}
+
+\item{multiplex_name}{(character) - Name of the multiplex to add the network
+to. Default is \code{'TF'}.}
+
+\item{tf_network_name}{(character) - Name of the network in the multiplex to
+add the network to. Default is \code{'TF_network'}.}
+
+\item{verbose}{(integer) - Display function messages. Set to 0 for no message
+displayed, >= 1 for more details.}
 }
 \value{
-(data.frame) - Return list of network interactions between tfs (or larger set of protein if source_target==\code{'OR'})
+(hummus_object) - Return hummus object with the new network added.
 }
 \description{
 Compute a protein-protein interaction layer from Omnipath request that will represent tf cooperativity.
 This network is the top-layer of HuMMuS multilayer.
 }
 \examples{
-TO DO. Same than UNIT test.
+hummus <- compute_tf_network(hummus,
+                                       gene_assay = "RNA",
+                                       verbose = 1)
 }

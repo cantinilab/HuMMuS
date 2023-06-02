@@ -8,9 +8,10 @@ output:
   pdf_document: default
 ---
 
+
 ```{r setup, include=FALSE}
 #knitr::opts_chunk$set(eval = FALSE)
-devtools::load_all("../hummus_package")
+library(HuMMuS)
 ```
 ## General description of the vignette
 ##### 0. Preparation of the data
@@ -67,7 +68,7 @@ seurat <- SeuratObject::CreateSeuratObject(scRNA)
 seurat[["peaks"]] <- Signac::CreateChromatinAssay(scATAC, sep = c(":", "-"))
 
 # Create an hummus object from seurat object
-hummus <- hummus_object(seurat)
+hummus <- as(seurat, 'hummus_object')
 ```
 
 #### 1.2. Add genome annotations to hummus object
@@ -170,4 +171,40 @@ grn <- define_grn(
 ```
 ```{r}
 head(grn)
+```
+
+#### 3.3. Retrieve enhancers
+```{r}
+enhancers <- define_enhancers(
+  hummus,
+  multilayer_f = "chen_multilayer",
+  njobs = 5
+  )
+```
+```{r}
+head(enhancers)
+```
+
+#### 3.4. Retrieve binding regions
+```{r}
+binding_regions <- define_binding_regions(
+  hummus,
+  multilayer_f = "chen_multilayer",
+  njobs = 5
+  )
+```
+```{r}
+head(binding_regions)
+```
+
+#### 3.5. Retrieve target genes
+```{r}
+target_genes <- define_target_genes(
+  hummus,
+  multilayer_f = "chen_multilayer",
+  njobs = 5
+  )
+```
+```{r}
+head(target_genes)
 ```

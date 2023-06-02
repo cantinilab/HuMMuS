@@ -3,11 +3,13 @@
 \name{fast_aggregate}
 \alias{fast_aggregate}
 \title{Copy of the aggregate.Matrix function from the Matrix.utils package,
-since this is off CRAN and does not seem to be maintained anymore}
+since this is off CRAN and does not seem to be maintained anymore
+internally}
 \usage{
 fast_aggregate(x, groupings = NULL, form = NULL, fun = "sum", ...)
 }
 \description{
 Copy of the aggregate.Matrix function from the Matrix.utils package,
 since this is off CRAN and does not seem to be maintained anymore
+internally
 }

@@ -4,11 +4,8 @@
 \name{motifs_db-class}
 \alias{motifs_db-class}
 \alias{motifs_db}
-\title{Motifs database class
-MotifsDatabase object stores motifs(PFM matrices)
-and tf2motifs (TF to motifs names mapping) data.}
+\title{Motifs database class}
 \description{
-Motifs database class
 MotifsDatabase object stores motifs(PFM matrices)
 and tf2motifs (TF to motifs names mapping) data.
 }

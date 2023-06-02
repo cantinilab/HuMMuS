@@ -5,42 +5,69 @@
 \title{Compute peak network from scATAC-seq data}
 \usage{
 compute_atac_peak_network(
-  scATAC,
+  hummus,
+  atac_assay = "peaks",
   genome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,
   method = "cicero",
-  store_network = TRUE,
-  output_file,
+  multiplex_name = NULL,
+  network_name = NULL,
+  store_network = FALSE,
+  output_file = NULL,
   threshold = 0,
   number_cells_per_clusters = 50,
   sample_num = 100,
-  seed = 2021,
+  seed = 2025,
   verbose = 1,
-  window = 5e+05
+  window = 5e+05,
+  reduction_method = "UMAP"
 )
 }
 \arguments{
-\item{scATAC}{TODO}
+\item{hummus}{(hummus_object) - Hummus object}
 
-\item{genome}{TODO}
+\item{atac_assay}{(character) - Name of the assay containing the atac
+peaks data.}
 
-\item{method}{TODO}
+\item{genome}{(BSgenome) - Genome used to compute the distance between peaks.}
+
+\item{method}{(character) - Method used to infer network edges.
+\itemize{
+\item \code{'cicero'} - Use cicero to infer regulatory networks.
+\item \code{'Other method'} - TO DO.
+}}
+
+\item{multiplex_name}{(character) - Name of the multiplex to add the network
+to. Default is \code{'peaks'}.}
+
+\item{network_name}{(character) - Name of the network in the multiplex to
+add the network to. Default is \code{'peak_network'}.}
 
 \item{store_network}{(bool) - Save the network directly (\code{TRUE},
 default) or return without saving on disk (\code{FALSE}).}
 
-\item{output_file}{(character) - Name of the output_file (if store_network == \code{TRUE}).}
+\item{output_file}{(character) - Name of the output_file
+(if store_network == \code{TRUE}).}
 
-\item{threshold}{(interger, default 0) - Minimal threshold to select tf-gene edges.}
+\item{threshold}{(interger, default 0) - Minimal threshold to select tf-gene
+edges.}
 
-\item{number_cells_per_clusters}{(integer) - Number of cells grouped by territory to define pseudocells}
+\item{number_cells_per_clusters}{(integer) - Number of cells grouped by
+territory to define pseudocells}
 
-\item{sample_num}{(integer | Cicero) - TO DO.}
+\item{sample_num}{(integer | Cicero) - Number of pseudocells to sample from
+each territory. Default is 100.}
 
-\item{seed}{( __ ) - Random seed used by Cicero.}
+\item{seed}{(integer | Cicero) - Seed used to sample pseudocells. Default is
+2025}
 
-\item{verbose}{(integer) - Display function messages. Set to 0 for no message displayed, >= 1 for more details.}
+\item{verbose}{(integer) - Display function messages. Set to 0 for no
+message displayed, >= 1 for more details.}
 
-\item{window}{(interger) - Size of window to consider potential cis-regulatory cooperations}
+\item{window}{(integer) - Size of window to consider potential
+cis-regulatory cooperations between peaks. Default is 500K base pairs.}
+
+\item{reduction_method}{(character | Cicero) - Method used to reduce dimensionality
+of the data to identify territories. Default is \code{'UMAP'}.}
 }
 \value{
 (data.frame) - Return list of network interactions between peaks
@@ -60,5 +87,6 @@ less distant than 500K base pairs)
 }
 }
 \examples{
-TO DO. Same than UNIT test.
+hummus <- compute_atac_peak_network(hummus)
+
 }

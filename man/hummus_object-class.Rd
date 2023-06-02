@@ -12,7 +12,14 @@ for the storage and analysis of a heterogeneous multilayer network
 \section{Slots}{
 
 \describe{
-\item{\code{multilayer}}{}
+\item{\code{multilayer}}{(multilayer) - Multilayer object}
+
+\item{\code{motifs_db}}{(motifs_db) - Motifs database}
+
+\item{\code{assay}}{(list) - List of assays}
 }}
 
-\concept{assay}
+\examples{
+hummus_object <- hummus_object(seurat_object)
+
+}

@@ -2,59 +2,69 @@
 % Please edit documentation in R/bipartites.R
 \name{bipartite_tfs2peaks}
 \alias{bipartite_tfs2peaks}
-\title{Compute links between TFs and DNA regions}
+\title{Compute links between TFs and DNA regions (ATAC peaks)}
 \usage{
 bipartite_tfs2peaks(
   hummus_object,
   tf_expr_assay = "RNA",
   peak_assay = "peaks",
-  tf_network_name = NULL,
-  peak_network_name = NULL,
+  tf_multiplex_name = NULL,
+  peak_multiplex_name = NULL,
   genome,
-  store_bipartite = FALSE,
+  store_network = FALSE,
   output_file = NULL,
-  verbose = 1
+  verbose = 1,
+  bipartite_name = "tf_peak"
 )
 }
 \arguments{
-\item{genome}{(BSGenome) - Genome sequences on which motifs positions
-will be searched for.}
+\item{hummus_object}{(hummus_object) - Hummus object.}
 
-\item{store_bipartite}{(bool) - Save the bipartite directly
+\item{tf_expr_assay}{(character) - Name of assay containing the TF expression
+data. If NULL, all TFs with a motif are used. Default: "RNA".}
+
+\item{peak_assay}{(character) - Name of the assay containing the DNA regions
+(ATAC peaks). Default: "peaks".}
+
+\item{tf_multiplex_name}{(character) - Name of multiplex containing the TFs.
+If NULL, the name of the TF assay is used.}
+
+\item{peak_multiplex_name}{(character) - Name of the multiplex containing the
+DNA regions (ATAC peaks). If NULL, the name of the peak assay is used.}
+
+\item{genome}{(BSgenome object) - Reference genome.}
+
+\item{store_network}{(bool) - Save the bipartite directly
 (\code{TRUE}, default) or return without saving on disk (\code{FALSE}).}
 
 \item{output_file}{(character) - Name of the output_file
-(if store_bipartite == \code{TRUE}).}
+(if store_bipartite == \code{TRUE}). Default: NULL.}
 
 \item{verbose}{(integer) Display function messages.
-Set to 0 for no message displayed, >= 1 for more details.}
+Set to 0 for no message displayed, >= 1 for more details. Default: 1.}
 
-\item{tfs}{vector(character) - List of tfs considered.}
-
-\item{peaks}{vector(character) - List of peaks.}
-
-\item{peak_sep1}{(character) - Separator between chromosme number
-and starting coordinates (e.g. : chr1/100_1000 --> sep1='/').}
-
-\item{peak_sep2}{(character) - Separator between chromosme number
-and starting coordinates (e.g. : chr1/100_1000 --> sep1='_').}
-
-\item{gene.range}{(gene.range object) - TO DO.}
-
-\item{motifs}{(PWMatrixList) List of PWMatrix (PWMs of motifs).}
-
-\item{tf2motifs}{(data.frame) Corresponding table between PWMatrix names
-and binding TFs.}
+\item{bipartite_name}{(character) - Name of bipartite. Default: "tf_peak".}
 }
 \value{
-(data.frame) Return list of the links betweeen TFs and peaks.
+hummus_object (hummus_object) - Hummus object with TF-peak bipartite
+added to the multilayer slot
 }
 \description{
-Return list of links between peaks and TFs, based on their binding motifs
-locations on a reference genome.
+Compute and add bipartite between TFs and DNA regions to hummus object.
+Links are computed based on the binding motifs of TFs and their locations
+on a reference genome.
 Currently based on Signac AddMotifs function (--> motifmachR, itself based on
 MOODs algorithm).
 }
 \examples{
-TO DO. Same than UNIT test.
+hummus <- bipartite_tfs2peaks(
+                     hummus_object = hummus,
+                     tf_expr_assay = "RNA",
+                     peak_assay = "peaks",
+                     tf_multiplex_name = "TF",
+                     peak_multiplex_name = "peaks",
+          genome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,
+                     store_network = FALSE,
+                     verbose = 1,
+                     bipartite_name = "tf_peak")
 }

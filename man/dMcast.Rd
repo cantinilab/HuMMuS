@@ -3,7 +3,8 @@
 \name{dMcast}
 \alias{dMcast}
 \title{Copy of the dMcast function from the Matrix.utils package,
-since this is off CRAN and does not seem to be maintained anymore}
+since this is off CRAN and does not seem to be maintained anymore
+internally}
 \usage{
 dMcast(
   data,
@@ -18,4 +19,5 @@ dMcast(
 \description{
 Copy of the dMcast function from the Matrix.utils package,
 since this is off CRAN and does not seem to be maintained anymore
+internally
 }

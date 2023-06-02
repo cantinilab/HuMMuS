@@ -5,54 +5,83 @@
 \title{Compute links between DNA regions and genenames}
 \usage{
 bipartite_peaks2genes(
-  seurat_object,
+  hummus_object,
   gene_assay = "RNA",
   peak_assay = "peaks",
-  gene_network_name = NULL,
-  peak_network_name = NULL,
+  gene_multiplex_name = NULL,
+  peak_multiplex_name = NULL,
   peak_to_gene_method = "Signac",
   upstream = 500,
   downstream = 500,
   only_tss = TRUE,
-  store_bipartite = FALSE,
-  output_file = NULL
+  store_network = FALSE,
+  output_file = NULL,
+  bipartite_name = "atac_rna"
 )
 }
 \arguments{
-\item{peak_to_gene_method}{(character) - Method to map peaks to near gene
+\item{hummus_object}{(hummus_object) - Hummus object.}
+
+\item{gene_assay}{(character) - Name of assay containing the gene expression
+data. Default: "RNA".}
+
+\item{peak_assay}{(character) - Name of the assay containing the DNA regions
+(ATAC peaks). Default: "peaks".}
+
+\item{gene_multiplex_name}{(character) - Name of the multiplex containing the
+genes.
+If NULL, the name of the gene assay is used.}
+
+\item{peak_multiplex_name}{(character) - Name of the multiplex containing the
+DNA regions (ATAC peaks). If NULL, the name of the peak assay is used.}
+
+\item{peak_to_gene_method}{(character) - Method to use to compute the links
+between peaks and genes. Default: "Signac".
 \itemize{
-\item \code{'Signac'} - Signac method (default).
-\item \code{'GREAT'} - not implemented yet.
+\item \code{'Signac'} - Use Signac::Extend to extend genes.
+\item \code{'GREAT'} - Not implemented yet.
 }}
 
-\item{upstream}{(int) - size of the window upstream the TSS considered}
+\item{upstream}{(int) - Upstream distance from TSS
+to consider as potential promoter.}
 
-\item{downstream}{(int) - size of the window downstream the TSS considered}
+\item{downstream}{(int) - Downstream distance from TSS
+to consider as potential promoter.}
 
-\item{only_tss}{(bool) - Associated peaks in the window size from TSS only (\code{TRUE}) or aroud the whole gene body (\code{FALSE}).}
+\item{only_tss}{(logical) - If TRUE, only TSS will be considered.}
 
-\item{store_bipartite}{(bool) - Save the bipartite directly (\code{TRUE}, default) or return without saving on disk (\code{FALSE}).}
+\item{store_network}{(bool) - Save the bipartite directly
+(\code{TRUE}, default) or return without saving on disk (\code{FALSE}).}
 
-\item{output_file}{(character) - Name of the output_file (if store_bipartite == \code{TRUE}).}
+\item{output_file}{(character) - Name of the output_file
+(if store_bipartite == \code{TRUE}). Default: NULL.}
 
-\item{genes}{vector(character) - List of genes.}
+\item{bipartite_name}{(character) - Name of bipartite. Default: "atac_rna".}
 
-\item{peaks}{vector(character) - List of peaks.}
-
-\item{peak_sep1}{(character) - Separator between chromosme number
-and starting coordinates (e.g. : chr1/100_1000 --> sep1='/').}
-
-\item{peak_sep2}{(character) - Separator between chromosme number
-and starting coordinates (e.g. : chr1/100_1000 --> sep1='_').}
-
-\item{gene.range}{(gene.range object) - Gene range object.}
+\item{verbose}{(integer) Display function messages.
+Set to 0 for no message displayed, >= 1 for more details. Default: 1.}
 }
 \value{
-(data.frame) Return list of the links betweeen peaks and genes.
+hummus_object (hummus_object) - Hummus object w/ atac-rna bipartite
+added to the multilayer slot
 }
 \description{
-Return list of links between peaks and genes,
-based on the distance between peaks and gene's TSS location
-from gene.range annotations.
+Compute and add bipartite between DNA regions and genenames to hummus object.
+Links are computed based on the distance between peaks and gene's TSS
+location from gene.range annotations.
 Call find_peaks_near_genes function, that can use different methods.
+}
+\examples{
+hummus <- bipartite_peaks2genes(
+                       hummus_object = hummus,
+                       gene_assay = "RNA",
+                       peak_assay = "peaks",
+                       gene_multiplex_name = "RNA",
+                       peak_multiplex_name = "peaks",
+                       peak_to_gene_method = "Signac",
+                       upstream = 500,
+                       downstream = 500,
+                       only_tss = TRUE,
+                       store_network = FALSE,
+                       bipartite_name = "atac_rna")
 }

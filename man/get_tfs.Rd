@@ -4,7 +4,13 @@
 \alias{get_tfs}
 \title{Extract TF names from scRNA data and tf2motifs}
 \usage{
-get_tfs(hummus, assay, store_tfs = TRUE, output_file = NULL, verbose = 0)
+get_tfs(
+  hummus,
+  assay = NULL,
+  store_tfs = TRUE,
+  output_file = NULL,
+  verbose = 0
+)
 }
 \arguments{
 \item{output_file}{(character) - Path to output file.}
