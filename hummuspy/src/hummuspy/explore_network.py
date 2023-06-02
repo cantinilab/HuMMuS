@@ -7,10 +7,8 @@ import pandas as pd
 import multixrank as mxr
 from joblib import Parallel, delayed
 from tqdm import tqdm
-from typing import Union
-
+# from typing import Union
 import hummuspy.config
-
 
 
 def compute_multiple_RandomWalk(
@@ -341,7 +339,7 @@ def define_grn_from_config(
                                           np.unique(df_layer[1].values)])
             tf_list = np.unique(np.concatenate([tf_list,
                                                 layer_nodes]))
-        tf_list = tf_list[tf_list!='fake_node']
+        tf_list = tf_list[tf_list != 'fake_node']
 
     # Add normalisation ?
     df = df[df['tf'].isin(tf_list)]
@@ -512,8 +510,7 @@ def define_binding_regions_from_config(
                                           np.unique(df_layer[1].values)])
             tf_list = np.unique(np.concatenate([tf_list,
                                                 layer_nodes]))
-        tf_list = tf_list[tf_list!='fake_node']
-
+        tf_list = tf_list[tf_list != 'fake_node']
 
     df = compute_multiple_RandomWalk(multilayer_f,
                                      config_name=config_name,
@@ -676,7 +673,7 @@ def define_target_genes_from_config(
                                           np.unique(df_layer[1].values)])
             tf_list = np.unique(np.concatenate([tf_list,
                                                 layer_nodes]))
-        tf_list = tf_list[tf_list!='fake_node']
+        tf_list = tf_list[tf_list != 'fake_node']
 
     df = compute_multiple_RandomWalk(multilayer_f,
                                      config_name=config_name,
@@ -706,9 +703,9 @@ def define_target_genes_from_config(
     if return_df:
         return df
 
-from hummuspy.explore_network import *
+
 def get_output_from_dicts(
-        output_request: Union['grn', 'enhancers', 'binding_regions', 'target_genes'],
+        output_request: str,
         multilayer_f,
         multiplexes_list,
         bipartites_list,
@@ -726,9 +723,12 @@ def get_output_from_dicts(
         return_df=True,
         output_f=None,
         njobs=1):
-    
-    
-    """TO DO
+    """
+    Compute an output from a multilayer network and a config file, that can be
+    chosen among ['grn', 'enhancers', 'binding_regions', 'target_genes'].
+
+    It is a wrapper of the functions define_*_from_config, that are called
+    depending on the output_request parameter.
 
     Parameters
     ----------
@@ -829,10 +829,10 @@ def get_output_from_dicts(
         'output_f':       output_f,
         'njobs':          njobs
     }
-    
+
     if output_request == 'grn':
         df = define_grn_from_config(**parameters)
-        
+
     elif output_request == 'enhancers':
         df = define_enhancers_from_config(**parameters)
 

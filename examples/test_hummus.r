@@ -25,8 +25,8 @@ hummus <- hummus_object(seurat)
 
    #### Add annotations to hummus object
 # Fetch genome annotations
-genome_annotations <- get_genome_annotations(
-  ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
+#genome_annotations <- get_genome_annotations(
+ # ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
 # Add genome annotations to seurat object
 Signac::Annotation(hummus@assays$peaks) <- genome_annotations
 # Load TF motifs from JASPAR2020 and chromVARmotifs in hummus object
@@ -46,7 +46,7 @@ hummus <- bipartite_tfs2peaks(
               hummus_object = hummus,
               tf_expr_assay = "RNA", #use to filter TF on only expressed TFs, if NULL, all TFs with motifs are used
               peak_assay = "peaks",
-              tf_network_name = "TF",
+              tf_multiplex_name = "TF",
               genome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,
               )
 
@@ -87,13 +87,21 @@ grn <- define_grn(
   )
 
 
-#"A" :
+#"multilayer" :
+
+  #  "config"
+    # "config_grn.yml"
+  #  "seed"
+    # ...
+
   #  "bipartite":
     #  "atac_rna.tsv"
-    #  "tf_peaks.tsv"
+    #  "tf_peak.tsv"
+
   #  "multiplex":
-    #  "gene_network.tsv"
-    #  "tf_network.tsv"
-    #  "atac_network.tsv"
-  #  "seeds"
-  #  "config"
+    #  "peaks"
+      # "peak_network_cicero.tsv"
+    #  "RNA"
+      # "gene_network_GENIE3.tsv"
+    #  "TF"
+      # "tf_network.tsv"

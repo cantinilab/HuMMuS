@@ -26,6 +26,17 @@ setMethod("show", "motifs_db",
   })
 
 
+#' @title Multiplex class
+#' Multiplex object stores a list of networks, a list of features and
+#' a list of logicals indicating if the network is directed or weighted.
+#' @slot networks (list) - List of networks.
+#' @slot features (vector) - Vector of features.
+#' @slot directed (list) - List of logical indicating if networks are directed.
+#' @slot weighted (list) - List of logical indicating if networks are weighted.
+#' 
+#' @name multiplex-class
+#' @rdname multiplex-class
+#' @exportClass multiplex
 multiplex <- setClass(Class = "multiplex",
                        slots = c(
                          "networks" = "list", # List of networks
@@ -37,69 +48,36 @@ multiplex <- setClass(Class = "multiplex",
                          # "network_names" = "vector" # Vector of network names
                         )
                       )
+
 setMethod("show", "multiplex",
   function(object) {
     cat(
+      # Reprensentation of the multiplex object
+      # with the number of networks and features, and the list of network names
       paste("Multiplex of ", length(object@networks),
       " networks with", length(object@features), "features.\n",
       "Networks names: ", paste(names(object@networks), collapse = ", "))
       )
   })
 
-add_network <- function(
-  object,
-  network,
-  network_name,
-  multiplex_name = NULL,
-  directed = FALSE,
-  weighted = FALSE) {
 
-  #Check type of object
-  if (inherits(object, "multiplex")) {
-    multiplex <- object
-  } else if (inherits(object, "multilayer")) {
-    if (is.null(multiplex_name)) {
-      stop("You need to specify the multiplex name.")
-    }
-    multiplex <- object@multiplex[[multiplex_name]]
-  } else if (inherits(object, "hummus_object")) {
-    if (is.null(multiplex_name)) {
-      stop("You need to specify the multiplex name.")
-    }
-    multiplex <- object@multilayer@multiplex[[multiplex_name]]
-  } else {
-    stop("Object is not a multiplex, a multilayer nor an hummus object.")
-  }
-  # Check if network name already exists in the multiplex
-  if (network_name %in% names(multiplex@networks)) {
-    stop("Network name already exists")
-  }
-  # Check if there is features in common
-  features <- unique(c(unique(network[, 1]), unique(network[, 2])))
-  if (length(intersect(features, multiplex@features)) == 0
-      && length(multiplex@features) != 0) {
-    stop(cat("There is no features in common.",
-      "Check if there is a mistake in the features names",
-      " or if you want to create a new multiplex instead."))
-  }
-  # Add network
-  multiplex@networks[[network_name]] <- network
-  multiplex@features <- unique(c(multiplex@features, features))
-  multiplex@directed[[network_name]] <- directed
-  multiplex@weighted[[network_name]] <- weighted
-
-  # Return object
-  if (inherits(object, "multiplex")) {
-    return(multiplex)
-  } else if (inherits(object, "multilayer")) {
-    object@multiplex <- multiplex
-    return(object)
-  } else if (inherits(object, "hummus_object")) {
-    object@multilayer@multiplex <- multiplex
-    return(object)
-  }
-}
-
+#' @title Bipartite class
+#' 
+#' Bipartite object stores a bipartite network (edge list) and the names of the
+#' left and right features' multiplexes.
+#' @slot network (data.frame) - Bipartite network (edge list)
+#' @slot multiplex_left (character) - Left features' multiplex
+#' @slot multiplex_right (character) - Right features' multiplex
+#'
+#' @name bipartite-class
+#' @rdname bipartite-class
+#' @exportClass bipartite
+#'
+#' @examples bipartite <- bipartite(
+#'                           network = bipartite_network,
+#'                          multiplex_left = "RNA",
+#'                         multiplex_right = "peaks")
+#' 
 bipartite <- setClass(Class = "bipartite",
                        slots = c(
                       "network" = "data.frame", # Bipartite network (edge list)
@@ -107,6 +85,7 @@ bipartite <- setClass(Class = "bipartite",
                       "multiplex_right" = "character" # right features multiplex
                         )
                       )
+
 setMethod("show", "bipartite",
   function(object) {
     cat(
@@ -116,6 +95,21 @@ setMethod("show", "bipartite",
       )
   })
 
+#' @title Multilayer class
+#' 
+#' Multilayer object stores a list of bipartite networks and a list of multiplex
+#' networks. It can also stores a config list to create a yaml file, which is
+#' used to parametrize the random walk with restart to explore the multilayer.
+#'
+#' @slot bipartites (list) - List of bipartite networks
+#' @slot multiplex (list) - List of multiplex networks
+#' @slot config (list) - List of parameters to parametrize the random walk with
+#' restart to explore the multilayer
+#' 
+#' @name multilayer-class
+#' @rdname multilayer-class
+#' @exportClass multilayer
+#' 
 multilayer <- setClass(Class = "multilayer",
                        slots = c(
                         "bipartites" = "list", # Bipartite networks
@@ -123,7 +117,10 @@ multilayer <- setClass(Class = "multilayer",
                         "config" = "list" # Parameters to create the hmln
                         )                 # representation of a yaml file
                       )
+
 setMethod("show", "multilayer",
+  # Representation of the multilayer object with the number of bipartite and
+  # multiplex networks, and the list of bipartite names and multiplex names
   function(object) {
     cat(
       paste("Multilayer network containing ",
@@ -137,17 +134,22 @@ setMethod("show", "multilayer",
     )
   })
 
+
 #' The hummus_object class
 #'
 #' The SeuratPlus object is an extended \code{Seurat} object
 #' for the storage and analysis of a heterogeneous multilayer network
 #'
-#' @slot multilayer
+#' @slot multilayer (multilayer) - Multilayer object
+#' @slot motifs_db (motifs_db) - Motifs database
+#' @slot assay (list) - List of assays
 #'
 #' @name hummus_object-class
 #' @rdname hummus_object-class
 #' @exportClass hummus_object
-#' @concept assay
+#'
+#' @examples hummus_object <- hummus_object(seurat_object)
+#'
 hummus_object <- setClass(
     Class = "hummus_object",
     contains = "Seurat",
@@ -156,6 +158,7 @@ hummus_object <- setClass(
         "motifs_db" = "motifs_db"
     )
 )
+
 setMethod("show", "hummus_object",
   function(object) {
     object <- SeuratObject::UpdateSlots(object = object)
@@ -236,11 +239,30 @@ setMethod("show", "hummus_object",
   }
 )
 
+
+#' @title Save multilayer object files in a hierarchical structure on disk
+#' 
+#' @description Save multilayer files from a hummus_object
+#' in a hierarchical structure on disk
+#'
+#' @param hummus A hummus object
+#' @param folder_name The name of the folder to save the multilayer
+#' @param verbose (integer) - Display function messages. Set to 0 for no
+#'  message displayed, >= 1 for more details.
+#' @param suffix The suffix of the files to save. Default: ".tsv"
+#'
+#' @return Nothing, but create a folder containing the multilayer object files
+#' @export
+#'
+#' @examples folder_name = "multilayer"
+#' save_multilayer(hummus = hummus, folder_name = "multilayer")
+#'
 save_multilayer <- function(
     hummus,
     folder_name,
     verbose = TRUE,
-    suffix = ".tsv") {
+    suffix = ".tsv"
+    ) {
 
   multiplex_folder <- "multiplex"
   bipartite_folder <- "bipartite"
@@ -274,5 +296,154 @@ save_multilayer <- function(
                   file = paste0(folder_name, "/",
                                bipartite_folder, "/",
                                bipartite, ".tsv"))
+  }
+}
+
+
+#' @title Add a network to a multiplex, a multilayer or an hummus object
+#'
+#' @description Add a network to a multiplex, a multilayer or an hummus object
+#'
+#' @param object A multiplex, a multilayer or an hummus object
+#' @param network A network (edge list)
+#' @param network_name The name of the network
+#' @param multiplex_name The name of the multiplex. Default: NULL if object is a
+#' multiplex already only
+#' @param directed Logical indicating if the network is directed. Default: FALSE
+#' @param weighted Logical indicating if the network is weighted. Default: FALSE
+#' @param verbose (integer) - Display function messages. Set to 0 for no
+#' message displayed, >= 1 for more details.
+#'
+#' @return A multiplex, a multilayer or an hummus object with the added network
+#' @export
+#'
+#' @examples hummus <- add_network(
+#'                            object = hummus,
+#'                            network = atac_peak_network,
+#'                            network_name = network_name,
+#'                            multiplex_name = multiplex_name,
+#'                            weighted = TRUE,
+#'                            directed = FALSE)
+add_network <- function(
+  object,
+  network,
+  network_name,
+  multiplex_name = NULL,
+  directed = FALSE,
+  weighted = FALSE,
+  verbose = 1) {
+
+  # Check if object is a multiplex, a multilayer or an hummus object
+  if (inherits(object, "multiplex")) {
+    multiplex <- object
+  } else if (inherits(object, "multilayer") ) {
+    # Check if multiplex_name is NULL
+    if (is.null(multiplex_name)) {
+      stop("You need to specify the multiplex name.")
+    }
+    # Check if multiplex_name already exists
+    if (!(multiplex_name %in% names(object@multilayer@multiplex))) {
+      if (verbose > 0) {
+        cat("\tCreating new multiplex : ", multiplex_name, "\n")
+      }
+      # Create new multiplex if not
+      object@multilayer@multiplex[[multiplex_name]] <- new("multiplex")
+    }
+    # Get working multiplex
+    multiplex <- object@multilayer@multiplex[[multiplex_name]]
+  } else if (inherits(object, "hummus_object")) {
+    # Check if multiplex_name is NULL
+    if (is.null(multiplex_name)) {
+      stop("You need to specify the multiplex name.")
+    }
+    # Check if multiplex_name already exists
+    if (!(multiplex_name %in% names(object@multilayer@multiplex))) {
+      if (verbose > 0) {
+        cat("\tCreating new multiplex : ", multiplex_name, "\n")
+      }
+      # Create new multiplex if not
+      object@multilayer@multiplex[[multiplex_name]] <- new("multiplex")
+    }
+    # Get working multiplex
+    multiplex <- object@multilayer@multiplex[[multiplex_name]]
+
+  } else {
+    stop("Object is not a multiplex, a multilayer nor an hummus object.")
+  }
+
+  # Check if network name already exists in the multiplex
+  if (network_name %in% names(multiplex@networks)) {
+    stop("Network name already exists in the multiplex.")
+  }
+
+  # Check if there is features in common
+  features <- unique(c(unique(network[, 1]), unique(network[, 2])))
+  if (length(intersect(features, multiplex@features)) == 0
+      && length(multiplex@features) != 0) {
+    stop(cat("There is no features in common.",
+      "Check if there is a mistake in the features names",
+      " or if you want to create a new multiplex instead."))
+  }
+
+  # Add network
+  multiplex@networks[[network_name]] <- network
+  multiplex@features <- unique(c(multiplex@features, features))
+  multiplex@directed[[network_name]] <- directed
+  multiplex@weighted[[network_name]] <- weighted
+
+  # Return object
+  if (inherits(object, "multiplex")) {
+    return(multiplex)
+  } else if (inherits(object, "multilayer")) {
+    object@multiplex[[multiplex_name]] <- multiplex
+    return(object)
+  } else if (inherits(object, "hummus_object")) {
+    object@multilayer@multiplex[[multiplex_name]] <- multiplex
+    return(object)
+  }
+}
+
+
+#' @title Wrapper function to save a network or not
+#'
+#' Wrapper function to save a network or not in a file according to the
+#' store_network parameter. If store_network is TRUE, the network is saved in
+#' the output_file.
+#'
+#' @param network A network (edge list)
+#' @param store_network Logical indicating if the network should be saved
+#' @param output_file The name of the file to save the network
+#' @param verbose (integer) - Display function messages. Set to 0 for no
+#' message displayed, >= 1 for more details.
+#'
+#' @return Nothing, but save the network in a file if store_network is TRUE
+#' @export
+#'
+#' @examples network <- read.table("network.tsv", header = TRUE, sep = "\t")
+#'           store_network(network = network,
+#'               store_network = TRUE,
+#'               output_file = "network.tsv",
+#'               verbose = 1)
+#'
+store_network <- function(
+    network,
+    store_network,
+    output_file,
+    verbose = 1) {
+
+  if (store_network) {
+    if (is.null(output_file)) {
+      stop("Please provide an output file name",
+           " if you want to store the network.")
+    }
+    if (verbose > 0) {
+      cat("\tStoring network in file : ", output_file, "\n")
+    }
+    write.table(network,
+                output_file,
+                col.names = TRUE,
+                row.names = FALSE,
+                quote = FALSE,
+                sep = "\t")
   }
 }

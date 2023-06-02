@@ -1,3 +1,39 @@
+# Description: This file contains the wrapper functions for the methods that
+# are used to compute the different layers of the multilayer network. The
+# functions are called from the compute_*_network functions in layers.R
+# For now, only the compute_atac_peak_network function has wrapper functions
+# for the different methods. The other methods are still directly implemented
+# in the compute_*_network functions in layers.R
+
+#' @title Cicero wrapper function for the compute_atac_peak_network function
+#'
+#' @description This function is a wrapper for the compute_atac_peak_network
+#' function in layers.R. It computes the peak network from scATAC-seq data
+#' using Cicero. It returns a data frame with the peak network. The data frame
+#' also contains the coaccess score for each edge. The coaccess score is the
+#' probability that two peaks are accessible in the same cell. The coaccess 
+#' score is computed by Cicero. Edges are filtered based on the coaccess score.
+#' Only edges with a coaccess score > threshold are kept.
+#' 
+#' @param hummus A hummus object
+#' @param atac_assay The name of the assay containing the scATAC-seq data
+#' @param genome The genome object
+#' @param window The window size used by Cicero to compute the coaccess score
+#' @param number_cells_per_clusters The number of cells per cluster used by
+#' Cicero to compute the coaccess score
+#' @param sample_num The number of samples used by Cicero to compute the
+#' coaccess score
+#' @param seed The seed used by Cicero to compute the coaccess score
+#' @param verbose The verbosity level
+#' @param threshold The threshold used to filter edges based on the coaccess
+#' score
+#' @param reduction_method The method used by monocle3 to reduce the dimension
+#' of the scATAC-seq data before defining the pseudocells. The default is UMAP.
+#'
+#' @return A data frame containing the peak network
+#' @export
+#'
+#' @examples TO DO.
 run_cicero_wrapper <- function(
     hummus,
     atac_assay,
@@ -101,107 +137,4 @@ run_cicero_wrapper <- function(
 
     # Return peak network including edges with positive coaccess score
     return(peak_network)
-}
-
-
-store_network <- function(
-    network,
-    store_network,
-    output_file,
-    verbose = 1) {
-
-  if (store_network) {
-    if (is.null(output_file)) {
-      stop("Please provide an output file name",
-           " if you want to store the network.")
-    }
-    if (verbose > 0) {
-      cat("\tStoring network in file : ", output_file, "\n")
-    }
-    write.table(network,
-                output_file,
-                col.names = TRUE,
-                row.names = FALSE,
-                quote = FALSE,
-                sep = "\t")
-  }
-}
-
-add_network <- function(
-  object,
-  network,
-  network_name,
-  multiplex_name = NULL,
-  directed = FALSE,
-  weighted = FALSE,
-  verbose = 1) {
-
-  # Check if object is a multiplex, a multilayer or an hummus object
-  if (inherits(object, "multiplex")) {
-    multiplex <- object
-  } else if (inherits(object, "multilayer") ) {
-    # Check if multiplex_name is NULL
-    if (is.null(multiplex_name)) {
-      stop("You need to specify the multiplex name.")
-    }
-    # Check if multiplex_name already exists
-    if (!(multiplex_name %in% names(object@multilayer@multiplex))) {
-      if (verbose > 0) {
-        cat("\tCreating new multiplex : ", multiplex_name, "\n")
-      }
-      # Create new multiplex if not
-      object@multilayer@multiplex[[multiplex_name]] <- new("multiplex")
-    }
-    # Get working multiplex
-    multiplex <- object@multilayer@multiplex[[multiplex_name]]
-  } else if (inherits(object, "hummus_object")) {
-    # Check if multiplex_name is NULL
-    if (is.null(multiplex_name)) {
-      stop("You need to specify the multiplex name.")
-    }
-    # Check if multiplex_name already exists
-    if (!(multiplex_name %in% names(object@multilayer@multiplex))) {
-      if (verbose > 0) {
-        cat("\tCreating new multiplex : ", multiplex_name, "\n")
-      }
-      # Create new multiplex if not
-      object@multilayer@multiplex[[multiplex_name]] <- new("multiplex")
-    }
-    # Get working multiplex
-    multiplex <- object@multilayer@multiplex[[multiplex_name]]
-
-  } else {
-    stop("Object is not a multiplex, a multilayer nor an hummus object.")
-  }
-
-  # Check if network name already exists in the multiplex
-  if (network_name %in% names(multiplex@networks)) {
-    stop("Network name already exists in the multiplex.")
-  }
-
-  # Check if there is features in common
-  features <- unique(c(unique(network[, 1]), unique(network[, 2])))
-  if (length(intersect(features, multiplex@features)) == 0
-      && length(multiplex@features) != 0) {
-    stop(cat("There is no features in common.",
-      "Check if there is a mistake in the features names",
-      " or if you want to create a new multiplex instead."))
-  }
-
-  # Add network
-  multiplex@networks[[network_name]] <- network
-  multiplex@features <- unique(c(multiplex@features, features))
-  multiplex@directed[[network_name]] <- directed
-  multiplex@weighted[[network_name]] <- weighted
-
-  # Return object
-  if (inherits(object, "multiplex")) {
-    return(multiplex)
-  } else if (inherits(object, "multilayer")) {
-    object@multiplex[[multiplex_name]] <- multiplex
-    return(object)
-  } else if (inherits(object, "hummus_object")) {
-    object@multilayer@multiplex[[multiplex_name]] <- multiplex
-    return(object)
-  }
 }

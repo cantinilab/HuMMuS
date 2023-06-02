@@ -10,36 +10,37 @@
 #' @return TFs (vector(character)) - List of TFs expressed with motifs.
 #' @export
 #'
-get_tfs <- function(hummus,
-                    assay = NULL,
-                    store_tfs = TRUE,
-                    output_file = NULL,
-                    verbose = 0) {
-  # Check if the hummsu object has motifs_db 
+get_tfs <- function(
+    hummus,
+    assay = NULL,
+    store_tfs = TRUE,
+    output_file = NULL,
+    verbose = 0
+    ) {
+  # Check if the hummus object has motifs_db slot
   if (is.null(hummus@motifs_db)) {
     stop("The hummus object does not have a motifs_db slot")
   }
-
-  if (! is.null(assay)) {
+  
   # Check if the assay is present in the seurat object
+  if (! is.null(assay)) {
     if (!assay %in% names(hummus@assays)) {
         stop("The gene assay is not present in the seurat object")
     }
-  expr_genes <- rownames(hummus@assays[[assay]])
-  tfs <- intersect(unique(as.character(hummus@motifs_db@tf2motifs$tf)),
-                                       expr_genes)
-  if (verbose > 0) {
-    cat("\t", length(tfs), "TFs expressed\n")
-    }
-  }
-  else {
+    # Get the expressed genes
+    expr_genes <- rownames(hummus@assays[[assay]])
+    tfs <- intersect(unique(as.character(hummus@motifs_db@tf2motifs$tf)),
+                                        expr_genes)
+    if (verbose > 0) {
+        cat("\t", length(tfs), "TFs expressed\n")
+        }
+  } else { # If no assay is provided, get all TFs with motifs
     tfs <- unique(as.character(hummus@motifs_db@tf2motifs$tf))
     if (verbose > 0) {
       cat("\t", length(tfs), "TFs with motif. No check if expressed or not.\n")
     }
   }
-
-
+  # Store TFs in a file if specified
   if (store_tfs) {
     if (is.null(output_file)) {
       stop("Please provide an output file name")

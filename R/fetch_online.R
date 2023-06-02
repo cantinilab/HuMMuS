@@ -7,7 +7,8 @@
 #'
 #' @examples gene_range = get_genome_annotations(EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
 get_genome_annotations <- function(
-  ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86) {
+  ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86
+  ) {
   # Get genome annotations from Ensembldb database
   gene_range <- Signac::GetGRangesFromEnsDb(ensdb_annotations)
 
@@ -34,6 +35,8 @@ get_tf2motifs <- function(species = "human") {
   #TF motifs using the union of databases: JASPAR and cis-BP
   # included in chromVAR
   getMatrixSet <- TFBSTools::getMatrixSet
+
+  # If species is human or mouse
   if (species == "human") {
     # Parameters for JASPAR2020
     opts <- list(collection = "CORE",
@@ -77,7 +80,8 @@ get_tf2motifs <- function(species = "human") {
     for (tf in tfs){
       tf <- strsplit(tf, "(", fixed = TRUE)[[1]][1]
       # only keeping <NAME> in identifier "<NAME>(var.n)"
-      tf2motifs <- rbind(tf2motifs, data.frame(motif = names(motifs)[i], tf = tf))
+      tf2motifs <- rbind(tf2motifs, data.frame(motif = names(motifs)[i],
+                                                             tf = tf))
     }
   }
 

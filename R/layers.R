@@ -1,41 +1,58 @@
-#' Compute TF network
+#' Compute TF network and add it to hummus object
 #'
 #' Compute a protein-protein interaction layer from Omnipath request that will represent tf cooperativity.
 #' This network is the top-layer of HuMMuS multilayer.
-#' 
-#' @param organism (integer)  - Specie identifier from Omnipath to fetch specific interactions
+#'
+#' @param hummus (hummus_object) - Hummus object
+#' @param organism (integer)  - Specie identifier from Omnipath to fetch
+#' specific interactions
 #' @param tfs vector(character) - List of tfs considered.
+#' @param gene_assay (character) - Name of the assay to get tfs from if tfs is
+#' not provided. If NULL, all TFs with motifs in the hummus object are used.
 #' @param store_network (bool) - Save the network directly (\code{TRUE},
 #'  default) or return without saving on disk (\code{FALSE}).
-#' @param output_file (character) - Name of the output_file (if store_network == \code{TRUE}).
+#' @param output_file (character) - Name of the output_file
+#' (if store_network == \code{TRUE}).
 #' @param source_target ('AND'|'OR') - Fetch only the interactions involving
-#'  two considered tfs (\code{'AND'}), or one considered tfs and any other element (\code{'OR'})
+#' two considered tfs (\code{'AND', default}), or one considered tfs and any 
+#' other element (\code{'OR'})
+#' @param multiplex_name (character) - Name of the multiplex to add the network
+#'  to. Default is \code{'TF'}.
+#' @param tf_network_name (character) - Name of the network in the multiplex to
+#' add the network to. Default is \code{'TF_network'}.
+#' @param verbose (integer) - Display function messages. Set to 0 for no message
+#'  displayed, >= 1 for more details.
 #'
-#' @return (data.frame) - Return list of network interactions between tfs (or larger set of protein if source_target==\code{'OR'})
+#' @return (hummus_object) - Return hummus object with the new network added.
 #' @export
 #'
-#' @examples TO DO. Same than UNIT test.
-compute_tf_network <- function(hummus = null, # Hummus object
-                               organism = 9606, # Human by default
-                               tfs = NA, # List of tfs considered.
-                               gene_assay = NULL, # Name of the assay to get tfs from
-                                                  # if tfs is not provided
-                               store_network = FALSE, # Save the network on disk (TRUE, default)
-                               output_file = NULL, # Name of the output_file (if store_network == TRUE)
-                               source_target = "AND", # 'AND' | 'OR'
-                               only_expressed = TRUE, # TRUE | FALSE
-                               multiplex_name = NULL, # Name of the multiplex to add the network to
-                               tf_network_name = "TF_network", # Name of the network in the multiplex
-                               verbose = 1) {
+#' @examples hummus <- compute_tf_network(hummus,
+#'                                        gene_assay = "RNA",
+#'                                        verbose = 1)
+compute_tf_network <- function(
+  hummus = null, # Hummus object
+  organism = 9606, # Human by default
+  tfs = NA, # List of tfs considered.
+  gene_assay = NULL, # Name of the assay to get tfs from
+                     # if tfs is not provided
+  store_network = FALSE, # Save the network on disk (TRUE, default)
+  output_file = NULL, # Name of the output_file (if store_network == TRUE)
+  source_target = "AND", # 'AND' | 'OR'
+  multiplex_name = "TF", # Name of the multiplex to add the network to
+  tf_network_name = "TF_network", # Name of the network in the multiplex
+  verbose = 1
+  ) {
 
   if (verbose > 0) {
     cat("Computing TF network...\n")
     a <- Sys.time()
   }
+  # Get TF-TF interactions from Omnipath
   TF_PPI <- OmnipathR::import_post_translational_interactions(
     organism = organism, partners = tfs, source_target = source_target
   )
 
+  # Get tfs list
   tfs <- get_tfs(hummus = hummus,
             assay = gene_assay,
             store_tfs = FALSE,
@@ -50,18 +67,22 @@ compute_tf_network <- function(hummus = null, # Hummus object
     TF_PPI <- TF_PPI[which(TF_PPI$source %in% tfs |
                            TF_PPI$target %in% tfs), ]
   }
+  # Get only source and target columns
   tf_network <- TF_PPI[, c(3, 4)]
 
   if (verbose > 0) {
     cat("\tTF network construction time:", Sys.time() - a, "\n")
   }
+  # Convert to data.frame from tibble
   tf_network <- as.data.frame(tf_network)
 
+  # Check if there is any TF-TF edges otherwise add a fake node
+  # and connect all TFs to it (to allow HuMMuS to run without impacting result)
   if (nrow(tf_network) == 0) {
-    cat("No TF-TF edges from Omnipath for the given parameters.\n
+    cat("No TF-TF edges from Omnipath for the given parameters.
         You can try to change the source_target parameter to 'OR' to get
-        TF-other protein interactions.\n Or try to import a network 
-        computed externally.\n Right now, a network with all TFs connected
+        TF-other protein interactions. Or try to import a network  
+        computed externally. Right now, a network with all TFs connected
         to a fake node is created, for HuMMuS analysis.\n It has no biological
         meaning but will allow to run the pipeline as if no edges were present.
         \n")
@@ -76,12 +97,14 @@ compute_tf_network <- function(hummus = null, # Hummus object
                 output_file = output_file,
                 verbose = verbose)
 
+  # Add network to hummus object
   hummus <- add_network(hummus,
                         multiplex_name = multiplex_name,
                         network = tf_network,
                         network_name = tf_network_name,
-                        weighted = FALSE,
-                        directed = FALSE,
+                        weighted = FALSE, # PPI could be weighted,
+                                          # could be added later
+                        directed = FALSE, # PPI are not directed
                         verbose = verbose)
 
   return(hummus)
@@ -99,34 +122,57 @@ compute_tf_network <- function(hummus = null, # Hummus object
 #'  1. Genie3
 #'      Use tree random forest to infer regulatory networks :
 #'      https://bioconductor.org/packages/release/bioc/html/GENIE3.html
-#'
-#' @param scRNA (data.frame) - Expression matrix (cells*genes)
-#' @param tfs vector(character) - List of tfs considered.
+#' 
+#' @param hummus (hummus_object) - Hummus object
+#' @param gene_assay (character) - Name of the assay containing the gene
+#'  expression data.
+#' @param tfs vector(character) - List of tfs considered. If NULL, all TFs with
+#' motifs in the hummus object are used.
 #' @param method (character) - Method used to infer network edges.
-#' * \code{'Genie3'} - TO DO.
+#' * \code{'Genie3'} - Use tree random forest to infer regulatory networks.
+#' * \code{'Other method'} - TO DO.
+#' @param multiplex_name (character) - Name of the multiplex to add the network
+#' to. Default is \code{'RNA'}.
+#' @param network_name (character) - Name of the network in the multiplex to
+#' add the network to. Default is \code{'RNA_network'}.
 #' @param store_network (bool) - Save the network directly (\code{TRUE},
 #'  default) or return without saving on disk (\code{FALSE}).
-#' @param output_file (character) - Name of the output_file (if store_network == \code{TRUE}).
-#' @param threshold (interger, default 0) - Minimal threshold to select tf-gene edges.
-#' @param number_cores (interger, default 1) - Number of thread that should be used for the parallelizable methods.
-#' @param verbose (integer) - Display function messages. Set to 0 for no message displayed, >= 1 for more details.
+#' @param output_file (character) - Name of the output_file
+#'  (if store_network == \code{TRUE}).
+#' @param threshold (interger, default 0) - Minimal threshold
+#'  to select tf-gene edges.
+#' @param number_cores (interger, default 1) - Number of thread that should be
+#'  used for the parallelizable methods.
+#' @param verbose (integer) - Display function messages. Set to 0 for no
+#'  message displayed, >= 1 for more details.
 #'
 #' @return (data.frame) - Return list of network interactions between genes
 #' @export
 #'
-#' @examples TO DO. Same than UNIT test.
-compute_gene_network <- function(hummus,
-                                 gene_assay = "RNA",
-                                 tfs = NULL,
-                                 method = "GENIE3",
-                                 store_network = FALSE,
-                                 output_file = NULL,
-                                 threshold = 0.0,
-                                 number_cores = 1,
-                                 verbose = 1,
-                                 multiplex_name = NULL,
-                                 network_name = NULL) {
+#' @examples hummus <- compute_gene_network(
+#'                                hummus,
+#'                                gene_assay = "RNA",
+#'                                method = "GENIE3",
+#'                                verbose = 1,
+#'                                number_cores = 8,
+#'                                store_network = FALSE)
+#' 
+compute_gene_network <- function(
+  hummus,
+  gene_assay = "RNA",
+  tfs = NULL,
+  method = "GENIE3",
+  multiplex_name = NULL,
+  network_name = NULL,
+  store_network = FALSE,
+  output_file = NULL,
+  threshold = 0.0,
+  number_cores = 1,
+  verbose = 1
+  ) {
+
   a <- Sys.time()
+  # Check if method is implemented
   if (method == "GENIE3") {
     if (verbose > 0) {
       cat("Computing gene network with ", method, " ...\n")
@@ -145,12 +191,10 @@ compute_gene_network <- function(hummus,
     weightMat <- GENIE3::GENIE3(as.matrix(hummus[[gene_assay]]@counts),
                                regulators = tfs,
                                nCores = number_cores)
-
     # get edge list
     linkList <- GENIE3::getLinkList(weightMat)
     gene_network <- linkList[which(linkList$weight > threshold), ]
-    features <- unique(c(unique(gene_network$regulatoryGene),
-                      unique(gene_network$targetGene)))
+ 
   # TODO : add other methods
   } else {
     stop(cat("Method not implemented yet, choose between GENIE3 and..",
@@ -167,13 +211,15 @@ compute_gene_network <- function(hummus,
                 output_file = output_file,
                 verbose = verbose)
 
-  # Check if multiplex name provided
+  # If no multiplex name provided, use assay name
   if (is.null(multiplex_name)) {
     multiplex_name <- gene_assay
   }
+  # If no network name provided, use method name + assay name
   if (is.null(network_name)) {
     network_name <- paste(multiplex_name, method, sep = "_")
   }
+  # Add network to hummus object
   hummus <- add_network(hummus,
                         multiplex_name = multiplex_name,
                         network = gene_network,
@@ -198,47 +244,66 @@ compute_gene_network <- function(hummus,
 #'      Use patial corelation between peaks that are in a given window (e.g. :
 #'      less distant than 500K base pairs)
 #'
-#' @param scATAC TODO
-#' @param genome TODO
-#' @param method TODO
+#' @param hummus (hummus_object) - Hummus object
+#' @param atac_assay (character) - Name of the assay containing the atac
+#'  peaks data.
+#' @param genome (BSgenome) - Genome used to compute the distance between peaks.
+#' @param method (character) - Method used to infer network edges.
+#' * \code{'cicero'} - Use cicero to infer regulatory networks.
+#' * \code{'Other method'} - TO DO.
+#' @param multiplex_name (character) - Name of the multiplex to add the network
+#' to. Default is \code{'peaks'}.
+#' @param network_name (character) - Name of the network in the multiplex to
+#' add the network to. Default is \code{'peak_network'}.
 #' @param store_network (bool) - Save the network directly (\code{TRUE},
 #'  default) or return without saving on disk (\code{FALSE}).
-#' @param output_file (character) - Name of the output_file (if store_network == \code{TRUE}).
-#' @param threshold (interger, default 0) - Minimal threshold to select tf-gene edges.
-#' @param number_cells_per_clusters (integer) - Number of cells grouped by territory to define pseudocells
-#' @param sample_num (integer | Cicero) - TO DO.
-#' @param seed ( __ ) - Random seed used by Cicero.
-#' @param verbose (integer) - Display function messages. Set to 0 for no message displayed, >= 1 for more details.
-#' @param window (interger) - Size of window to consider potential cis-regulatory cooperations
+#' @param output_file (character) - Name of the output_file
+#'  (if store_network == \code{TRUE}).
+#' @param threshold (interger, default 0) - Minimal threshold to select tf-gene
+#'  edges.
+#' @param number_cells_per_clusters (integer) - Number of cells grouped by
+#'  territory to define pseudocells
+#' @param sample_num (integer | Cicero) - Number of pseudocells to sample from
+#' each territory. Default is 100.
+#' @param seed (integer | Cicero) - Seed used to sample pseudocells. Default is
+#' 2025
+#' @param verbose (integer) - Display function messages. Set to 0 for no
+#'  message displayed, >= 1 for more details.
+#' @param window (integer) - Size of window to consider potential
+#'  cis-regulatory cooperations between peaks. Default is 500K base pairs.
+#' @param reduction_method (character | Cicero) - Method used to reduce dimensionality
+#' of the data to identify territories. Default is \code{'UMAP'}.
 #'
 #' @return (data.frame) - Return list of network interactions between peaks
 #' @export
 #'
-#' @examples TO DO. Same than UNIT test.
+#' @examples hummus <- compute_atac_peak_network(hummus)
+#' 
 compute_atac_peak_network <- function(
     hummus,
     atac_assay = "peaks",
     genome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,
     method = "cicero",
+    multiplex_name = NULL,
+    network_name = NULL,
     store_network = FALSE,
     output_file = NULL,
     threshold = 0.0,
     number_cells_per_clusters = 50,
     sample_num = 100,
-    seed = 2021,
+    seed = 2025,
     verbose = 1,
     window = 5e+05,
-    reduction_method = "UMAP",
-    multiplex_name = NULL,
-    network_name = NULL) {
+    reduction_method = "UMAP") {
     
   a <- Sys.time()
+  # Check if method is implemented
   if (method == "cicero") {
       if (!requireNamespace("cicero", quietly = TRUE)) {
         stop("Please install cicero.\n",
          "https://cole-trapnell-lab.github.io/cicero-release/docs_m3/")
       } else {
-
+        # infer network with cicero
         atac_peak_network <- run_cicero_wrapper(
                                 hummus,
                                 atac_assay,
@@ -259,19 +324,21 @@ compute_atac_peak_network <- function(
   if (verbose > 0) {
     cat("Peak network construction time:", Sys.time() - a)
   }
+  # Save peak network
   store_network(network = atac_peak_network,
                 store_network = store_network,
                 output_file = output_file,
                 verbose = verbose)
-
+  # If no multiplex name provided, use assay name
   if (is.null(multiplex_name)) {
     multiplex_name <- atac_assay
     }
+  # If no network name provided, use method name + assay name
   if (is.null(network_name)) {
     network_name <- paste0("peak_network_", method)
     }
 
-    # Add network to hummus object
+  # Add network to hummus object
   hummus <- add_network(
     object = hummus,
     network = atac_peak_network,

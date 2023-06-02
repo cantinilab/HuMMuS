@@ -1,44 +1,56 @@
-#' Compute links between TFs and DNA regions
+#' Compute links between TFs and DNA regions (ATAC peaks)
 #'
-#' Return list of links between peaks and TFs, based on their binding motifs
-#' locations on a reference genome.
+#' Compute and add bipartite between TFs and DNA regions to hummus object.
+#' Links are computed based on the binding motifs of TFs and their locations
+#' on a reference genome.
 #' Currently based on Signac AddMotifs function (--> motifmachR, itself based on
 #' MOODs algorithm).
 #'
-#' @param tfs vector(character) - List of tfs considered.
-#' @param peaks vector(character) - List of peaks.
-#' @param peak_sep1 (character) - Separator between chromosme number
-#' and starting coordinates (e.g. : chr1/100_1000 --> sep1='/').
-#' @param peak_sep2 (character) - Separator between chromosme number
-#' and starting coordinates (e.g. : chr1/100_1000 --> sep1='_').
-#' @param genome (BSGenome) - Genome sequences on which motifs positions
-#' will be searched for.
-#' @param gene.range (gene.range object) - TO DO.
-#' @param motifs  (PWMatrixList) List of PWMatrix (PWMs of motifs).
-#' @param tf2motifs (data.frame) Corresponding table between PWMatrix names
-#' and binding TFs.
-#' @param store_bipartite (bool) - Save the bipartite directly
+#' @param hummus_object (hummus_object) - Hummus object.
+#' @param tf_expr_assay (character) - Name of assay containing the TF expression
+#' data. If NULL, all TFs with a motif are used. Default: "RNA".
+#' @param peak_assay (character) - Name of the assay containing the DNA regions
+#' (ATAC peaks). Default: "peaks".
+#' @param tf_multiplex_name (character) - Name of multiplex containing the TFs.
+#' If NULL, the name of the TF assay is used.
+#' @param peak_multiplex_name (character) - Name of the multiplex containing the
+#' DNA regions (ATAC peaks). If NULL, the name of the peak assay is used.
+#' @param genome (BSgenome object) - Reference genome.
+#' @param store_network (bool) - Save the bipartite directly
 #' (\code{TRUE}, default) or return without saving on disk (\code{FALSE}).
 #' @param output_file (character) - Name of the output_file
-#' (if store_bipartite == \code{TRUE}).
+#' (if store_bipartite == \code{TRUE}). Default: NULL.
 #' @param verbose (integer) Display function messages.
-#' Set to 0 for no message displayed, >= 1 for more details.
+#' Set to 0 for no message displayed, >= 1 for more details. Default: 1.
+#' @param bipartite_name (character) - Name of bipartite. Default: "tf_peak".
 #'
-#' @return (data.frame) Return list of the links betweeen TFs and peaks.
+#' @return hummus_object (hummus_object) - Hummus object with TF-peak bipartite
+#' added to the multilayer slot
 #' @export
 #'
-#' @examples TO DO. Same than UNIT test.
+#' @examples hummus <- bipartite_tfs2peaks(
+#'                      hummus_object = hummus,
+#'                      tf_expr_assay = "RNA",
+#'                      peak_assay = "peaks",
+#'                      tf_multiplex_name = "TF",
+#'                      peak_multiplex_name = "peaks",
+#'           genome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,
+#'                      store_network = FALSE,
+#'                      verbose = 1,
+#'                      bipartite_name = "tf_peak")
+
 bipartite_tfs2peaks <- function(
   hummus_object,
   tf_expr_assay = "RNA",
   peak_assay = "peaks",
-  tf_network_name = NULL,
-  peak_network_name = NULL,
+  tf_multiplex_name = NULL,
+  peak_multiplex_name = NULL,
   genome,
   store_network = FALSE,
   output_file = NULL,
   verbose = 1,
-  bipartite_name = "tf_peak") {
+  bipartite_name = "tf_peak"
+  ) {
 
   if (verbose > 0) {
     cat("Computing TF-peak bipartite\n")
@@ -53,9 +65,11 @@ bipartite_tfs2peaks <- function(
     tfs_use <- get_tfs(hummus_object,
                        assay = tf_expr_assay,
                        store_tfs = FALSE,
-                       verbose=verbose)
-  }
-  else { # No filtering on expression assay, use all TFs
+                       verbose = verbose)
+  } else { # No filtering on expression assay, use all TFs with a motif
+    if (verbose > 0) {
+      cat("No filtering on expression assay, using all TFs with a motif.\n")
+    }
     tfs_use <- unique(hummus_object@motifs_db@tf2motifs$tf)
   }
 
@@ -74,7 +88,7 @@ bipartite_tfs2peaks <- function(
       stop("The peak assay does not have annotations (gene.range object)")
   }
 
-
+  # Add motifs to the peaks
   motif_pos <- Signac::AddMotifs(
     object = hummus_object[[peak_assay]],
     genome = genome,
@@ -90,17 +104,22 @@ bipartite_tfs2peaks <- function(
 
   # Spread dataframe to sparse matrix
   tf2motifs <- hummus_object@motifs_db@tf2motifs
-  tf2motifs <- dplyr::'%>%'(tf2motifs, dplyr::select("motif" = 1, "tf" = 2)) # Select motif and tf columns
-  tf2motifs <- dplyr::'%>%'(tf2motifs, dplyr::distinct()) # Remove duplicates
-  tf2motifs <- dplyr::'%>%'(tf2motifs, dplyr::mutate(val = 1)) # Add value column
-  tf2motifs <- dplyr::'%>%'(tf2motifs, # Spread TFs
+  # Select motif and tf columns
+  tf2motifs <- dplyr::"%>%"(tf2motifs, dplyr::select("motif" = 1, "tf" = 2))
+  tf2motifs <- dplyr::"%>%"(tf2motifs, dplyr::distinct()) # Remove duplicates
+  # Add value column
+  tf2motifs <- dplyr::"%>%"(tf2motifs, dplyr::mutate(val = 1))
+  tf2motifs <- dplyr::"%>%"(tf2motifs, # Spread TFs
                   tidyr::pivot_wider(names_from = "tf",
                                      values_from = val,
                                      values_fill = 0)
                             )
-  tf2motifs <- dplyr::'%>%'(tf2motifs, tibble::column_to_rownames("motif")) # Set motif as rownames
-  tf2motifs <- dplyr::'%>%'(tf2motifs, as.matrix()) # Convert to matrix
-  tf2motifs <- dplyr::'%>%'(tf2motifs, Matrix::Matrix(sparse = TRUE)) # Convert to sparse matrix
+  # Set motif as rownames
+  tf2motifs <- dplyr::"%>%"(tf2motifs, tibble::column_to_rownames("motif"))
+  tf2motifs <- dplyr::"%>%"(tf2motifs, as.matrix()) # Convert to matrix
+
+  # Convert to sparse matrix
+  tf2motifs <- dplyr::"%>%"(tf2motifs, Matrix::Matrix(sparse = TRUE))
 
   if (length(tfs_use) == 0) { # If no TFs are found in the dataset
     stop("None of the provided TFs were found in the dataset.
@@ -108,10 +127,10 @@ bipartite_tfs2peaks <- function(
   }
 
   # Get TF peak links
+  # Keep only the TFs that are in our tf list
   TFs_Peaks <- motif_pos@motifs@data %*% tf2motifs[, tfs_use]
-  # TFs_Peaks <- TFs_Peaks[, colnames(TFs_Peaks) %in% tfs]
 
-   # Keep only the TFs that are in our scRNA-seq dataset
+  # Remove values equal to 0
   tfs2peaks <- expand.grid(rownames(TFs_Peaks),
                            colnames(TFs_Peaks))[as.vector(TFs_Peaks > 0), ]
                           # TF-peak links
@@ -126,22 +145,22 @@ bipartite_tfs2peaks <- function(
   if (verbose > 0) {
     cat("\tReturning TF-peak links as bipartite object\n")
   }
-  # Return TF-peak links
 
   # Set default names for the networks if not provided
-  if (is.null(tf_network_name)) {
-    cat('no TF layer name provided, using tf_expr_assay name\n')
-    tf_network_name <- tf_expr_assay
+  if (is.null(tf_multiplex_name)) {
+    cat("no TF layer name provided, using tf_expr_assay name\n")
+    tf_multiplex_name <- tf_expr_assay
   }
-  if (is.null(peak_network_name)) {
-    peak_network_name <- peak_assay
+  if (is.null(peak_multiplex_name)) {
+    cat("no peak layer name provided, using peak_assay name\n")
+    peak_multiplex_name <- peak_assay
   }
 
-  # Return atac-rna bipartite
+  # Return tf-peak bipartite
   hummus_object@multilayer@bipartites[[bipartite_name]] <- new("bipartite",
                            "network" = tfs2peaks,
-                           "multiplex_left" = peak_network_name,
-                           "multiplex_right" = tf_network_name)
+                           "multiplex_left" = peak_multiplex_name,
+                           "multiplex_right" = tf_multiplex_name)
   return(hummus_object) # Return TF-peak bipartite object
 }
 
@@ -150,60 +169,82 @@ bipartite_tfs2peaks <- function(
 
 #' Compute links between DNA regions and genenames
 #'
-#' Return list of links between peaks and genes,
-#' based on the distance between peaks and gene's TSS location
-#' from gene.range annotations.
+#' Compute and add bipartite between DNA regions and genenames to hummus object.
+#' Links are computed based on the distance between peaks and gene's TSS
+#' location from gene.range annotations.
 #' Call find_peaks_near_genes function, that can use different methods.
 #'
-#' @param genes vector(character) - List of genes.
-#' @param peaks vector(character) - List of peaks.
-#' @param peak_sep1 (character) - Separator between chromosme number
-#'  and starting coordinates (e.g. : chr1/100_1000 --> sep1='/').
-#' @param peak_sep2 (character) - Separator between chromosme number
-#'  and starting coordinates (e.g. : chr1/100_1000 --> sep1='_').
-#' @param gene.range (gene.range object) - Gene range object.
-#' @param peak_to_gene_method (character) - Method to map peaks to near gene
-#' * \code{'Signac'} - Signac method (default).
-#' * \code{'GREAT'} - not implemented yet.
-#' @param upstream (int) - size of the window upstream the TSS considered
-#' @param downstream (int) - size of the window downstream the TSS considered
-#' @param only_tss (bool) - Associated peaks in the window size from TSS only (\code{TRUE}) or aroud the whole gene body (\code{FALSE}).
-#' @param store_bipartite (bool) - Save the bipartite directly (\code{TRUE}, default) or return without saving on disk (\code{FALSE}).
-#' @param output_file (character) - Name of the output_file (if store_bipartite == \code{TRUE}).
-#'
-#' @return (data.frame) Return list of the links betweeen peaks and genes.
+#' @param hummus_object (hummus_object) - Hummus object.
+#' @param gene_assay (character) - Name of assay containing the gene expression
+#' data. Default: "RNA".
+#' @param peak_assay (character) - Name of the assay containing the DNA regions
+#' (ATAC peaks). Default: "peaks".
+#' @param gene_multiplex_name (character) - Name of the multiplex containing the
+#' genes.
+#' If NULL, the name of the gene assay is used.
+#' @param peak_multiplex_name (character) - Name of the multiplex containing the
+#' DNA regions (ATAC peaks). If NULL, the name of the peak assay is used.
+#' @param peak_to_gene_method (character) - Method to use to compute the links
+#' between peaks and genes. Default: "Signac".
+#' * \code{'Signac'} - Use Signac::Extend to extend genes.
+#' * \code{'GREAT'} - Not implemented yet.
+#' @param upstream (int) - Upstream distance from TSS
+#' to consider as potential promoter.
+#' @param downstream (int) - Downstream distance from TSS
+#' to consider as potential promoter.
+#' @param only_tss (logical) - If TRUE, only TSS will be considered.
+#' @param store_network (bool) - Save the bipartite directly
+#' (\code{TRUE}, default) or return without saving on disk (\code{FALSE}).
+#' @param output_file (character) - Name of the output_file
+#' (if store_bipartite == \code{TRUE}). Default: NULL.
+#' @param verbose (integer) Display function messages.
+#' Set to 0 for no message displayed, >= 1 for more details. Default: 1.
+#' @param bipartite_name (character) - Name of bipartite. Default: "atac_rna".
+#' 
+#' @return hummus_object (hummus_object) - Hummus object w/ atac-rna bipartite
+#' added to the multilayer slot
 #' @export
 #'
-#' @examples
+#' @examples hummus <- bipartite_peaks2genes(
+#'                        hummus_object = hummus,
+#'                        gene_assay = "RNA",
+#'                        peak_assay = "peaks",
+#'                        gene_multiplex_name = "RNA",
+#'                        peak_multiplex_name = "peaks",
+#'                        peak_to_gene_method = "Signac",
+#'                        upstream = 500,
+#'                        downstream = 500,
+#'                        only_tss = TRUE,
+#'                        store_network = FALSE,
+#'                        bipartite_name = "atac_rna")
+
 bipartite_peaks2genes <- function(
   hummus_object,
-  gene_assay = 'RNA',
-  peak_assay = 'peaks',
-  gene_network_name = NULL,
-  peak_network_name = NULL,
+  gene_assay = "RNA",
+  peak_assay = "peaks",
+  gene_multiplex_name = NULL,
+  peak_multiplex_name = NULL,
   peak_to_gene_method = "Signac",
   upstream = 500,
   downstream = 500,
   only_tss = TRUE,
   store_network = FALSE,
   output_file = NULL,
-  bipartite_name = "atac_rna") {
+  bipartite_name = "atac_rna"
+  ) {
   # Check if the gene assay is present in the hummus object
   if (!gene_assay %in% names(hummus_object@assays)) {
-    stop("The gene assay is not present in the hummus object")
-  }
-  # Check if the peak assay is present in the hummus object
-  else if (!peak_assay %in% names(hummus_object@assays)) {
-    stop("The peak assay is not present in the hummus object")
-  }
-  # Check if the peak assay is a ChromatinAssay object
-  else if (!inherits(hummus_object@assays[[peak_assay]],
-                     "ChromatinAssay")) {
-    stop("The peak assay is not a ChromatinAssay object 
-    or does not have annotations (gene.range object))")
-  }
-  # Check if the peak assay has gene.range annotations
-  else if (is.null(Signac::Annotation(hummus_object[[peak_assay]]))) {
+      stop("The gene assay is not present in the hummus object")
+  } else if (!peak_assay %in% names(hummus_object@assays)) {
+      # Check if the peak assay is present in the hummus object
+      stop("The peak assay is not present in the hummus object")
+  } else if (!inherits(hummus_object@assays[[peak_assay]],
+                      "ChromatinAssay")) {
+      # Check if the peak assay is a ChromatinAssay object
+      stop("The peak assay is not a ChromatinAssay object 
+      or does not have annotations (gene.range object))")
+  } else if (is.null(Signac::Annotation(hummus_object[[peak_assay]]))) {
+      # Check if the peak assay has gene.range annotations
       stop("The peak assay does not have annotations (gene.range object)")
   }
 
@@ -220,14 +261,14 @@ bipartite_peaks2genes <- function(
                                  groups = colnames(peaks_near_genes),
                                  fun = "sum")
   # Keep only the genes that are in our scRNA-seq dataset
-  peaks2genes <- peaks2genes[rownames(peaks2genes) 
+  peaks2genes <- peaks2genes[rownames(peaks2genes)
                  %in% rownames(hummus_object@assays[[gene_assay]]), ]
   # Remove rows/cols with only zeros
   peaks2genes <- peaks2genes[Matrix::rowSums(peaks2genes) != 0,
                              Matrix::colSums(peaks2genes) != 0]
   # peak-gene links
   peaks2genes <- expand.grid(rownames(peaks2genes),
-                             colnames(peaks2genes))[as.vector(peaks2genes > 0), ]
+                          colnames(peaks2genes))[as.vector(peaks2genes > 0), ]
   colnames(peaks2genes) <- c("gene", "peak") # set column names
 
 
@@ -238,19 +279,18 @@ bipartite_peaks2genes <- function(
                 verbose = 1)
 
   # Set default names for the networks if not provided
-  if (is.null(gene_network_name)) {
-    gene_network_name <- gene_assay
+  if (is.null(gene_multiplex_name)) {
+    gene_multiplex_name <- gene_assay
   }
-  if (is.null(peak_network_name)) {
-    peak_network_name <- peak_assay
+  if (is.null(peak_multiplex_name)) {
+    peak_multiplex_name <- peak_assay
   }
 
   # Return atac-rna bipartite
-  bipartite_atac_rna <- 
   hummus_object@multilayer@bipartites[[bipartite_name]] <- new("bipartite",
                            "network" = peaks2genes,
-                           "multiplex_left" = gene_network_name,
-                           "multiplex_right" = peak_network_name)
+                           "multiplex_left" = gene_multiplex_name,
+                           "multiplex_right" = peak_multiplex_name)
   return(hummus_object)
 }
 
@@ -286,7 +326,7 @@ find_peaks_near_genes <- function(
   extend = 1000000,
   only_tss = FALSE,
   verbose = TRUE
-) {
+  ) {
   # Match arg
   method <- match.arg(method)
 
@@ -315,97 +355,6 @@ find_peaks_near_genes <- function(
     rownames(hit_matrix) <- Signac::GRangesToString(grange = peaks, sep = sep)
     colnames(hit_matrix) <- genes_extended$gene_name
 
-  } else if (method == "_____GREAT") {
-
-    # Read gene annotation (Ensembl v93, GRCh38)
-    utils::data(EnsDb.Hsapiens.v93.annot.UCSC.hg38, envir = environment())
-    gene_annot_use <- EnsDb.Hsapiens.v93.annot.UCSC.hg38[
-      which(EnsDb.Hsapiens.v93.annot.UCSC.hg38$gene_name %in% genes$gene_name),
-    ]
-    gene_annot_tss <- select(as_tibble(gene_annot_use),
-                             seqnames, "start" = tss, "end" = tss, strand)
-
-    # Create GRanges object storing the TSS information
-    tss <- GRanges(gene_annot_use)
-
-    # Define basal regulatory region (promoter region)
-    # as 5 kb upstream + 1 kb downstream of the TSS
-    basal_reg <- suppressWarnings(
-      expr = Signac::Extend(
-        tss, upstream = upstream, downstream = downstream
-      )
-    )
-
-    # Step 1 - get peaks overlap with basal regulatory region
-    basal_overlaps <- suppressWarnings(IRanges::findOverlaps(
-      query = peaks,
-      subject = basal_reg,
-      type = "any",
-      select = "all",
-      minoverlap = 2
-    ))
-
-    peak_all <- Signac::GRangesToString(grange = peaks, sep = sep)
-    basal_peak_mapped_idx <- queryHits(basal_overlaps)
-    basal_mapped_peaks <- unique(peak_all[basal_peak_mapped_idx])
-    n1 <- length(basal_mapped_peaks)
-
-    # Step 2: for the peaks not overlapped with basal regulatory regions,
-    # check whether they located within gene body of any genes
-    peak_unmapped_idx <- setdiff(seq(length(peak_all)), basal_peak_mapped_idx)
-    peak_unmapped <- peak_all[peak_unmapped_idx]
-    peak_unmapped_region <- Signac::StringToGRanges(peak_unmapped)
-
-    # Create GRanges object storing annotated gene boundary
-    gene_bound <- GRanges(gene_annot_use)
-    body_overlaps <- IRanges::findOverlaps(
-      query = peak_unmapped_region,
-      subject = gene_bound,
-      type = "any",
-      select = "all",
-      minoverlap = 2
-    )
-    body_peak_mapped_idx <- peak_unmapped_idx[queryHits(body_overlaps)]
-    body_mapped_peaks <- unique(peak_all[body_peak_mapped_idx])
-    n2 <- length(body_mapped_peaks)
-    peak_mapped_idx <- c(basal_peak_mapped_idx, body_peak_mapped_idx)
-
-    # Step 3: for the peaks not overlapped with regulatory regions of any genes,
-    # check whether they overlap with extended regulatory region. 
-    # i.e. +/- 1MB of basal regulatory region
-    peak_unmapped_idx <- setdiff(seq(length(peak_all)), peak_mapped_idx)
-    peak_unmapped <- peak_all[peak_unmapped_idx]
-    peak_unmapped_region <- Signac::StringToGRanges(peak_unmapped)
-    extend_reg <- suppressWarnings(
-      expr = Signac::Extend(
-        basal_reg, upstream = extend, downstream = extend
-      )
-    )
-
-    # Get overlap between unmapped_peak_region and extended regulatory region
-    extended_overlaps <- suppressWarnings(IRanges::findOverlaps(
-      query = peak_unmapped_region,
-      subject = extend_reg,
-      type = "any",
-      select = "all",
-      minoverlap = 2
-    ))
-    extended_peak_mapped_idx <- peak_unmapped_idx[queryHits(extended_overlaps)]
-    extended_mapped_peaks <- unique(peak_all[extended_peak_mapped_idx])
-    n3 <- length(extended_mapped_peaks)
-
-    hit_matrix <- Matrix::sparseMatrix(
-      i = c(basal_peak_mapped_idx,
-            body_peak_mapped_idx,
-            extended_peak_mapped_idx),
-      j = c(subjectHits(basal_overlaps),
-            subjectHits(body_overlaps),
-            subjectHits(extended_overlaps)),
-      x = 1,
-      dims = c(length(peaks), length(basal_reg))
-    )
-    rownames(hit_matrix) <- peak_all
-    colnames(hit_matrix) <- c(basal_reg$gene_name)
   } else {
     stop("method must be either 'Signac' or 'GREAT' ; 
           please check that current version of HuMMuS
@@ -418,7 +367,7 @@ find_peaks_near_genes <- function(
 #' @title Filter peaks to those overlapping specific (regulatory) elements
 #' @description Function to reduce list of "Peaks" to the ones overlapping with
 #' list of "RegEl", e.g. regulatory elements, evolutionary conserved regions
-#' 
+#'
 #' @param Peaks (character) vector of genomic coordinates of peaks
 #' @param RegEl (character) vector of genomic coordinates of regulatory elements
 #' @param sep_Peak1 (character) separator between chromosome and
@@ -435,20 +384,22 @@ find_peaks_near_genes <- function(
 #'
 #' @examples peaks_in_regulatory_elements(peaks, RegEl)
 peaks_in_regulatory_elements <- function(
-  Peaks, 
-  RegEl, 
-  sep_Peak1="-",
-  sep_Peak2="-",
-  sep_RegEl1="-",
-  sep_RegEl2="-"
-) {
+  Peaks,
+  RegEl,
+  sep_Peak1 = "-",
+  sep_Peak2 = "-",
+  sep_RegEl1 = "-",
+  sep_RegEl2 = "-"
+  ) {
   # Make sure Peaks and RegEl are unique
   Peaks <- unique(Peaks)
   RegEl <- unique(RegEl)
 
   # convert genomic corrdinate string to GRanges object
-  Peak_GRangesObj <- StringToGRanges(Peaks, sep = c(sep_Peak1, sep_Peak2))
-  RegEl_GRangesObj <- StringToGRanges(RegEl, sep = c(sep_RegEl1, sep_RegEl2))
+  Peak_GRangesObj <- Signac::StringToGRanges(Peaks, 
+                                             sep = c(sep_Peak1, sep_Peak2))
+  RegEl_GRangesObj <- Signac::StringToGRanges(RegEl,
+                                              sep = c(sep_RegEl1, sep_RegEl2))
 
   # find overlap between peaks and regulatory elements
   PeakOverlaps <- IRanges::findOverlaps(query = RegEl_GRangesObj,
