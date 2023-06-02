@@ -48,7 +48,6 @@ Core R package can be installed directly from R:
 devtools::install_github("cantinilab/HuMMuS") 
 ```
 
-
 For more details on hom to setup the reticulate connection,
 see: https://rstudio.github.io/reticulate
 
