@@ -11,10 +11,10 @@ output:
 
 ```{r setup, include=FALSE}
 #knitr::opts_chunk$set(eval = FALSE)
-library(HuMMuS)
+devtools::install_github("cantinilab/HuMMuS")
 ```
 ## General description of the vignette
-##### 0. Preparation of the data
+##### 0. Preparation of the environment
 ##### 1. Initialisation of a hummus object 
 
 ##### 2. Construction of the multilayer
@@ -34,21 +34,22 @@ library(HuMMuS)
   This part requires first have hummuspy python package (pip install hummuspy)
   installed, and second to save locally the multilayer files
   
-  - 3.1. Save the multilayer
+  - 3.1. Save the network files
   - 3.2. Create GRN output
+  - 3.3. Create enhancers output
+  - 3.4. Create binding regions output
+  - 3.5. Create target genes output
     
 
-  
+use_condaenv("base")
+
 ## Download the single-cell data
 The data used in this tutorial can be downloaded at : ibens repo link
 
-## 0. Import single-cell data
+## 0. Setting up the environment
 ```{r}
-scRNA <- read.table("data/real_example/hESC_Chen_scRNA.tsv")
-scATAC <- read.table("data/real_example/hESC_Chen_scATAC_bin.tsv")
-# subsetting data to infer faster a toy case : specific for the tutorial, dont keep it in real cases !!
-scRNA <- scRNA[1:700, ]
-scATAC <- scATAC[1:1000, ]
+library(HuMMuS)
+library(reticulate)
 ```
 
 ## 1. Initialisation of HuMMuS object
@@ -58,6 +59,14 @@ Additionally, it contains a motifs_db object, providing tf motifs informations, 
 
   - list of multiplex networks (one per modality) 
   - list of bipartites (one per connection between layers)
+  
+```{r}
+scRNA <- read.table("../data/real_example/hESC_Chen_scRNA.tsv")
+scATAC <- read.table("../data/real_example/hESC_Chen_scATAC_bin.tsv")
+# subsetting data to infer faster a toy case : specific for the tutorial, dont keep it in real cases !!
+scRNA <- scRNA[1:700, ]
+scATAC <- scATAC[1:1000, ]
+```
 
 #### 1.1. Transform data into a hummus object
 ```{r}
