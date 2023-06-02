@@ -45,7 +45,7 @@ use_condaenv(envname, required = TRUE)
 #### HuMMuS R package
 Core R package can be installed directly from R:
 ```r
-devtools::install_github("cantinilab/hummus") 
+devtools::install_github("cantinilab/HuMMuS") 
 ```
 
 
