@@ -16,9 +16,9 @@ It is then possible to add any additional network to an already existing modalit
 
 ## Installation
 
-HuMMuS is for now ready only in R but it requires some python dependencies (hummuspy).
+HuMMuS is for now ready only in R but requires some python dependencies (hummuspy).
 
-### Python HuMMuS depencency : hummuspy
+#### HuMMuS python depency
 Python package hummuspy should preferably be installed using pip (from the terminal in your conda environment for e.g)
 ```r
 pip install hummuspy
@@ -30,27 +30,28 @@ envname = "hummus_env"
 py_install("hummuspy", envname = envname, method="auto")
 ```
 
-### HuMMuS R package
-Core R package can be installed directly from R:
-```r
-devtools::install_github("cantinilab/hummus") 
-```
+Before running HuMMuS, if you're using multiple conda environment you need to make sure to that reticulate points toward the one where hummuspy is installed. You can precise it at the beginning of your code :
 
-### Reticulate configuration
-Before running HuMMuS, you need to make sure 'reticulate' is using the correct python binary (or conda environment). You can precise it at the beginning of your code :
 ```r
 library(reticulate)
-
-# Using a specific python binary
-use_python("/home/user/python", required=TRUE)
-
 # Using a specific conda environemnt
 envname = "hummus_env"
 use_condaenv(envname, required = TRUE)
 ```
 
+#### HuMMuS R package
+Core R package can be installed directly from R:
+```r
+devtools::install_github("cantinilab/hummus") 
+```
+
+
 For more details on hom to setup the reticulate connection,
 see: https://rstudio.github.io/reticulate
+
+## Data accessibility
+
+To reproduce the results presented in the manuscript, preprocessed data are accessible [here](https://figshare.com/account/home#/projects/168899)
 
 
 ## Tutorials/Vignettes
@@ -60,9 +61,6 @@ The tutorial and vignettes proposed will be listed here. For now, we propose a v
 
 ## Cite us
 
-## Data accessibility
-
-To reproduce the results presented in the manuscript, preprocessed data are accessible [here](https://figshare.com/account/home#/projects/168899)
 
 
 
