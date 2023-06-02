@@ -54,14 +54,18 @@ see: https://rstudio.github.io/reticulate
 ## Tutorials/Vignettes
 
 The tutorial and vignettes proposed will be listed here. For now, we propose a vignette to illustrate the most standard use of HuMMuS.
-* **Infer a gene regulatory network from unpaired/paired scRNA+scATAC data** The data correspond to a subset of the Chen dataset, which was part of the benchmark analysed in the [paper](__preprint_links__)
+* **Infer a gene regulatory network and other outputs from unpaired/paired scRNA+scATAC data** This [vignette](https://github.com/cantinilab/HuMMuS/blob/main/examples/Vignette1.md) shows the application of HuMMuS to the Chen dataset, used in the benchmark of HuMMuS publication [paper](__preprint_links__)
 
 ## Data accessibility
 
-To reproduce other HuMMuS results presented in the manuscript, preprocessed data are accessible [here](https://figshare.com/account/home#/projects/168899)
+To reproduce HuMMuS results presented in the manuscript, preprocessed data are accessible [here](https://figshare.com/account/home#/projects/168899)
+The Chen dataset preprocessed is accessible direclt through the package as a Seurat object:
+```r
+load(chen_data)
+```
 
 ## Cite us
-Trimbour R., Deutschmann I. M., Cantini L. Molecular mechanisms reconstruction from single-cell multi-omics data with HuMMuS. bioXriv (2023). doi:
+Trimbour R., Deutschmann I. M., Cantini L. Molecular mechanisms reconstruction from single-cell multi-omics data with HuMMuS. bioXriv (2023). doi: 
 
 
 
