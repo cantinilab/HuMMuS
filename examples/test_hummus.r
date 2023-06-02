@@ -1,4 +1,5 @@
-devtools::load_all("../hummus_package")
+#devtools::load_all("../hummus_package")
+library(HuMMuS)
 library(reticulate)
 use_condaenv("base")
 
@@ -21,12 +22,12 @@ seurat[["peaks"]] <- Signac::CreateChromatinAssay(scATAC, sep = c(":", "-"))
 ###############################################
 aa <- Sys.time()
 
-hummus <- hummus_object(seurat)
+hummus <- as(seurat, "hummus_object")
 
    #### Add annotations to hummus object
 # Fetch genome annotations
-#genome_annotations <- get_genome_annotations(
- # ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
+genome_annotations <- get_genome_annotations(
+  ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
 # Add genome annotations to seurat object
 Signac::Annotation(hummus@assays$peaks) <- genome_annotations
 # Load TF motifs from JASPAR2020 and chromVARmotifs in hummus object

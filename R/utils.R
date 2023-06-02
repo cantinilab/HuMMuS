@@ -68,7 +68,7 @@ summary_fun <- list(
 
 #' Copy of the aggregate.Matrix function from the Matrix.utils package,
 #' since this is off CRAN and does not seem to be maintained anymore
-#' @keyword internal
+#' internally
 #'
 fast_aggregate <- function(
     x,
@@ -106,7 +106,7 @@ fast_aggregate <- function(
 
 #' Copy of the dMcast function from the Matrix.utils package,
 #' since this is off CRAN and does not seem to be maintained anymore
-#' @keyword internal
+#'  internally
 #'
 dMcast <- function(
     data,

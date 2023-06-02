@@ -1,5 +1,13 @@
+#' @importFrom methods setClass
+#' @importClassesFrom Signac Motif
+#' @importClassesFrom SeuratObject Seurat
+#' @importClassesFrom TFBSTools PWMatrixList
+NULL
+
+
 #' @title Motifs database class
-#' MotifsDatabase object stores motifs(PFM matrices)
+#'
+#' @description MotifsDatabase object stores motifs(PFM matrices)
 #' and tf2motifs (TF to motifs names mapping) data.
 #'
 #' @slot motifs (TFBSTools::PWMatrixList) - PFM matrices.
@@ -27,7 +35,7 @@ setMethod("show", "motifs_db",
 
 
 #' @title Multiplex class
-#' Multiplex object stores a list of networks, a list of features and
+#' @description Multiplex object stores a list of networks, a list of features and
 #' a list of logicals indicating if the network is directed or weighted.
 #' @slot networks (list) - List of networks.
 #' @slot features (vector) - Vector of features.
@@ -62,9 +70,9 @@ setMethod("show", "multiplex",
 
 
 #' @title Bipartite class
-#' 
-#' Bipartite object stores a bipartite network (edge list) and the names of the
-#' left and right features' multiplexes.
+#'
+#' @description Bipartite object stores a bipartite network (edge list) and the names of the
+#'  left and right features' multiplexes.
 #' @slot network (data.frame) - Bipartite network (edge list)
 #' @slot multiplex_left (character) - Left features' multiplex
 #' @slot multiplex_right (character) - Right features' multiplex
@@ -77,7 +85,7 @@ setMethod("show", "multiplex",
 #'                           network = bipartite_network,
 #'                          multiplex_left = "RNA",
 #'                         multiplex_right = "peaks")
-#' 
+#'
 bipartite <- setClass(Class = "bipartite",
                        slots = c(
                       "network" = "data.frame", # Bipartite network (edge list)
@@ -96,20 +104,21 @@ setMethod("show", "bipartite",
   })
 
 #' @title Multilayer class
-#' 
-#' Multilayer object stores a list of bipartite networks and a list of multiplex
-#' networks. It can also stores a config list to create a yaml file, which is
-#' used to parametrize the random walk with restart to explore the multilayer.
+#'
+#' @description Multilayer object stores a list of bipartite networks and a
+#'  list of multiplex networks. It can also stores a config list to create a
+#'  yaml file, which is used to parametrize the random walk with restart to
+#' explore the multilayer.
 #'
 #' @slot bipartites (list) - List of bipartite networks
 #' @slot multiplex (list) - List of multiplex networks
 #' @slot config (list) - List of parameters to parametrize the random walk with
 #' restart to explore the multilayer
-#' 
+#'
 #' @name multilayer-class
 #' @rdname multilayer-class
 #' @exportClass multilayer
-#' 
+#'
 multilayer <- setClass(Class = "multilayer",
                        slots = c(
                         "bipartites" = "list", # Bipartite networks
@@ -147,6 +156,7 @@ setMethod("show", "multilayer",
 #' @name hummus_object-class
 #' @rdname hummus_object-class
 #' @exportClass hummus_object
+#' @export
 #'
 #' @examples hummus_object <- hummus_object(seurat_object)
 #'
@@ -241,7 +251,7 @@ setMethod("show", "hummus_object",
 
 
 #' @title Save multilayer object files in a hierarchical structure on disk
-#' 
+#'
 #' @description Save multilayer files from a hummus_object
 #' in a hierarchical structure on disk
 #'
@@ -406,7 +416,7 @@ add_network <- function(
 
 #' @title Wrapper function to save a network or not
 #'
-#' Wrapper function to save a network or not in a file according to the
+#' @description Wrapper function to save a network or not in a file according to the
 #' store_network parameter. If store_network is TRUE, the network is saved in
 #' the output_file.
 #'
