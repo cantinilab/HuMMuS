@@ -64,12 +64,12 @@ format_multiplex_names <- function(
 #' @param bipartites_names A vector of bipartites names considered.
 #' It must be a subset of the names of the bipartites in the hummus object.
 #' @param suffix_bipartites A suffix to add to the bipartites location
-#' 
+#'
 #' @return A list of bipartites names formatted for hummuspy config funtions
 #' each element of the list is a list containing the right and left layer
 #' connected by the bipartite
 #' @export
-#' 
+#'
 #' @examples bipartites_dictionary <- format_bipartites_names(
 #'                                       hummus_object = hummus,
 #'                                       bipartites_names = c("atac_rna",
@@ -149,6 +149,7 @@ format_bipartites_names <- function(
 #' @param njobs The number of jobs to be used for the computation of the GRN
 #'
 #' @return A dataframe containing the GRN (if return_df == TRUE)
+#' @export
 #'
 #' @examples grn <- define_grn(hummus_object = hummus,
 #'                             multilayer_f = multilayer_folder,
@@ -226,6 +227,7 @@ define_grn <- function(
 #' @param njobs The number of jobs to be used for to compute of the enhancers
 #'
 #' @return A dataframe containing the enhancers (if return_df == TRUE)
+#' @export
 #'
 #' @examples enhancers <- define_enhancers(hummus_object = hummus,
 #'                             multilayer_f = multilayer_folder,
@@ -304,6 +306,7 @@ define_enhancers <- function(
 #' @param njobs The number of jobs to be used for the computation of the binding_regions
 #'
 #' @return A dataframe containing the binding_regions (if return_df == TRUE)
+#' @export
 #'
 #' @examples binding_regions <- define_binding_regions(hummus_object = hummus,
 #'                             multilayer_f = multilayer_folder,
@@ -382,6 +385,7 @@ define_binding_regions <- function(
 #' @param njobs The number of jobs to be used to compute of the target_genes
 #'
 #' @return A dataframe containing the target_genes (if return_df == TRUE)
+#' @export
 #'
 #' @examples target_genes <- define_target_genes(hummus_object = hummus,
 #'                             multilayer_f = multilayer_folder,
@@ -430,7 +434,39 @@ define_target_genes <- function(
   return(target_genes)
  }
 
-
+#' @title Define output from hummus object
+#' 
+#' @description Define output from hummus object
+#' 
+#' @param output_type The type of output to be defined
+#' @param hummus_object A hummus object
+#' @param multiplex_names A vector of multiplex names considered.
+#' It must be a subset of the names of the multiplexes in the hummus object.
+#' @param bipartites_names A vector of bipartites names considered.
+#' It must be a subset of the names of the bipartites in the hummus object.
+#' @param config_name The name of the config file to be created by hummuspy
+#' @param config_folder The folder where the config file will be created
+#' @param tf_multiplex The name of the multiplex containing the TFs
+#' @param atac_multiplex The name of the multiplex containing the ATAC-seq peaks
+#' @param rna_multiplex The name of the multiplex containing the RNA-seq genes
+#' @param multilayer_f The folder where the multilayer is stored
+#' @param gene_list A vector of genes to be considered for the target_genes
+#' (filtering is done on the genes before inferring the target_genes)
+#' @param tf_list A vector of TFs to be considered for the final target_genes
+#' (filtering is done on the TFs after inferring the target_genes)
+#' @param save A boolean indicating if the target_genes should be saved
+#' @param output_f The name of the file where the target_genes should be saved
+#' (if save == TRUE)
+#' @param return_df A boolean indicating if the target_genes should be returned
+#'  as a dataframe
+#' @param suffix_bipartites A suffix to add to the bipartites names (to indicate
+#' the exact file location)
+#' @param njobs The number of jobs to be used to compute of the target_genes
+#'
+#' @return A dataframe containing the target_genes (if return_df == TRUE)
+#' @export
+#' 
+#' @examples target_genes <- define_target_genes(hummus_object = hummus,
 define_output <- function(
   output_type,
   hummus_object,
