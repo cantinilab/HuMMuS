@@ -1,11 +1,11 @@
 Package: HuMMuS
 Title: Heterogeneous Multilayer Network for Multi-Omics Single-Cell Data
-Version: 0.0.0.9000
+Version: 0.0.1
 Authors@R: person(given = "Rémi", 
-                  family = "Trimbour",
-                  email = "remi.trimbour@pasteur.fr",
-                  role = c("aut", "cre"),
-                  comment = c(ORCID = "YOUR-ORCID-ID"))
+    family = "Trimbour",
+    email = "remi.trimbour@pasteur.fr",
+    role = c("aut", "cre"),
+    comment = c(ORCID = "0000-0001-8770-8412"))
 Description: A general framework to infer regulatory mechanisms from multi-omics single-cell data. 
     HuMMuS package provides functions to build individual networks
     from different single-cell modalities, then to integrate them 
