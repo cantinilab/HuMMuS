@@ -56,7 +56,13 @@ see: https://rstudio.github.io/reticulate
 ## Tutorials/Vignettes
 
 The tutorial and vignettes proposed will be listed here. For now, we propose a vignette to illustrate the most standard use of HuMMuS.
-* **Infer a gene regulatory network from unpaired/paired scRNA+scATAC data** The data correspond to a subset of the Chen dataset, which was part of the benchmark analysed in the [paper] __preprint_links__
+* **Infer a gene regulatory network from unpaired/paired scRNA+scATAC data** The data correspond to a subset of the Chen dataset, which was part of the benchmark analysed in the [paper](__preprint_links__)
+
+## Cite us
+
+## Data accessibility
+
+To reproduce the results presented in the manuscript, preprocessed data are accessible [here](https://figshare.com/account/home#/projects/168899)
 
 
 
