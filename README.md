@@ -19,23 +19,26 @@ It is then possible to add any additional network to an already existing modalit
 HuMMuS is for now ready only in R but requires some python dependencies (hummuspy).
 
 #### HuMMuS python depency
-Python package hummuspy should preferably be installed using pip (from the terminal in your conda environment for e.g)
+Python package hummuspy should preferably be installed using pip (from the terminal in a conda environment for e.g)
+
 ```r
+conda create -n hummuspy_env
+conda activate hummuspy_env
 pip install hummuspy
 ```
+
 Alternatively, you can also install it directly from R using the reticulate package:
 ```r
 library(reticulate)
-envname = "hummus_env"
-py_install("hummuspy", envname = envname, method="auto")
+py_install("hummuspy", envname = "r-reticulate", method="auto")
 ```
 
 Before running HuMMuS, if you're using multiple conda environment you need to make sure to that reticulate points toward the one where hummuspy is installed. You can precise it at the beginning of your code :
 
 ```r
 library(reticulate)
-# Using a specific conda environemnt
-envname = "hummus_env"
+# Using a specific conda environment
+envname = "hummuspy_env" # or "r-reticulate" for e.g.
 use_condaenv(envname, required = TRUE)
 ```
 
@@ -49,17 +52,19 @@ devtools::install_github("cantinilab/hummus")
 For more details on hom to setup the reticulate connection,
 see: https://rstudio.github.io/reticulate
 
-## Data accessibility
-
-To reproduce the results presented in the manuscript, preprocessed data are accessible [here](https://figshare.com/account/home#/projects/168899)
-
-
 ## Tutorials/Vignettes
 
 The tutorial and vignettes proposed will be listed here. For now, we propose a vignette to illustrate the most standard use of HuMMuS.
 * **Infer a gene regulatory network from unpaired/paired scRNA+scATAC data** The data correspond to a subset of the Chen dataset, which was part of the benchmark analysed in the [paper](__preprint_links__)
 
+## Data accessibility
+
+To reproduce other HuMMuS results presented in the manuscript, preprocessed data are accessible [here](https://figshare.com/account/home#/projects/168899)
+
 ## Cite us
+Trimbour R., Deutschmann I. M., Cantini L. Molecular mechanisms reconstruction from single-cell multi-omics data with HuMMuS. bioXriv (2023). doi:
+
+
 
 
 
