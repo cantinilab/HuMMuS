@@ -54,8 +54,8 @@ see: https://rstudio.github.io/reticulate
 ## Tutorials/Vignettes
 
 The tutorial and vignettes proposed will be listed here. For now, we propose a vignette to illustrate the most standard use of HuMMuS.
-* **Infer a gene regulatory network and other outputs from unpaired/paired scRNA+scATAC data**: This [vignette](https://github.com/cantinilab/HuMMuS/blob/main/examples/Vignette1.md) 
-shows the application of HuMMuS to the Chen dataset, used in the benchmark of HuMMuS publication [paper](__preprint_links__). Load it using `vignette(".....")`.
+* **Infer a gene regulatory network and other outputs from unpaired/paired scRNA+scATAC data**: This [vignette](https://github.com/cantinilab/HuMMuS/blob/main/examples/chen_grn.md) 
+shows the application of HuMMuS to the Chen dataset, used in the benchmark of HuMMuS publication [paper](__preprint_links__).
 
 ## Data accessibility
 
