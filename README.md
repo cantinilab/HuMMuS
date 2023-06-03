@@ -60,10 +60,7 @@ shows the application of HuMMuS to the Chen dataset, used in the benchmark of Hu
 ## Data accessibility
 
 To reproduce HuMMuS results presented in the manuscript, preprocessed data are accessible [here](https://figshare.com/account/home#/projects/168899)
-The Chen dataset preprocessed is accessible direclt through the package as a Seurat object:
-```r
-load(chen_data)
-```
+<br> For quick tests, the Chen dataset preprocessed is accessible directly through the package as a Seurat object: `load(chen_data)`.
 
 ## Cite us
 Trimbour R., Deutschmann I. M., Cantini L. Molecular mechanisms reconstruction from single-cell multi-omics data with HuMMuS. bioXriv (2023). doi: 
