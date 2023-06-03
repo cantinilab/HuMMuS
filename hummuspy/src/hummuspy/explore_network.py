@@ -713,6 +713,7 @@ def get_output_from_dicts(
         folder_bipartites='bipartite',
         gene_list=None,
         tf_list=None,
+        peak_list=None,
         config_filename='grn_hummuspy.config.yml',
         config_folder='config',
         tf_multiplex: str = 'TF',
@@ -789,6 +790,7 @@ def get_output_from_dicts(
     print('folder_bipartites : ', folder_bipartites)
     print('gene_list : ', gene_list)
     print('tf_list : ', tf_list)
+    print('peak_list : ', peak_list)
     print('config_filename : ', config_filename)
     print('config_folder : ', config_folder)
     print('tf_multiplex : ', tf_multiplex)
@@ -817,6 +819,7 @@ def get_output_from_dicts(
         'multilayer_f':   multilayer_f,
         'config':         config,
         'gene_list':      gene_list,
+        'peak_list':      peak_list,
         'tf_list':        tf_list,
         'config_name':    config_filename,
         'config_folder':  config_folder,
@@ -831,15 +834,19 @@ def get_output_from_dicts(
     }
 
     if output_request == 'grn':
+        del parameters['peak_list']
         df = define_grn_from_config(**parameters)
 
     elif output_request == 'enhancers':
+        del parameters['tf_list']
         df = define_enhancers_from_config(**parameters)
 
     elif output_request == 'binding_regions':
+        del parameters['gene_list']
         df = define_binding_regions_from_config(**parameters)
 
     elif output_request == 'target_genes':
+        del parameters['peak_list']
         df = define_target_genes_from_config(**parameters)
 
     return df

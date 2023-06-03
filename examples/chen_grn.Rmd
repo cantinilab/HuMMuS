@@ -50,6 +50,7 @@ The data used in this tutorial can be downloaded at : ibens repo link
 ```{r}
 library(HuMMuS)
 library(reticulate)
+use_condaenv("base")
 ```
 
 ## 1. Initialisation of HuMMuS object
