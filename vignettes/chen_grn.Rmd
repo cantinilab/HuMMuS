@@ -2,10 +2,12 @@
 title: "Predict GRN from scRNA+scATAC data (Chen 2018 dataset)"
 author: "Trimbour Rémi"
 date: "2023-05-16"
-output:
-  github_document: default
-  html_document: default
-  pdf_document: default
+output: rmarkdown::html_vignette
+
+vignette: >
+  %\VignetteIndexEntry{test}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 
