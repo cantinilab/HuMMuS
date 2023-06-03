@@ -64,15 +64,11 @@ Additionally, it contains a motifs_db object, providing tf motifs informations, 
 #### 1.1. Transform data into a hummus object
 ```{r}
 # Load the Chen dataset, which is a Seurat object containing scRNA-seq and scATAC-seq data
-data("chen_dataset")
-chen_dataset
-
-counts <- GetAssayData(chen_dataset, slot='counts', assay='ATAC')
-peaks_percent_expression <-
-
+data("chen_dataset_subset")
+chen_dataset_subset
 
 # Create an hummus object from seurat object
-hummus <- as(chen_dataset, 'hummus_object')
+hummus <- as(chen_dataset_subset, 'hummus_object')
 
 a <- chen_dataset
 ```
