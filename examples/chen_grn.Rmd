@@ -60,24 +60,21 @@ Additionally, it contains a motifs_db object, providing tf motifs informations, 
   - list of multiplex networks (one per modality) 
   - list of bipartites (one per connection between layers)
   
-```{r}
-scRNA <- read.table("../data/real_example/hESC_Chen_scRNA.tsv")
-scATAC <- read.table("../data/real_example/hESC_Chen_scATAC_bin.tsv")
-# subsetting data to infer faster a toy case : specific for the tutorial, dont keep it in real cases !!
-scRNA <- scRNA[1:700, ]
-scATAC <- scATAC[1:1000, ]
-```
 
 #### 1.1. Transform data into a hummus object
 ```{r}
-# Create seurat object with scRNA-seq data
-seurat <- SeuratObject::CreateSeuratObject(scRNA)
+# Load the Chen dataset, which is a Seurat object containing scRNA-seq and scATAC-seq data
+data("chen_dataset")
+chen_dataset
 
-# Add scATAC-seq data to seurat object
-seurat[["peaks"]] <- Signac::CreateChromatinAssay(scATAC, sep = c(":", "-"))
+counts <- GetAssayData(chen_dataset, slot='counts', assay='ATAC')
+peaks_percent_expression <-
+
 
 # Create an hummus object from seurat object
-hummus <- as(seurat, 'hummus_object')
+hummus <- as(chen_dataset, 'hummus_object')
+
+a <- chen_dataset
 ```
 
 #### 1.2. Add genome annotations to hummus object
@@ -87,11 +84,13 @@ Fetch genome annotations
 genome_annotations <- get_genome_annotations(
   ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
 ```
+
 Add genome annotations to hummus/seurat object
 ```{r}
 # We add annotation to the ATAC/peak assay
 # (will be used to define peak-gene links)
 Signac::Annotation(hummus@assays$peaks) <- genome_annotations
+
 # Load TF motifs from JASPAR2020 and chromVARmotifs in hummus object
 hummus@motifs_db <- get_tf2motifs() # by default human motifs
 ```
