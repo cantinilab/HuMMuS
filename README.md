@@ -18,7 +18,7 @@ It is then possible to add any additional network to an already existing modalit
 
 HuMMuS is for now ready only in R but requires some python dependencies (hummuspy).
 
-#### HuMMuS python depency
+### HuMMuS python depency
 Python package hummuspy should preferably be installed using pip (from the terminal in a conda environment for e.g)
 
 ```r
@@ -53,7 +53,6 @@ see: https://rstudio.github.io/reticulate
 
 ## Tutorials/Vignettes
 
-The tutorial and vignettes proposed will be listed here. For now, we propose a vignette to illustrate the most standard use of HuMMuS.
 * **Infer a gene regulatory network and other outputs from unpaired/paired scRNA+scATAC data**: This [vignette](https://github.com/cantinilab/HuMMuS/blob/main/examples/chen_grn.md) 
 shows the application of HuMMuS to the Chen dataset, used in the benchmark of HuMMuS publication [paper](__preprint_links__).
 
