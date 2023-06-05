@@ -7,7 +7,11 @@ HuMMuS exploits multi-omics single-cell measurements to infer numerous regulator
 Inter-omics (e.g. peak-gene, TF-peak) and intra-omics interactions (e.g. peak-peak, gene-gene, TF-TF) are considered to capture both regulatory interactions and macromolecule cooperations.
 
 ## Overview
-The current outputs available from HuMMuS are gene regulatory networks (GRNs), enhancers, TF - DNA binding regions and TF - target genes.
+The current outputs available from HuMMuS are 
+* gene regulatory networks (GRNs)
+* enhancers
+* TF - DNA binding regions
+* TF - target genes.
 
 [Read our preprint](TBA) for more details !
 <img src="Figures/Fig_0001.jpg" align="center" width="1000"/>
