@@ -253,7 +253,8 @@ setMethod("show", "hummus_object",
 #' @title Save multilayer object files in a hierarchical structure on disk
 #'
 #' @description Save multilayer files from a hummus_object
-#' in a hierarchical structure on disk
+#' in a hierarchical structure on disk, inside a folder specified through
+#'  folder_name
 #'
 #' @param hummus A hummus object
 #' @param folder_name The name of the folder to save the multilayer
@@ -334,6 +335,7 @@ save_multilayer <- function(
 #'                            multiplex_name = multiplex_name,
 #'                            weighted = TRUE,
 #'                            directed = FALSE)
+#' 
 add_network <- function(
   object,
   network,
@@ -416,9 +418,9 @@ add_network <- function(
 
 #' @title Wrapper function to save a network or not
 #'
-#' @description Wrapper function to save a network or not in a file according to the
-#' store_network parameter. If store_network is TRUE, the network is saved in
-#' the output_file.
+#' @description Wrapper function to save a network or not in a file according
+#' to the store_network parameter. If store_network is TRUE, the network is
+#' saved in the output_file.
 #'
 #' @param network A network (edge list)
 #' @param store_network Logical indicating if the network should be saved
