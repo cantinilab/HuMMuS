@@ -4,12 +4,12 @@
 ### Heterogeneous Multilayer network for Multi-omics Single-cell data 
 
 HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory relationships.
-Beside classical Gene Regulatory Networks (GRN), HuMMus proposes enhancer prediction, binding regions prediction and target genes of specific transcription factors.
+It allows the reconstruction of Gene REgulatory Networks (GRN), but also predictions of gene enhancers, transcription factors (TFs) binding regions and target genes ranking of specific TFs.
+<br> Inter-omics interactions are considered (e.g. peak-gene, TF-peak), as done by the current state-of-the-art methods, but also intra-omics ones (e.g. peak-peak, gene-gene, TF-TF) thus allowing to capture cooperation between biological macromolecules. 
 
 ## General framework
 <img src="Figures/Fig_0001.jpg" align="center" width="1000"/>
-HuMMuS considers not only inter-omics interactions (e.g. peak-gene, TF-peak), as done by the state-of-the-art, but also intra-omics ones (e.g. peak-peak, gene-gene, TF-TF) thus allowing to capture cooperation between biological macromolecules. 
-<br>The final outputs of HuMMuS are: (i) the prediction of  the targets of a Transcription Factor (TF), based on RWRs starting from each TF in the TF layer and exploring the full network until the scRNA layer; (ii) the prediction of the peaks bound by a given TF, based on RWRs starting from each TF in the TF layer and exploring the scATAC layer; (iii) the prediction of the regulatory regions (proximal and distal enhancers) associated to a given gene, based on RWRs starting in each gene of the scRNA layer and exploring the scATAC layer; (iv) the reconstruction of Gene Regulatory Networks (GRNs), based on RWRs starting in each gene of the scRNA layer and exploring the full network until the TF layer
+
 
 #### **scRNA + scATAC** 
 Like most of the current state-of-the-art method to infer Gene Regulatory Networks, we popose a minimal version of HuMMuS based on scRNA-seq + scATAC-seq data (paired or **unpaired**).
