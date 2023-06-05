@@ -13,6 +13,8 @@ Like most of the current state-of-the-art method to infer Gene Regulatory Networ
 HuMMuS has been developed to be extendable to any additional biological modality of interest.
 It is then possible to add any additional network to an already existing modality (forming multiplex where the same nodes are connected through different networks (e.g. prior-knowledge network and data-driven network)) or from a new one (e.g. adding epigenetic or proteomic networks).
 
+#### General framework
+<img src="Figures/Fig1_0001.jpg" align="center" width="400"/>
 
 ## Installation
 
