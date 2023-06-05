@@ -11,11 +11,11 @@ Inter-omics (e.g. peak-gene, TF-peak) and intra-omics interactions (e.g. peak-pe
 The current outputs available from HuMMuS are gene regulatory networks (GRNs), enhancers, TF - DNA binding regions and TF - target genes.
 
 #### **scRNA + scATAC** 
-Like most of the current state-of-the-art method to infer Gene Regulatory Networks, we popose a minimal version of HuMMuS based on scRNA-seq + scATAC-seq data (paired or **unpaired**).
+Like most of the current state-of-the-art methods to infer GRN, we propose a minimal version of HuMMuS based on scRNA-seq + scATAC-seq data (paired or **unpaired**).
 
 #### **Use of additional modalities**
 HuMMuS has been developed to be extendable to any additional biological modality of interest.
-It is then possible to add any additional network to an already existing modality (e.g. prior-knowledge network and data-driven network), or from a new modality (e.g. adding epigenetic or proteomic networks).
+It is then possible to add any additional network to an already existing modality (e.g. both prior-knowledge network and data-driven network of genes), or from a new modality (e.g. adding epigenetic or proteomic networks).
 <br>_For now, such personalisation requires to use directly some hummuspy (python package) functions at the end of the pipeline. It will be simplified soon._
 
 ## Installation
