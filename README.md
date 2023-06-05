@@ -1,10 +1,15 @@
 ![Build](https://github.com/cantinilab/HuMMuS/____/badge.svg?branch=main)
 
 # HuMMuS <img src="Figures/hummus_logo.png" align="right" width="180"/>
-## Heterogeneous Multilayer network for Multi-omics Single-cell data 
+### Heterogeneous Multilayer network for Multi-omics Single-cell data 
 
 HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory relationships.
 Beside classical Gene Regulatory Networks (GRN), HuMMus proposes enhancer prediction, binding regions prediction and target genes of specific transcription factors.
+
+## General framework
+<img src="Figures/Fig_0001.jpg" align="center" width="1000"/>
+HuMMuS considers not only inter-omics interactions (e.g. peak-gene, TF-peak), as done by the state-of-the-art, but also intra-omics ones (e.g. peak-peak, gene-gene, TF-TF) thus allowing to capture cooperation between biological macromolecules. 
+<br>The final outputs of HuMMuS are: (i) the prediction of  the targets of a Transcription Factor (TF), based on RWRs starting from each TF in the TF layer and exploring the full network until the scRNA layer; (ii) the prediction of the peaks bound by a given TF, based on RWRs starting from each TF in the TF layer and exploring the scATAC layer; (iii) the prediction of the regulatory regions (proximal and distal enhancers) associated to a given gene, based on RWRs starting in each gene of the scRNA layer and exploring the scATAC layer; (iv) the reconstruction of Gene Regulatory Networks (GRNs), based on RWRs starting in each gene of the scRNA layer and exploring the full network until the TF layer
 
 #### **scRNA + scATAC** 
 Like most of the current state-of-the-art method to infer Gene Regulatory Networks, we popose a minimal version of HuMMuS based on scRNA-seq + scATAC-seq data (paired or **unpaired**).
@@ -12,9 +17,6 @@ Like most of the current state-of-the-art method to infer Gene Regulatory Networ
 #### **Use of additional modalities**
 HuMMuS has been developed to be extendable to any additional biological modality of interest.
 It is then possible to add any additional network to an already existing modality (forming multiplex where the same nodes are connected through different networks (e.g. prior-knowledge network and data-driven network)) or from a new one (e.g. adding epigenetic or proteomic networks).
-
-#### General framework
-<img src="Figures/Fig_0001.jpg" align="center" width="1000"/>
 
 
 ## Installation
