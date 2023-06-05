@@ -4,8 +4,7 @@
 ### Heterogeneous Multilayer network for Multi-omics Single-cell data 
 
 HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory relationships.
-It allows the reconstruction of Gene REgulatory Networks (GRN), but also predictions of gene enhancers, transcription factors (TFs) binding regions and target genes ranking of specific TFs.
-<br> Inter-omics interactions are considered (e.g. peak-gene, TF-peak), as done by the current state-of-the-art methods, but also intra-omics ones (e.g. peak-peak, gene-gene, TF-TF) thus allowing to capture cooperation between biological macromolecules. 
+<br> Inter-omics interactions are considered for regulatory mechanisms (e.g. peak-gene, TF-peak), along with intra-omics ones (e.g. peak-peak, gene-gene, TF-TF) to capture cooperation between biological macromolecules. 
 
 ## General framework
 <img src="Figures/Fig_0001.jpg" align="center" width="1000"/>
