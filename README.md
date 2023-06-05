@@ -16,7 +16,7 @@ Like most of the current state-of-the-art method to infer Gene Regulatory Networ
 #### **Use of additional modalities**
 HuMMuS has been developed to be extendable to any additional biological modality of interest.
 It is then possible to add any additional network to an already existing modality (e.g. prior-knowledge network and data-driven network), or from a new modality (e.g. adding epigenetic or proteomic networks).
-_For now, such personalisation requires to use directly some hummuspy (python package) functions at the end of the pipeline. It will be simplified soon._
+<br>_For now, such personalisation requires to use directly some hummuspy (python package) functions at the end of the pipeline. It will be simplified soon._
 
 ## Installation
 HuMMuS is for now ready only in R but requires some python dependencies (hummuspy).
