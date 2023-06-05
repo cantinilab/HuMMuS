@@ -3,12 +3,15 @@
 # HuMMuS <img src="Figures/hummus_logo.png" align="right" width="180"/>
 ### Heterogeneous Multilayer network for Multi-omics Single-cell data 
 
-HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory relationships.
-<br> Both inter-omics interactions (e.g. peak-gene, TF-peak) and intra-omics ones (e.g. peak-peak, gene-gene, TF-TF) are considered for regulatory mechanisms and macromolecule cooperations. 
+HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory mechanisms.
+Both inter-omics interactions (e.g. peak-gene, TF-peak) and intra-omics ones (e.g. peak-peak, gene-gene, TF-TF) are considered for regulatory mechanisms and macromolecule cooperations assumptions.
+
+HuMMuS considers not only inter-omics interactions (e.g. peak-gene, TF-peak), as done by the state-of-the-art, but also intra-omics ones (e.g. peak-peak, gene-gene, TF-TF) thus allowing to capture cooperation between biological macromolecules. 
+
 
 ## General framework
 <img src="Figures/Fig_0001.jpg" align="center" width="1000"/>
-
+The current outputs available from HuMMuS are gene regulatory networks (GRNs), enhancers, TF - DNA binding regions and TF - target genes.
 
 #### **scRNA + scATAC** 
 Like most of the current state-of-the-art method to infer Gene Regulatory Networks, we popose a minimal version of HuMMuS based on scRNA-seq + scATAC-seq data (paired or **unpaired**).
