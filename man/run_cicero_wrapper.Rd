@@ -54,6 +54,3 @@ probability that two peaks are accessible in the same cell. The coaccess
 score is computed by Cicero. Edges are filtered based on the coaccess score.
 Only edges with a coaccess score > threshold are kept.
 }
-\examples{
-TO DO.
-}

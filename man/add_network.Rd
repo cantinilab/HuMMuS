@@ -45,4 +45,5 @@ hummus <- add_network(
                            multiplex_name = multiplex_name,
                            weighted = TRUE,
                            directed = FALSE)
+
 }

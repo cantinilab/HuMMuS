@@ -73,5 +73,5 @@ A dataframe containing the target_genes (if return_df == TRUE)
 Define output from hummus object
 }
 \examples{
-target_genes <- define_target_genes(hummus_object = hummus,
+target_genes <- define_output('grn', hummus_object = hummus)
 }

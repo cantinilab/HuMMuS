@@ -20,9 +20,9 @@ message displayed, >= 1 for more details.}
 Nothing, but save the network in a file if store_network is TRUE
 }
 \description{
-Wrapper function to save a network or not in a file according to the
-store_network parameter. If store_network is TRUE, the network is saved in
-the output_file.
+Wrapper function to save a network or not in a file according
+to the store_network parameter. If store_network is TRUE, the network is
+saved in the output_file.
 }
 \examples{
 network <- read.table("network.tsv", header = TRUE, sep = "\t")
