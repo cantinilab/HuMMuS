@@ -30,7 +30,7 @@ HuMMuS is for now ready only in R but requires some python dependencies (hummusp
 ### HuMMuS python depency
 Python package **hummuspy** should preferably be installed using pip (from the terminal in a conda environment for e.g)
 ```r
-conda create -n hummuspy_env
+conda create -n hummuspy_env python
 conda activate hummuspy_env
 pip install hummuspy
 ```
