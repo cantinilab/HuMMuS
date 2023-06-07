@@ -11,7 +11,7 @@ output:
 
 ```{r setup, include=FALSE}
 #knitr::opts_chunk$set(eval = FALSE)
-devtools::install_github("cantinilab/HuMMuS")
+#devtools::install_github("cantinilab/HuMMuS")
 ```
 ## General description of the vignette
 ##### 0. Preparation of the environment
