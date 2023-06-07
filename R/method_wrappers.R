@@ -33,7 +33,6 @@
 #' @return A data frame containing the peak network
 #' @export
 #'
-#' @examples TO DO.
 run_cicero_wrapper <- function(
     hummus,
     atac_assay,

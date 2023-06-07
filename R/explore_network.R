@@ -435,9 +435,9 @@ define_target_genes <- function(
  }
 
 #' @title Define output from hummus object
-#' 
+#'
 #' @description Define output from hummus object
-#' 
+#'
 #' @param output_type The type of output to be defined
 #' @param hummus_object A hummus object
 #' @param multiplex_names A vector of multiplex names considered.
@@ -465,8 +465,8 @@ define_target_genes <- function(
 #'
 #' @return A dataframe containing the target_genes (if return_df == TRUE)
 #' @export
-#' 
-#' @examples target_genes <- define_target_genes(hummus_object = hummus,
+#'
+#' @examples target_genes <- define_output('grn', hummus_object = hummus)
 define_output <- function(
   output_type,
   hummus_object,
