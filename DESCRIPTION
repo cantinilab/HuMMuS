@@ -46,7 +46,6 @@ Imports:
     biovizBase,
     SingleCellExperiment,
     motifmatchr
-
 Suggests:
     doParallel,
     doRNG,
