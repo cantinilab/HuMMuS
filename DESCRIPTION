@@ -53,3 +53,4 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://cantinilab.github.io/HuMMuS/
