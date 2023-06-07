@@ -1,5 +1,6 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+# , local::.
 on:
   push:
     branches: [main, master]
@@ -32,7 +33,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown#, local::.
+          extra-packages: any::pkgdown
           needs: website
 
       - name: Build site
