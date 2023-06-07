@@ -45,7 +45,8 @@ Imports:
     Signac,
     biovizBase,
     SingleCellExperiment,
-    motifmatchr
+    motifmatchr,
+    reticulate
 Suggests:
     doParallel,
     doRNG,
