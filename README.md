@@ -1,28 +1,34 @@
 ![Build](https://github.com/cantinilab/HuMMuS/____/badge.svg?branch=main)
 
 # HuMMuS <img src="Figures/hummus_logo.png" align="right" width="180"/>
-## Heterogeneous Multilayer network for Multi-omics Single-cell data 
+### Heterogeneous Multilayer network for Multi-omics Single-cell data 
 
-HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory relationships.
-Beside classical Gene Regulatory Networks (GRN), HuMMus proposes enhancer prediction, binding regions prediction and target genes of specific transcription factors.
+HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory mechanisms.
+Inter-omics (e.g. peak-gene, TF-peak) and intra-omics interactions (e.g. peak-peak, gene-gene, TF-TF) are considered to capture both regulatory interactions and macromolecule cooperations.
 
-#### **scRNA + scATAC** 
-Like most of the current state-of-the-art method to infer Gene Regulatory Networks, we popose a minimal version of HuMMuS based on scRNA-seq + scATAC-seq data (paired or **unpaired**).
+## Overview
+The current outputs available from HuMMuS are 
+* gene regulatory networks (GRNs)
+* enhancers
+* TF - DNA binding regions
+* TF - target genes.
 
-#### **Use of additional modalities**
-HuMMuS has been developed to be extendable to any additional biological modality of interest.
-It is then possible to add any additional network to an already existing modality (forming multiplex where the same nodes are connected through different networks (e.g. prior-knowledge network and data-driven network)) or from a new one (e.g. adding epigenetic or proteomic networks).
-
-### General framework
+[Read our preprint](TBA) for more details !
 <img src="Figures/Fig_0001.jpg" align="center" width="1000"/>
 
+### **scRNA + scATAC** 
+Like most of the current state-of-the-art methods to infer GRN, we propose a minimal version of HuMMuS based on scRNA-seq + scATAC-seq data (paired or **unpaired**).
+
+### **Use of additional modalities**
+HuMMuS has been developed to be extendable to any additional biological modality of interest.
+It is then possible to add any additional network to an already existing modality (e.g. both prior-knowledge network and data-driven network of genes), or from a new modality (e.g. adding epigenetic or proteomic networks).
+<br>_For now, such personalisation requires to use directly some hummuspy (python package) functions at the end of the pipeline. It will be simplified soon._
 
 ## Installation
 HuMMuS is for now ready only in R but requires some python dependencies (hummuspy).
 
 ### HuMMuS python depency
 Python package **hummuspy** should preferably be installed using pip (from the terminal in a conda environment for e.g)
-
 ```r
 conda create -n hummuspy_env
 conda activate hummuspy_env
@@ -35,22 +41,20 @@ library(reticulate)
 py_install("hummuspy", envname = "r-reticulate", method="auto")
 ```
 
-Before running HuMMuS, if you're using multiple conda environment you need to make sure to that reticulate points toward the one where hummuspy is installed. You can precise it at the beginning of your code :
-
-```r
-library(reticulate)
-# Using a specific conda environment
-envname = "hummuspy_env" # or "r-reticulate" for e.g.
-use_condaenv(envname, required = TRUE)
-```
-
 ### HuMMuS R package
 Core R package can be installed directly from R:
 ```r
 devtools::install_github("cantinilab/HuMMuS") 
 ```
 
-For more details on hom to setup the reticulate connection,
+Before running HuMMuS, if you're using multiple conda environment you need to make sure to that reticulate points toward the one where hummuspy is installed. You can precise it at the beginning of your code :
+```r
+library(reticulate)
+# Using a specific conda environment
+envname = "hummuspy_env" # or "r-reticulate" for e.g.
+use_condaenv(envname, required = TRUE)
+```
+For more details on how to setup the reticulate connection,
 see: https://rstudio.github.io/reticulate
 
 ## Tutorials/Vignettes
