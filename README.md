@@ -1,6 +1,6 @@
 ![Build](https://github.com/cantinilab/HuMMuS/____/badge.svg?branch=main)
 
-# HuMMuS <img src="Figures/hummus_logo.png" align="right" width="180"/>
+# HuMMuS <img src="man/figures/hummus_logo.png" align="right" width="180"/>
 ### Heterogeneous Multilayer network for Multi-omics Single-cell data 
 
 HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory mechanisms.
@@ -14,7 +14,7 @@ The current outputs available from HuMMuS are
 * TF - target genes.
 
 [Read our preprint](TBA) for more details !
-<img src="Figures/Fig_0001.jpg" align="center" width="1000"/>
+<img src="man/figures/Fig_0001.jpg" align="center" width="1000"/>
 
 ### **scRNA + scATAC** 
 Like most of the current state-of-the-art methods to infer GRN, we propose a minimal version of HuMMuS based on scRNA-seq + scATAC-seq data (paired or **unpaired**).
@@ -59,7 +59,7 @@ see: https://rstudio.github.io/reticulate
 
 ## Tutorials/Vignettes
 
-* #### **Infer a gene regulatory network and other outputs from unpaired/paired scRNA+scATAC data**: This [vignette](https://github.com/cantinilab/HuMMuS/blob/main/examples/chen_grn.md) 
+* #### **Infer a gene regulatory network and other outputs from unpaired/paired scRNA+scATAC data**: [This vignette](https://github.com/cantinilab/HuMMuS/blob/main/examples/chen_grn.md) 
 shows the application of HuMMuS to the Chen dataset, used in the benchmark of HuMMuS publication [paper](__preprint_links__).
 
 ## Data accessibility
