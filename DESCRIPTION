@@ -28,8 +28,8 @@ RoxygenNote: 7.2.3
 Depends:
     R (>= 4.0.0)
 biocViews:
-    sparseMatrixStats
 Imports:
+    sparseMatrixStats,
     TFBSTools,
     stringr,
     JASPAR2020,
@@ -46,6 +46,7 @@ Imports:
     biovizBase,
     SingleCellExperiment,
     motifmatchr
+
 Suggests:
     doParallel,
     doRNG,
