@@ -11,7 +11,7 @@ output:
 
 ```{r setup, include=FALSE}
 #knitr::opts_chunk$set(eval = FALSE)
-#devtools::install_github("cantinilab/HuMMuS")
+devtools::install_github("cantinilab/HuMMuS")
 ```
 ## General description of the vignette
 ##### 0. Preparation of the environment
@@ -41,8 +41,6 @@ output:
   - 3.5. Create target genes output
     
 
-use_condaenv("base")
-
 ## Download the single-cell data
 The data used in this tutorial can be downloaded at : ibens repo link
 
@@ -50,7 +48,7 @@ The data used in this tutorial can be downloaded at : ibens repo link
 ```{r}
 library(HuMMuS)
 library(reticulate)
-use_condaenv("base")
+use_condaenv("hummuspy_env")
 ```
 
 ## 1. Initialisation of HuMMuS object
