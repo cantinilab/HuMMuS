@@ -32,13 +32,16 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, local::., any::devtools, any::Rtools
+          extra-packages: any::pkgdown, local::., any::devtools
           needs: website
           
       - name: Setup hummuspy env
         run: reticulate::virtualenv_create("r-reticulate", Sys.which("python"), packages="hummuspy")
         shell: Rscript {0}
         
+      - name: ubuntu setup for Monocle3
+        run: sudo apt-get install libgdal-dev libgeos-dev libproj-dev
+      
       - name: Install Monocle3
         run: devtools::install_github('cole-trapnell-lab/monocle3')
         shell: Rscript {0}
