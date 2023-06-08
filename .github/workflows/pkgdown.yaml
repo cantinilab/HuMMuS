@@ -38,6 +38,14 @@ jobs:
       - name: Setup hummuspy env
         run: reticulate::virtualenv_create("r-reticulate", Sys.which("python"), packages="hummuspy")
         shell: Rscript {0}
+        
+      - name: Install Monocle3
+        run: devtools::install_github('cole-trapnell-lab/monocle3')
+        shell: Rscript {0}
+        
+      - name: Install Cicero
+        run: devtools::install_github("cole-trapnell-lab/cicero-release", ref = "monocle3")
+        shell: Rscript {0}
 
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
