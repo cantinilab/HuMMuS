@@ -36,7 +36,7 @@ jobs:
           needs: website
           
       - name: Setup hummuspy env
-        run: reticulate::virtualenv_create("hummuspy_env", Sys.which("python"), packages="hummuspy")
+        run: reticulate::virtualenv_create("r-reticulate", Sys.which("python"), packages="hummuspy")
         shell: Rscript {0}
 
       - name: Build site
