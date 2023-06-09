@@ -14,7 +14,7 @@ The current outputs available from HuMMuS are
 * TF - target genes.
 
 [Read our preprint](TBA) for more details !
-<img src="man/figures/Fig_0001.png" align="center" width="1000"/>
+<img src="man/figures/Fig_0001.jpg" align="center" width="1000"/>
 
 ### **scRNA + scATAC** 
 Like most of the current state-of-the-art methods to infer GRN, we propose a minimal version of HuMMuS based on scRNA-seq + scATAC-seq data (paired or **unpaired**).
