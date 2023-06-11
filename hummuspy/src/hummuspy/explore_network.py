@@ -14,10 +14,10 @@ import hummuspy.config
 def compute_multiple_RandomWalk(
         multilayer_f,
         config_name,
-        output_f,
         list_seeds,
         config_folder='config',
         save=True,
+        output_f=None,
         return_df=False,
         spec_layer_result_saved='all',
         njobs=1):
@@ -84,11 +84,12 @@ def compute_multiple_RandomWalk(
                                             'seed'])
 
     l_ranking_df = Parallel(n_jobs=njobs)(delayed(compute_RandomWalk)
-                                          (multilayer_f,
-                                           config_name,
-                                           seeds,
-                                           config_folder,
-                                           spec_layer_result_saved)
+                                          (multilayer_f=multilayer_f,
+                                           config_name=config_name,
+                                           seeds=seeds,
+                                           config_folder=config_folder,
+                                           save=False,
+                                           spec_layer_result_saved=spec_layer_result_saved)
                                           for seeds in tqdm(list_seeds,
                                                             position=0,
                                                             leave=True))
@@ -109,8 +110,11 @@ def compute_RandomWalk(
         config_name,
         seeds,
         seeds_filename = 'auto',
-        seeds_folder = 'seed'
+        seeds_folder = 'seed',
         config_folder='config',
+        save=True,
+        output_f=None,
+        return_df=False,
         spec_layer_result_saved='all',
         njobs=1):
     """Compute random walks for a list of seeds.
@@ -203,7 +207,13 @@ def compute_RandomWalk(
         ranking_df = ranking_df[ranking_df['layer'].isin(
             spec_layer_result_saved)]
 
-    return ranking_df
+        
+    if save:
+        assert output_f is not None, 'You need to provide an output_f name' +\
+            ' to save the random walks result'
+        ranking_df.to_csv(output_f, sep='\t', index=False, header=True)
+    if return_df:
+        return ranking_df
 
 
 #############################################

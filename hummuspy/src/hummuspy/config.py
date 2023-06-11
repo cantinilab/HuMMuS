@@ -256,6 +256,12 @@ def save_config(config, filename):
         yaml.dump(config, f)
 
 
+def open_config(filename):
+    with open(filename) as file:
+        config_dic = yaml.load(file, Loader=yaml.BaseLoader)
+    return config_dic
+
+
 def setup_proba_config(
         config: dict,
         eta: Union[list[float], pd.Series, np.ndarray],
@@ -324,7 +330,7 @@ def setup_proba_config(
 
     # Add eta and lamb to config
     config['eta'] = eta
-    config['lambda'] = lamb.values.tolist()
+    config['lamb'] = lamb.values.T.tolist()
 
     return config
 
@@ -365,8 +371,9 @@ def get_single_layer_eta(config, starting_multiplex='RNA'):
            for multiplex in ordered_multiplex]
     return eta
 
+
 def get_eta_from_dict(config,
-            multiplexes_scores:dict):
+                      multiplexes_scores: dict):
 
     ordered_multiplex = config['multiplex'].keys()
     for multiplex in list(multiplexes_scores.keys()):
