@@ -317,7 +317,6 @@ def old_setup_proba_config(
         "eta (length of {}) should be as long as the number of layers ({})"\
         .format(len(eta), len(config['multiplex']))
 
-    
     # Normalise lamb per rows
     lamb = lamb.div(lamb.sum(axis=1), axis=0)
     # Check that lamb is a valid probability matrix
@@ -395,7 +394,7 @@ def setup_proba_config(
     # Normalise lamb per rows
     lamb = lamb.div(lamb.sum(axis=0), axis=1)
     lamb = lamb.fillna(0)
-    
+
     # Check that lamb is a valid probability matrix
     assert check_lamb(lamb, config),\
         "lamb is not a valid probability matrix according to bipartites"

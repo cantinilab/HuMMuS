@@ -109,8 +109,8 @@ def compute_RandomWalk(
         multilayer_f,
         config_name,
         seeds,
-        seeds_filename = 'auto',
-        seeds_folder = 'seed',
+        seeds_filename='auto',
+        seeds_folder='seed',
         config_folder='config',
         save=True,
         output_f=None,
@@ -174,12 +174,14 @@ def compute_RandomWalk(
     if seeds_filename != 'auto':
         if njobs > 1:
             raise Exception("Impossible to use only one seeds filename while" +
-                            " parallelising random walks. \nTry seeds_filename = 'auto', or njobs=1.")
+                            " parallelising random walks." +
+                            "\nTry seeds_filename = 'auto', or njobs=1.")
     else:
         seeds_filename = '_'.join(seeds)
 
     # write seeds file
-    with open(multilayer_f+'/'+seeds_folder+'/'+seeds_filename+'.txt', 'w') as f:
+    with open(multilayer_f + "/" + seeds_folder + "/" +
+              seeds_filename + '.txt', 'w') as f:
         f.write('\n'.join(seeds)+'\n')
 
     # config file personalised with seed file
@@ -207,7 +209,6 @@ def compute_RandomWalk(
         ranking_df = ranking_df[ranking_df['layer'].isin(
             spec_layer_result_saved)]
 
-        
     if save:
         assert output_f is not None, 'You need to provide an output_f name' +\
             ' to save the random walks result'
