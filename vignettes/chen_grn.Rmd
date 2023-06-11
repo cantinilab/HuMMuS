@@ -11,7 +11,7 @@ output:
 
 ```{r setup, include=FALSE}
 #knitr::opts_chunk$set(eval = FALSE)
-#devtools::install_github("cantinilab/HuMMuS")
+devtools::install_github("cantinilab/HuMMuS")
 ```
 ## General description of the vignette
 ##### 0. Preparation of the environment
@@ -42,7 +42,7 @@ output:
     
 
 ## Download the single-cell data
-The data used in this tutorial can be downloaded at : ibens repo link
+The data used in this tutorial can be [downloaded here](https://figshare.com/account/home#/projects/168899)
 
 ## 0. Setting up the environment
 ```{r}
@@ -59,7 +59,7 @@ Additionally, it contains a motifs_db object, providing tf motifs informations, 
   - list of bipartites (one per connection between layers)
   
 
-#### 1.1. Transform data into a hummus object
+### 1.1. Transform data into a hummus object
 ```{r}
 # Load the Chen dataset, which is a Seurat object containing scRNA-seq and scATAC-seq data
 data("chen_dataset_subset")
@@ -68,10 +68,9 @@ chen_dataset_subset
 # Create an hummus object from seurat object
 hummus <- as(chen_dataset_subset, 'hummus_object')
 
-a <- chen_dataset
 ```
 
-#### 1.2. Add genome and motif annotations to hummus object
+### 1.2. Add genome and motif annotations to hummus object
 Fetch genome annotations online (necessitate an internet connection).
 You can also request any "EnsDB" object adapted to your data 
 (e.g. EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86 for human genome annotations)
@@ -82,6 +81,7 @@ You can also request any "EnsDB" object adapted to your data
 # wrapper of Signac::GetGRangesFromEnsDb, adapting output to UCSC format
 genome_annotations <- get_genome_annotations(
   ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
+
 ```
 
 Add genome annotations to hummus/seurat object
@@ -89,6 +89,7 @@ Add genome annotations to hummus/seurat object
 # We add annotation to the ATAC/peak assay
 # (will be used to define peak-gene links)
 Signac::Annotation(hummus@assays$peaks) <- genome_annotations
+rm(genome_annotations)
 ```
 
 Get TF motifs from JASPAR2020 and chromVARmotifs databsases in a motifs_db
@@ -110,9 +111,11 @@ hummus@motifs_db <- get_tf2motifs() # by default human motifs
 
 
 ## 2. Construction of the multilayer
-### Compute bipartites and add it to hummus object
 
-#### 2.1. TF - peaks bipartite reconstruction
+Since it's a long sttep (several hours, at least to build the scATAC layer, but also probably the scRNA layer depending of the number of cores), you can also directly import a multilayer completed with : `data(chen_subset_hummus)`. This object corresponds to a multilayer from chen_dataset_subset completed. You can then go to the part 3, replacing `hummus` by `chen_subset_hummus` in each step.
+#### Compute bipartites and add it to hummus object
+
+### 2.1. TF - peaks bipartite reconstruction
 
 TF - peaks bipartite is computed using the motifs_db object and the peak
 assay. You can specify the assay to use to filter TFs (e.g. "RNA" if you want
@@ -133,7 +136,7 @@ hummus <- bipartite_tfs2peaks(
               )
 ```
 
-#### 2.2. Genes - peaks bipartite reconstruction
+### 2.2. Genes - peaks bipartite reconstruction
 Peaks - genes bipartite is computed 
 ```{r}
 hummus <- bipartite_peaks2genes(
@@ -144,10 +147,10 @@ hummus <- bipartite_peaks2genes(
                       )
 ```
 
-### Compute layer networks and add it to hummus object
+#### Compute layer networks and add it to hummus object
 Each one of the three layers is computed inidividually. 
 
-#### 2.3. Compute the TF network from OmniPath database
+### 2.3. Compute the TF network from OmniPath database
 We currently use OmniPath R package to fetch TF interactions. 
 You can first specify if you want to use only the TFs expressed in your dataset
 (if you have a RNA assay in your hummus object). If `gene_assay` is NULL, all
@@ -167,12 +170,13 @@ hummus <- compute_tf_network(hummus,
                                                 # only the TFs that are present
                                                 # will be considered
                             verbose = 1,
+                            #source_target = "OR",
                             multiplex_name = "TF",
                             tf_network_name = "TF_network")
 ```
 
 
-#### 2.4. Compute gene network from scRNA-seq w/ GENIE3
+### 2.4. Compute gene network from scRNA-seq w/ GENIE3
 Different methods can be used to compute the gene network. For now, only GENIE3
 is implemented in HuMMuS. You can specify which assay to use to compute the
 network (`gene_assay`).
@@ -198,7 +202,7 @@ hummus <- compute_gene_network(
               output_file = "gene_network.tsv")
 ```
 
-#### 2.5. Compute the peak network from scATAC-seq w/ Cicero
+### 2.5. Compute the peak network from scATAC-seq w/ Cicero
 Different methods can be used to compute the peak network. For now, only Cicero
 is implemented in HuMMuS. You can specify which assay to use to compute the network
 (`peak_assay`). You can also specify the number of cores to use to compute the
@@ -218,7 +222,7 @@ hummus <- compute_atac_peak_network(hummus,
 
 
 ## Analyse of the multilayer and definition of GRN
-#### 3.1. Save the mulilayer in a classic hierarchical structure
+### 3.1. Save the mulilayer in a classic hierarchical structure
 The package used for the random walk with restart exploration (multixrank)
  requires currently to save all the network files on disk. To simplify the
  organisation of the file, it is possible to save everything necessary with
@@ -240,7 +244,30 @@ save_multilayer(hummus = hummus,
                 folder_name = "chen_multilayer")
 ```
 
-#### 3.2. Define GRN
+### 3.2. Retrieve target genes
+With HuMMuS, inference of GRN and target gene of TFs are different outputs.
+Indeed, while GRN is computed making TFs compete to regulate genes (by random
+walk with restart starting from the genes and going to the TFs), target genes
+are computed making genes compete to be regulated by TFs (by random walk with
+restart starting from the TFs and going to the genes).<br>
+For target genes output, you can specify the list of TFs (`tf_list`) to use as seed
+(if NULL by default, all TFs will be used as seed). Only the links between
+the seed TFs and the genes will be computed. You can also specify the list of
+genes to use. Only the score of the genes present in the network and the
+`gene_list` will be returned.
+
+```{r}
+target_genes <- define_target_genes(
+  hummus,
+  multilayer_f = "chen_multilayer",
+  njobs = 5
+  )
+```
+```{r}
+head(target_genes)
+```
+
+### 3.3. Define GRN
 The GRN is defined using the multixrank algorithm. It requires to have
  the hummuspy python package installed (pip install hummuspy).<br>
 The function `define_grn()` will call hummuspy and compute random walk with
@@ -272,7 +299,7 @@ grn <- define_grn(
 head(grn)
 ```
 
-#### 3.3. Retrieve enhancers
+### 3.4. Retrieve enhancers
 For enhancers output, you can specify the list of genes (`gene_list`) to use as seed 
 (if NULL by default, all genes will be used as seed). Only the links between 
 the seed genes and the peaks will be computed.
@@ -290,7 +317,7 @@ enhancers <- define_enhancers(
 head(enhancers)
 ```
 
-#### 3.4. Retrieve binding regions
+### 3.5. Retrieve binding regions
 For binding regions output, you can specify the list of TFs (`tf_list`) to use as seed
 (if NULL by default, all TFs will be used as seed). Only the links between
 the seed TFs and the peaks will be computed. You can also specify the list of
@@ -305,27 +332,4 @@ binding_regions <- define_binding_regions(
 ```
 ```{r}
 head(binding_regions)
-```
-
-#### 3.5. Retrieve target genes
-With HuMMuS, inference of GRN and target gene of TFs are different outputs.
-Indeed, while GRN is computed making TFs compete to regulate genes (by random
-walk with restart starting from the genes and going to the TFs), target genes
-are computed making genes compete to be regulated by TFs (by random walk with
-restart starting from the TFs and going to the genes).<br>
-For target genes output, you can specify the list of TFs (`tf_list`) to use as seed
-(if NULL by default, all TFs will be used as seed). Only the links between
-the seed TFs and the genes will be computed. You can also specify the list of
-genes to use. Only the score of the genes present in the network and the
-`gene_list` will be returned.
-
-```{r}
-target_genes <- define_target_genes(
-  hummus,
-  multilayer_f = "chen_multilayer",
-  njobs = 5
-  )
-```
-```{r}
-head(target_genes)
 ```
