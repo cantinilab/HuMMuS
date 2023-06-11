@@ -176,8 +176,8 @@ going through this tutorial. It will mostly include :</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"chen_dataset_subset"</span><span class="op">)</span></span>
 <span><span class="va">chen_dataset_subset</span></span></code></pre></div>
 <pre><code><span><span class="co">## An object of class Seurat </span></span>
-<span><span class="co">## 1700 features across 385 samples within 2 assays </span></span>
-<span><span class="co">## Active assay: RNA (700 features, 0 variable features)</span></span>
+<span><span class="co">## 12000 features across 385 samples within 2 assays </span></span>
+<span><span class="co">## Active assay: RNA (2000 features, 0 variable features)</span></span>
 <span><span class="co">##  1 other assay present: peaks</span></span></code></pre>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create an hummus object from seurat object</span></span>
@@ -243,7 +243,7 @@ default, it will be named “tf_peak”.</p>
 <span>              genome <span class="op">=</span> <span class="fu">BSgenome.Hsapiens.UCSC.hg38</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/BSgenome.Hsapiens.UCSC.hg38/man/package.html" class="external-link">BSgenome.Hsapiens.UCSC.hg38</a></span>,</span>
 <span>              <span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Computing TF-peak bipartite</span></span>
-<span><span class="co">##   13 TFs expressed</span></span></code></pre>
+<span><span class="co">##   31 TFs expressed</span></span></code></pre>
 <pre><code><span><span class="co">## Building motif matrix</span></span></code></pre>
 <pre><code><span><span class="co">## Finding motif positions</span></span></code></pre>
 <pre><code><span><span class="co">## Creating Motif object</span></span></code></pre>
@@ -295,8 +295,8 @@ database are not directional nor return any weight here.</p>
 <span>                            multiplex_name <span class="op">=</span> <span class="st">"TF"</span>,</span>
 <span>                            tf_network_name <span class="op">=</span> <span class="st">"TF_network"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Computing TF network...</span></span>
-<span><span class="co">##   13 TFs expressed</span></span>
-<span><span class="co">##  TF network construction time: 3.935365 </span></span>
+<span><span class="co">##   31 TFs expressed</span></span>
+<span><span class="co">##  TF network construction time: 6.197426 </span></span>
 <span><span class="co">## No TF-TF edges from Omnipath for the given parameters.</span></span>
 <span><span class="co">##         You can try to change the source_target parameter to 'OR' to get</span></span>
 <span><span class="co">##         TF-other protein interactions. Or try to import a network  </span></span>
@@ -336,8 +336,8 @@ proximity.</p>
 <span>              output_file <span class="op">=</span> <span class="st">"gene_network.tsv"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Computing gene network with  GENIE3  ...</span></span>
 <span><span class="co">##  No TFs list provided, fetching from hummus object...</span></span>
-<span><span class="co">##   13 TFs expressed</span></span>
-<span><span class="co">##  Gene network construction time: 2.530372 </span></span>
+<span><span class="co">##   31 TFs expressed</span></span>
+<span><span class="co">##  Gene network construction time: 13.6065 </span></span>
 <span><span class="co">##  Creating new multiplex :  RNA</span></span></code></pre>
 </div>
 <div class="section level4">
@@ -363,7 +363,7 @@ outputs are not directional.</p>
 <pre><code><span><span class="co">## Overlap QC metrics:</span></span>
 <span><span class="co">## Cells per bin: 50</span></span>
 <span><span class="co">## Maximum shared cells bin-bin: 44</span></span>
-<span><span class="co">## Mean shared cells bin-bin: 7.04584942084942</span></span>
+<span><span class="co">## Mean shared cells bin-bin: 6.26759906759907</span></span>
 <span><span class="co">## Median shared cells bin-bin: 0</span></span></code></pre>
 <pre><code><span><span class="co">## Warning in cicero::make_cicero_cds(input_cds, reduced_coordinates =</span></span>
 <span><span class="co">## umap_coords, : On average, more than 10% of cells are shared between paired</span></span>
@@ -371,20 +371,20 @@ outputs are not directional.</p>
 <pre><code><span><span class="co">## [1] "Starting Cicero"</span></span>
 <span><span class="co">## [1] "Calculating distance_parameter value"</span></span></code></pre>
 <pre><code><span><span class="co">## Warning in estimate_distance_parameter(cds, window = window, maxit = 100, :</span></span>
-<span><span class="co">## Could not calculate sample_num distance_parameters (2 were calculated) - see</span></span>
+<span><span class="co">## Could not calculate sample_num distance_parameters (74 were calculated) - see</span></span>
 <span><span class="co">## documentation details</span></span></code></pre>
 <pre><code><span><span class="co">## [1] "Running models"</span></span>
 <span><span class="co">## [1] "Assembling connections"</span></span>
-<span><span class="co">## [1] "Successful cicero models:  226"</span></span>
+<span><span class="co">## [1] "Successful cicero models:  4782"</span></span>
 <span><span class="co">## [1] "Other models: "</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Zero or one element in range </span></span>
-<span><span class="co">##                        13359 </span></span>
+<span><span class="co">##                         8803 </span></span>
 <span><span class="co">## [1] "Models with errors:  0"</span></span>
 <span><span class="co">## [1] "Done"</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">##  29 peak edges with a coaccess score &gt; 0 were found.</span></span>
-<span><span class="co">## Peak network construction time: 32.60936 Creating new multiplex :  peaks</span></span></code></pre>
+<span><span class="co">##  5318 peak edges with a coaccess score &gt; 0 were found.</span></span>
+<span><span class="co">## Peak network construction time: 57.22891 Creating new multiplex :  peaks</span></span></code></pre>
 </div>
 </div>
 </div>
@@ -411,11 +411,11 @@ to compute HuMMuS outputs later)</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_multilayer.html">save_multilayer</a></span><span class="op">(</span>hummus <span class="op">=</span> <span class="va">hummus</span>,</span>
 <span>                folder_name <span class="op">=</span> <span class="st">"chen_multilayer"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Multiplex of  1  networks with 14 features.</span></span>
+<pre><code><span><span class="co">## Multiplex of  1  networks with 32 features.</span></span>
 <span><span class="co">##  Networks names:  TF_network[1] "TF TF_network"</span></span>
-<span><span class="co">## Multiplex of  1  networks with 700 features.</span></span>
+<span><span class="co">## Multiplex of  1  networks with 2000 features.</span></span>
 <span><span class="co">##  Networks names:  RNA_GENIE3[1] "RNA RNA_GENIE3"</span></span>
-<span><span class="co">## Multiplex of  1  networks with 41 features.</span></span>
+<span><span class="co">## Multiplex of  1  networks with 4135 features.</span></span>
 <span><span class="co">##  Networks names:  peak_network_cicero[1] "peaks peak_network_cicero"</span></span></code></pre>
 </div>
 <div class="section level4">
