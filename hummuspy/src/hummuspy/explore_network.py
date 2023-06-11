@@ -114,7 +114,7 @@ def compute_RandomWalk(
         config_folder='config',
         save=True,
         output_f=None,
-        return_df=False,
+        return_df=True,
         spec_layer_result_saved='all',
         njobs=1):
     """Compute random walks for a list of seeds.
