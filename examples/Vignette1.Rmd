@@ -64,8 +64,8 @@ Additionally, it contains a motifs_db object, providing tf motifs informations, 
 scRNA <- read.table("../data/real_example/hESC_Chen_scRNA.tsv")
 scATAC <- read.table("../data/real_example/hESC_Chen_scATAC_bin.tsv")
 # subsetting data to infer faster a toy case : specific for the tutorial, dont keep it in real cases !!
-scRNA <- scRNA[1:700, ]
-scATAC <- scATAC[1:1000, ]
+scRNA <- scRNA[1:2000, ]
+scATAC <- scATAC[1:10000, ]
 ```
 
 #### 1.1. Transform data into a hummus object
