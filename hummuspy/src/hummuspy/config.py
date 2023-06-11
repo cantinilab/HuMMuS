@@ -365,6 +365,17 @@ def get_single_layer_eta(config, starting_multiplex='RNA'):
            for multiplex in ordered_multiplex]
     return eta
 
+def get_eta_from_dict(config,
+            multiplexes_scores:dict):
+
+    ordered_multiplex = config['multiplex'].keys()
+    for multiplex in list(multiplexes_scores.keys()):
+        assert multiplex in ordered_multiplex,\
+            "It seems starting_multiplex not in config['multiplex']"
+
+    eta = list(map(multiplexes_scores.get, list(multiplexes_scores.keys())))
+    return eta
+
 
 #############################
 # 1/4 Get GRN classic lamb  #
