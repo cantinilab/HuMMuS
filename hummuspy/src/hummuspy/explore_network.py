@@ -108,9 +108,10 @@ def compute_RandomWalk(
         multilayer_f,
         config_name,
         seeds,
+        seeds_filename = 'auto',
+        seeds_folder = 'seed'
         config_folder='config',
         spec_layer_result_saved='all',
-        unnamed=False,
         njobs=1):
     """Compute random walks for a list of seeds.
 
@@ -158,30 +159,29 @@ def compute_RandomWalk(
     >>> df = compute_RandomWalk(multilayer_f,
                                 config_name,
                                 seed,
+                                # seeds_filename = 'auto'/'your_name.txt'
                                 config_folder=config_folder,
                                 spec_layer_result_saved='all', # or 'TF'
-                                unnamed=False,
                                 njobs=5)
     """
-
+    seeds_filename
     # seeds file names
     seeds = hummuspy.config.make_values_list(seeds)
-    if unnamed is True:
-        seeds_filename = 'seeds.txt'
+    if seeds_filename != 'auto':
         if njobs > 1:
-            raise Exception("Impossible to use unnamed seeds files while" +
-                            " parallelising random walks.")
+            raise Exception("Impossible to use only one seeds filename while" +
+                            " parallelising random walks. \nTry seeds_filename = 'auto', or njobs=1.")
     else:
         seeds_filename = '_'.join(seeds)
 
     # write seeds file
-    with open(multilayer_f+'/seed/'+seeds_filename+'.txt', 'w') as f:
+    with open(multilayer_f+'/'+seeds_folder+'/'+seeds_filename+'.txt', 'w') as f:
         f.write('\n'.join(seeds)+'\n')
 
     # config file personalised with seed file
     with open(multilayer_f+'/{}/'.format(config_folder)+config_name, 'r') as f:
         config = yaml.load(f, Loader=yaml.BaseLoader)
-        config['seed'] = 'seed/'+seeds_filename+'.txt'
+        config['seed'] = seeds_folder+'/'+seeds_filename+'.txt'
     with open(multilayer_f+'/{}/'.format(config_folder)
               + seeds_filename + '_' + config_name, 'w') as f:
         yaml.dump(config, f)
@@ -194,7 +194,7 @@ def compute_RandomWalk(
     ranking_df = multixrank_obj.random_walk_rank()
 
     # and filter df results andadd seeds name
-    ranking_df['tf'] = '_'.join(seeds)
+    ranking_df['seed'] = seeds_filename
     ranking_df = ranking_df[ranking_df.score > 0]  # ??
     ranking_df.columns = ['layer', 'target', 'path_layer', 'score', 'seed']
     if spec_layer_result_saved != 'all':
@@ -765,7 +765,8 @@ def get_output_from_dicts(
         Number of jobs. The default is 1.
 
     Returns
-    -------
+    -------ith open(self.config_path) as fin:
+            self.config_dic = yaml.load(fin, Loader=yaml.BaseLoader)
     df : pd.DataFrame
         Dataframe containing the random walks's results that defines the GRN.
         Columns:
