@@ -394,6 +394,8 @@ def setup_proba_config(
     lamb = lamb.transpose()
     # Normalise lamb per rows
     lamb = lamb.div(lamb.sum(axis=0), axis=1)
+    lamb = lamb.fillna(0)
+    
     # Check that lamb is a valid probability matrix
     assert check_lamb(lamb, config),\
         "lamb is not a valid probability matrix according to bipartites"
@@ -516,6 +518,7 @@ def get_enhancers_lamb(config,
     lamb.loc[peak_multiplex, rna_multiplex] = 1
     lamb.loc[peak_multiplex, peak_multiplex] = 1
     lamb.loc[rna_multiplex, peak_multiplex] = 1
+    lamb.loc[tf_multiplex, peak_multiplex] = 1
     lamb = lamb.div(lamb.sum(axis=1),
                     axis=0)
     lamb = lamb.fillna(0)
@@ -555,6 +558,8 @@ def get_binding_regions_lamb(config,
     lamb.loc[tf_multiplex, peak_multiplex] = 1
     lamb.loc[peak_multiplex, peak_multiplex] = 1
     lamb.loc[peak_multiplex, tf_multiplex] = 1
+    lamb.loc[rna_multiplex, peak_multiplex] = 1
+
     lamb = lamb.div(lamb.sum(axis=1),
                     axis=0)
     lamb = lamb.fillna(0)
