@@ -296,7 +296,7 @@ database are not directional nor return any weight here.</p>
 <span>                            tf_network_name <span class="op">=</span> <span class="st">"TF_network"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Computing TF network...</span></span>
 <span><span class="co">##   13 TFs expressed</span></span>
-<span><span class="co">##  TF network construction time: 4.897202 </span></span>
+<span><span class="co">##  TF network construction time: 3.935365 </span></span>
 <span><span class="co">## No TF-TF edges from Omnipath for the given parameters.</span></span>
 <span><span class="co">##         You can try to change the source_target parameter to 'OR' to get</span></span>
 <span><span class="co">##         TF-other protein interactions. Or try to import a network  </span></span>
@@ -337,7 +337,7 @@ proximity.</p>
 <pre><code><span><span class="co">## Computing gene network with  GENIE3  ...</span></span>
 <span><span class="co">##  No TFs list provided, fetching from hummus object...</span></span>
 <span><span class="co">##   13 TFs expressed</span></span>
-<span><span class="co">##  Gene network construction time: 2.827384 </span></span>
+<span><span class="co">##  Gene network construction time: 2.530372 </span></span>
 <span><span class="co">##  Creating new multiplex :  RNA</span></span></code></pre>
 </div>
 <div class="section level4">
@@ -384,7 +384,7 @@ outputs are not directional.</p>
 <span><span class="co">## [1] "Done"</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">##  29 peak edges with a coaccess score &gt; 0 were found.</span></span>
-<span><span class="co">## Peak network construction time: 43.05799 Creating new multiplex :  peaks</span></span></code></pre>
+<span><span class="co">## Peak network construction time: 32.60936 Creating new multiplex :  peaks</span></span></code></pre>
 </div>
 </div>
 </div>
@@ -468,10 +468,8 @@ use. Only the score of the peaks present in the network and the
 <span>  <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">enhancers</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##   layer                              path_layer     score    gene</span></span>
-<span><span class="co">## 1 peaks multiplex/peaks/peak_network_cicero.tsv 0.2164948 ARFGAP1</span></span>
-<span><span class="co">##                      peak</span></span>
-<span><span class="co">## 1 chr20-63272380-63273028</span></span></code></pre>
+<pre><code><span><span class="co">## [1] layer      path_layer score      gene       peak      </span></span>
+<span><span class="co">## &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="retrieve-binding-regions">3.4. Retrieve binding regions<a class="anchor" aria-label="anchor" href="#retrieve-binding-regions"></a>
@@ -490,20 +488,8 @@ will be returned.</p>
 <span>  <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">binding_regions</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##   layer                              path_layer      score    tf</span></span>
-<span><span class="co">## 1 peaks multiplex/peaks/peak_network_cicero.tsv 0.07191929 ATF6B</span></span>
-<span><span class="co">## 2 peaks multiplex/peaks/peak_network_cicero.tsv 0.07104954  ATF1</span></span>
-<span><span class="co">## 3 peaks multiplex/peaks/peak_network_cicero.tsv 0.03643318 ARID2</span></span>
-<span><span class="co">## 4 peaks multiplex/peaks/peak_network_cicero.tsv 0.03579478 ARNT2</span></span>
-<span><span class="co">## 5 peaks multiplex/peaks/peak_network_cicero.tsv 0.03575792 ARID2</span></span>
-<span><span class="co">## 6 peaks multiplex/peaks/peak_network_cicero.tsv 0.03569583   BBX</span></span>
-<span><span class="co">##                        peak</span></span>
-<span><span class="co">## 1   chr11-66616117-66617358</span></span>
-<span><span class="co">## 2   chr11-66408446-66409257</span></span>
-<span><span class="co">## 3   chr11-66408446-66409257</span></span>
-<span><span class="co">## 4 chr14-104815457-104816516</span></span>
-<span><span class="co">## 5   chr15-77070409-77071408</span></span>
-<span><span class="co">## 6   chr16-81939180-81939911</span></span></code></pre>
+<pre><code><span><span class="co">## [1] layer      path_layer score      tf         peak      </span></span>
+<span><span class="co">## &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="retrieve-target-genes">3.5. Retrieve target genes<a class="anchor" aria-label="anchor" href="#retrieve-target-genes"></a>
@@ -527,13 +513,8 @@ will be returned.</p>
 <span>  <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">target_genes</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##   layer                   path_layer        score   tf    gene</span></span>
-<span><span class="co">## 1   RNA multiplex/RNA/RNA_GENIE3.tsv 4.918039e-04 ATF6 ARFGAP1</span></span>
-<span><span class="co">## 2   RNA multiplex/RNA/RNA_GENIE3.tsv 1.080888e-05 ATF6    ATF3</span></span>
-<span><span class="co">## 3   RNA multiplex/RNA/RNA_GENIE3.tsv 1.080888e-05 ATF6   BACH1</span></span>
-<span><span class="co">## 4   RNA multiplex/RNA/RNA_GENIE3.tsv 1.080888e-05 ATF6    ATF6</span></span>
-<span><span class="co">## 5   RNA multiplex/RNA/RNA_GENIE3.tsv 1.080888e-05 ATF6   ATF6B</span></span>
-<span><span class="co">## 6   RNA multiplex/RNA/RNA_GENIE3.tsv 1.080888e-05 ATF6    ATF1</span></span></code></pre>
+<pre><code><span><span class="co">## [1] layer      path_layer score      tf         gene      </span></span>
+<span><span class="co">## &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre>
 </div>
 </div>
   </div>
