@@ -262,7 +262,7 @@ def open_config(filename):
     return config_dic
 
 
-def setup_proba_config(
+def old_setup_proba_config(
         config: dict,
         eta: Union[list[float], pd.Series, np.ndarray],
         lamb: pd.DataFrame):
@@ -317,6 +317,7 @@ def setup_proba_config(
         "eta (length of {}) should be as long as the number of layers ({})"\
         .format(len(eta), len(config['multiplex']))
 
+    
     # Normalise lamb per rows
     lamb = lamb.div(lamb.sum(axis=1), axis=0)
     # Check that lamb is a valid probability matrix
@@ -330,7 +331,81 @@ def setup_proba_config(
 
     # Add eta and lamb to config
     config['eta'] = eta
-    config['lamb'] = lamb.values.T.tolist()
+    config['lamb'] = lamb.values.tolist()
+
+    return config
+
+
+def setup_proba_config(
+        config: dict,
+        eta,
+        lamb: pd.DataFrame):
+    """ Setup the RWR probability for the exploration of hummus networks
+    with the given eta and lambda values.
+    The lambda values are normalised (per rows) to sum to 1.
+
+    Parameters
+    ----------
+    config: dict
+        The config dictionary.
+    eta: list[float]
+        The eta values for the RWR probability, must sum up to 1.
+        e.g.: [0.5, 0.5, 0]
+
+    lamb: list[list[float]]
+        The lambda values for the RWR probability.
+        e.g.: lamb = pd.DataFrame(np.ones((3,3)),
+                           index = ['TF', 'Gene', 'Peak''],
+                           columns = ['TF', 'Gene', 'Peak'])
+        lamb.loc[i, j] corresponds to the probability
+        to go from layer i to layer j.
+
+    Returns
+    -------
+    config: dict
+        The config dictionary with the RWR probability setup.
+
+    Raises
+    ------
+    AssertionError if the length of eta is not equal to the number of layers.
+
+    e.g.:
+    config = {'multiplex': {'TF': {'file_path': 'TF.csv',
+                                   'type': 'TF'},
+                            'Gene': {'file_path': 'Gene.csv',
+                                     'type': 'Gene'},
+                            'Peak': {'file_path': 'Peak.csv',
+                                     'type': 'Peak'}},
+              'bipartite': {'TF_Peak': {'source': 'TF',
+                                        'target': 'Peak'},
+                            'Gene_Peak': {'source': 'Gene',
+                                          'target': 'Peak'}},
+              'eta': [0.5, 0.5, 0],
+              'lambda': [[0.5, 0.5, 0],
+                         [0.5, 0, 0.5],
+                         [0, 0.5, 0.5]]}
+    """
+
+    # Check that the length of eta is equal to the number of layers
+    assert len(config['multiplex']) == len(eta),\
+        "eta (length of {}) should be as long as the number of layers ({})"\
+        .format(len(eta), len(config['multiplex']))
+
+    lamb = lamb.transpose()
+    # Normalise lamb per rows
+    lamb = lamb.div(lamb.sum(axis=0), axis=1)
+    # Check that lamb is a valid probability matrix
+    assert check_lamb(lamb, config),\
+        "lamb is not a valid probability matrix according to bipartites"
+    # Transform eta to list if it's a pandas Series or a numpy array
+    if type(eta) == pd.Series:
+        eta = eta.values.tolist()
+    elif type(eta) == np.ndarray:
+        eta = eta.tolist()
+
+    # Add eta and lamb to config
+    config['eta'] = eta
+    config['lamb'] = lamb.values.tolist()
 
     return config
 
