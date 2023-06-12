@@ -1,5 +1,3 @@
-![Build](https://github.com/cantinilab/HuMMuS/____/badge.svg?branch=main)
-
 # HuMMuS <img src="man/figures/hummus_logo.png" align="right" width="180"/>
 ### Heterogeneous Multilayer network for Multi-omics Single-cell data 
 
