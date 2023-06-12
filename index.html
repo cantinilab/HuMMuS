@@ -103,7 +103,12 @@
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
 <p>The current outputs available from HuMMuS are * gene regulatory networks (GRNs) * enhancers * TF - DNA binding regions * TF - target genes.</p>
-<p><a href="TBA">Read our preprint</a> for more details ! <img src="reference/figures/Fig_0001.jpg" align="center" width="1000"></p>
+<div class="section level4">
+<h4 id="read-our-preprint-for-more-details-">
+<a href="https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1" class="external-link">Read our preprint</a> for more details !<a class="anchor" aria-label="anchor" href="#read-our-preprint-for-more-details-"></a>
+</h4>
+<p><img src="reference/figures/Fig_0001.jpg" align="center" width="1000"></p>
+</div>
 <div class="section level3">
 <h3 id="scrna--scatac">
 <strong>scRNA + scATAC</strong><a class="anchor" aria-label="anchor" href="#scrna--scatac"></a>
@@ -114,8 +119,16 @@
 <h3 id="use-of-additional-modalities">
 <strong>Use of additional modalities</strong><a class="anchor" aria-label="anchor" href="#use-of-additional-modalities"></a>
 </h3>
-<p>HuMMuS has been developed to be extendable to any additional biological modality of interest. It is then possible to add any additional network to an already existing modality (e.g. both prior-knowledge network and data-driven network of genes), or from a new modality (e.g. adding epigenetic or proteomic networks). <br><em>For now, such personalisation requires to use directly some hummuspy (python package) functions at the end of the pipeline. It will be simplified soon.</em></p>
+<p>HuMMuS has been developed to be extendable to any additional biological modality of interest. It is then possible to add any additional network to an already <strong>existing modality</strong> (e.g. both prior-knowledge network and data-driven network of genes), or from a <strong>new modality</strong> (e.g. adding epigenetic or proteomic networks). <br><em>For now, such personalisation requires to use directly some hummuspy (python package) functions at the end of the pipeline and write some configuration files manually. It will be simplified soon !</em></p>
 </div>
+</div>
+<div class="section level2">
+<h2 id="tutorialsvignettes">Tutorials/Vignettes<a class="anchor" aria-label="anchor" href="#tutorialsvignettes"></a>
+</h2>
+<ul>
+<li>
+<a href="https://github.com/cantinilab/HuMMuS/blob/main/examples/chen_grn.md" class="external-link"><strong>Infer a gene regulatory network and other outputs from unpaired/paired scRNA+scATAC data</strong></a> shows the application of HuMMuS to the Chen dataset, used in the benchmark of <a href="https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1" class="external-link">HuMMuS publication</a>.</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -147,27 +160,25 @@
 <span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_condaenv</a></span><span class="op">(</span><span class="va">envname</span>, required <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>For more details on how to setup the reticulate connection, see: <a href="https://rstudio.github.io/reticulate" class="external-link uri">https://rstudio.github.io/reticulate</a></p>
 </div>
+<div class="section level3">
+<h3 id="scatac-processing">scATAC processing<a class="anchor" aria-label="anchor" href="#scatac-processing"></a>
+</h3>
+<p>To compute directly the scATAC data with HuMMuS, we currently only propose to use <a href="https://cole-trapnell-lab.github.io/cicero-release/docs_m3/" class="external-link">Cicero</a>. It requires the version running with <a href="https://cole-trapnell-lab.github.io/monocle3/" class="external-link">Monocle3</a>. You then need to install both <a href="https://cole-trapnell-lab.github.io/monocle3/docs/installation/" class="external-link">Monocle3</a>, and Cicero:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'cole-trapnell-lab/monocle3'</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"cole-trapnell-lab/cicero-release"</span>, ref <span class="op">=</span> <span class="st">"monocle3"</span><span class="op">)</span></span></code></pre></div>
+<p><em>If you encounter some troubles with Monocle3 installation, on ubuntu you can try to run: <code>sudo apt-get install libgdal-dev libgeos-dev libproj-dev</code>. You can also go on <a href="https://github.com/cole-trapnell-lab/monocle3/issues" class="external-link">their github page</a> for more help. Having a previous version of Monocle (1 or 2) still in your R session can cause some troubles. If you encounter some even after restarting your R session,, try to <code>remove.packages("monocle")</code> before to reinstall both Monocle<strong>3</strong> and Cicero</em></p>
 </div>
-<div class="section level2">
-<h2 id="tutorialsvignettes">Tutorials/Vignettes<a class="anchor" aria-label="anchor" href="#tutorialsvignettes"></a>
-</h2>
-<ul>
-<li>
-<h4 id="infer-a-gene-regulatory-network-and-other-outputs-from-unpairedpaired-scrnascatac-data-this-vignette">
-<strong>Infer a gene regulatory network and other outputs from unpaired/paired scRNA+scATAC data</strong>: <a href="https://github.com/cantinilab/HuMMuS/blob/main/examples/chen_grn.md" class="external-link">This vignette</a>
-</h4>
-shows the application of HuMMuS to the Chen dataset, used in the benchmark of HuMMuS publication <a href="__preprint_links__">paper</a>.</li>
-</ul>
 </div>
 <div class="section level2">
 <h2 id="data-accessibility">Data accessibility<a class="anchor" aria-label="anchor" href="#data-accessibility"></a>
 </h2>
-<p>To reproduce HuMMuS results presented in the manuscript, preprocessed data are accessible <a href="https://figshare.com/account/home#/projects/168899" class="external-link">here</a> <br> For quick tests, the Chen dataset preprocessed is accessible directly through the package as a Seurat object: <code>load(chen_data)</code>.</p>
+<p>To reproduce HuMMuS results presented in the manuscript, preprocessed data <a href="https://figshare.com/account/home#/projects/168899" class="external-link">are accessible here</a> <br> For quick tests, the Chen dataset preprocessed is accessible directly through the package as a Seurat object: <code>load(chen_data)</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="cite-us">Cite us<a class="anchor" aria-label="anchor" href="#cite-us"></a>
 </h2>
-<p>Trimbour R., Deutschmann I. M., Cantini L. Molecular mechanisms reconstruction from single-cell multi-omics data with HuMMuS. bioXriv (2023). doi:</p>
+<p>Trimbour R., Deutschmann I. M., Cantini L. Molecular mechanisms reconstruction from single-cell multi-omics data with HuMMuS. bioXriv (2023). doi: <a href="https://doi.org/10.1101/2023.06.09.543828" class="external-link uri">https://doi.org/10.1101/2023.06.09.543828</a></p>
 </div>
 </div>
 

@@ -139,8 +139,8 @@ hummuspy) installed, and second to save locally the multilayer files</p>
 <div class="section level2">
 <h2 id="download-the-single-cell-data">Download the single-cell data<a class="anchor" aria-label="anchor" href="#download-the-single-cell-data"></a>
 </h2>
-<p>The data used in this tutorial can be downloaded at : ibens repo
-link</p>
+<p>The data used in this tutorial can be <a href="https://figshare.com/account/home#/projects/168899" class="external-link">downloaded
+here</a></p>
 </div>
 <div class="section level2">
 <h2 id="setting-up-the-environment">0. Setting up the environment<a class="anchor" aria-label="anchor" href="#setting-up-the-environment"></a>
@@ -168,9 +168,9 @@ going through this tutorial. It will mostly include :</p>
 <li>list of multiplex networks (one per modality)</li>
 <li>list of bipartites (one per connection between layers)</li>
 </ul>
-<div class="section level4">
-<h4 id="transform-data-into-a-hummus-object">1.1. Transform data into a hummus object<a class="anchor" aria-label="anchor" href="#transform-data-into-a-hummus-object"></a>
-</h4>
+<div class="section level3">
+<h3 id="transform-data-into-a-hummus-object">1.1. Transform data into a hummus object<a class="anchor" aria-label="anchor" href="#transform-data-into-a-hummus-object"></a>
+</h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load the Chen dataset, which is a Seurat object containing scRNA-seq and scATAC-seq data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"chen_dataset_subset"</span><span class="op">)</span></span>
@@ -181,13 +181,11 @@ going through this tutorial. It will mostly include :</p>
 <span><span class="co">##  1 other assay present: peaks</span></span></code></pre>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create an hummus object from seurat object</span></span>
-<span><span class="va">hummus</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">chen_dataset_subset</span>, <span class="st">'hummus_object'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">a</span> <span class="op">&lt;-</span> <span class="va">chen_dataset</span></span></code></pre></div>
+<span><span class="va">hummus</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">chen_dataset_subset</span>, <span class="st">'hummus_object'</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="add-genome-and-motif-annotations-to-hummus-object">1.2. Add genome and motif annotations to hummus object<a class="anchor" aria-label="anchor" href="#add-genome-and-motif-annotations-to-hummus-object"></a>
-</h4>
+<div class="section level3">
+<h3 id="add-genome-and-motif-annotations-to-hummus-object">1.2. Add genome and motif annotations to hummus object<a class="anchor" aria-label="anchor" href="#add-genome-and-motif-annotations-to-hummus-object"></a>
+</h3>
 <p>Fetch genome annotations online (necessitate an internet connection).
 You can also request any “EnsDB” object adapted to your data
 (e.g. EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86 for human genome
@@ -201,7 +199,8 @@ annotations) or use your own genome annotations in the same format.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># We add annotation to the ATAC/peak assay</span></span>
 <span><span class="co"># (will be used to define peak-gene links)</span></span>
-<span><span class="fu">Signac</span><span class="fu">::</span><span class="fu"><a href="https://stuartlab.org/signac/reference/Annotation.html" class="external-link">Annotation</a></span><span class="op">(</span><span class="va">hummus</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">peaks</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">genome_annotations</span></span></code></pre></div>
+<span><span class="fu">Signac</span><span class="fu">::</span><span class="fu"><a href="https://stuartlab.org/signac/reference/Annotation.html" class="external-link">Annotation</a></span><span class="op">(</span><span class="va">hummus</span><span class="op">@</span><span class="va">assays</span><span class="op">$</span><span class="va">peaks</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">genome_annotations</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">genome_annotations</span><span class="op">)</span></span></code></pre></div>
 <p>Get TF motifs from JASPAR2020 and chromVARmotifs databsases in a
 motifs_db object. By default, human motifs are used. You can specify the
 species you want to use with the <code>species</code> argument
@@ -220,12 +219,16 @@ contains the same slots.</p>
 <div class="section level2">
 <h2 id="construction-of-the-multilayer-1">2. Construction of the multilayer<a class="anchor" aria-label="anchor" href="#construction-of-the-multilayer-1"></a>
 </h2>
+<p>Since it’s a long sttep (several hours, at least to build the scATAC
+layer, but also probably the scRNA layer depending of the number of
+cores), you can also directly import a multilayer completed with :
+<code>data(chen_subset_hummus)</code>. This object corresponds to a
+multilayer from chen_dataset_subset completed. You can then go to the
+part 3, replacing <code>hummus</code> by <code>chen_subset_hummus</code>
+in each step. #### Compute bipartites and add it to hummus object</p>
 <div class="section level3">
-<h3 id="compute-bipartites-and-add-it-to-hummus-object">Compute bipartites and add it to hummus object<a class="anchor" aria-label="anchor" href="#compute-bipartites-and-add-it-to-hummus-object"></a>
+<h3 id="tf---peaks-bipartite-reconstruction">2.1. TF - peaks bipartite reconstruction<a class="anchor" aria-label="anchor" href="#tf---peaks-bipartite-reconstruction"></a>
 </h3>
-<div class="section level4">
-<h4 id="tf---peaks-bipartite-reconstruction">2.1. TF - peaks bipartite reconstruction<a class="anchor" aria-label="anchor" href="#tf---peaks-bipartite-reconstruction"></a>
-</h4>
 <p>TF - peaks bipartite is computed using the motifs_db object and the
 peak assay. You can specify the assay to use to filter TFs (e.g. “RNA”
 if you want to use only the TFs expressed in your dataset). If NULL, all
@@ -253,9 +256,9 @@ default, it will be named “tf_peak”.</p>
 <span><span class="co">##  Returning TF-peak links as bipartite object</span></span>
 <span><span class="co">## no peak layer name provided, using peak_assay name</span></span></code></pre>
 </div>
-<div class="section level4">
-<h4 id="genes---peaks-bipartite-reconstruction">2.2. Genes - peaks bipartite reconstruction<a class="anchor" aria-label="anchor" href="#genes---peaks-bipartite-reconstruction"></a>
-</h4>
+<div class="section level3">
+<h3 id="genes---peaks-bipartite-reconstruction">2.2. Genes - peaks bipartite reconstruction<a class="anchor" aria-label="anchor" href="#genes---peaks-bipartite-reconstruction"></a>
+</h3>
 <p>Peaks - genes bipartite is computed</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hummus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bipartite_peaks2genes.html">bipartite_peaks2genes</a></span><span class="op">(</span></span>
@@ -264,15 +267,15 @@ default, it will be named “tf_peak”.</p>
 <span>                      peak_assay <span class="op">=</span> <span class="st">"peaks"</span>,</span>
 <span>                      store_network <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                      <span class="op">)</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="compute-layer-networks-and-add-it-to-hummus-object">Compute layer networks and add it to hummus object<a class="anchor" aria-label="anchor" href="#compute-layer-networks-and-add-it-to-hummus-object"></a>
+</h4>
+<p>Each one of the three layers is computed inidividually.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="compute-layer-networks-and-add-it-to-hummus-object">Compute layer networks and add it to hummus object<a class="anchor" aria-label="anchor" href="#compute-layer-networks-and-add-it-to-hummus-object"></a>
+<h3 id="compute-the-tf-network-from-omnipath-database">2.3. Compute the TF network from OmniPath database<a class="anchor" aria-label="anchor" href="#compute-the-tf-network-from-omnipath-database"></a>
 </h3>
-<p>Each one of the three layers is computed inidividually.</p>
-<div class="section level4">
-<h4 id="compute-the-tf-network-from-omnipath-database">2.3. Compute the TF network from OmniPath database<a class="anchor" aria-label="anchor" href="#compute-the-tf-network-from-omnipath-database"></a>
-</h4>
 <p>We currently use OmniPath R package to fetch TF interactions. You can
 first specify if you want to use only the TFs expressed in your dataset
 (if you have a RNA assay in your hummus object). If
@@ -292,11 +295,12 @@ database are not directional nor return any weight here.</p>
 <span>                                                <span class="co"># only the TFs that are present</span></span>
 <span>                                                <span class="co"># will be considered</span></span>
 <span>                            verbose <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                            <span class="co">#source_target = "OR",</span></span>
 <span>                            multiplex_name <span class="op">=</span> <span class="st">"TF"</span>,</span>
 <span>                            tf_network_name <span class="op">=</span> <span class="st">"TF_network"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Computing TF network...</span></span>
 <span><span class="co">##   31 TFs expressed</span></span>
-<span><span class="co">##  TF network construction time: 6.197426 </span></span>
+<span><span class="co">##  TF network construction time: 4.788232 </span></span>
 <span><span class="co">## No TF-TF edges from Omnipath for the given parameters.</span></span>
 <span><span class="co">##         You can try to change the source_target parameter to 'OR' to get</span></span>
 <span><span class="co">##         TF-other protein interactions. Or try to import a network  </span></span>
@@ -307,9 +311,9 @@ database are not directional nor return any weight here.</p>
 <span><span class="co">##         </span></span>
 <span><span class="co">##  Creating new multiplex :  TF</span></span></code></pre>
 </div>
-<div class="section level4">
-<h4 id="compute-gene-network-from-scrna-seq-w-genie3">2.4. Compute gene network from scRNA-seq w/ GENIE3<a class="anchor" aria-label="anchor" href="#compute-gene-network-from-scrna-seq-w-genie3"></a>
-</h4>
+<div class="section level3">
+<h3 id="compute-gene-network-from-scrna-seq-w-genie3">2.4. Compute gene network from scRNA-seq w/ GENIE3<a class="anchor" aria-label="anchor" href="#compute-gene-network-from-scrna-seq-w-genie3"></a>
+</h3>
 <p>Different methods can be used to compute the gene network. For now,
 only GENIE3 is implemented in HuMMuS. You can specify which assay to use
 to compute the network (<code>gene_assay</code>). <br>You can specify
@@ -337,12 +341,12 @@ proximity.</p>
 <pre><code><span><span class="co">## Computing gene network with  GENIE3  ...</span></span>
 <span><span class="co">##  No TFs list provided, fetching from hummus object...</span></span>
 <span><span class="co">##   31 TFs expressed</span></span>
-<span><span class="co">##  Gene network construction time: 13.6065 </span></span>
+<span><span class="co">##  Gene network construction time: 12.72683 </span></span>
 <span><span class="co">##  Creating new multiplex :  RNA</span></span></code></pre>
 </div>
-<div class="section level4">
-<h4 id="compute-the-peak-network-from-scatac-seq-w-cicero">2.5. Compute the peak network from scATAC-seq w/ Cicero<a class="anchor" aria-label="anchor" href="#compute-the-peak-network-from-scatac-seq-w-cicero"></a>
-</h4>
+<div class="section level3">
+<h3 id="compute-the-peak-network-from-scatac-seq-w-cicero">2.5. Compute the peak network from scATAC-seq w/ Cicero<a class="anchor" aria-label="anchor" href="#compute-the-peak-network-from-scatac-seq-w-cicero"></a>
+</h3>
 <p>Different methods can be used to compute the peak network. For now,
 only Cicero is implemented in HuMMuS. You can specify which assay to use
 to compute the network (<code>peak_assay</code>). You can also specify
@@ -363,7 +367,7 @@ outputs are not directional.</p>
 <pre><code><span><span class="co">## Overlap QC metrics:</span></span>
 <span><span class="co">## Cells per bin: 50</span></span>
 <span><span class="co">## Maximum shared cells bin-bin: 44</span></span>
-<span><span class="co">## Mean shared cells bin-bin: 6.26759906759907</span></span>
+<span><span class="co">## Mean shared cells bin-bin: 7.00239234449761</span></span>
 <span><span class="co">## Median shared cells bin-bin: 0</span></span></code></pre>
 <pre><code><span><span class="co">## Warning in cicero::make_cicero_cds(input_cds, reduced_coordinates =</span></span>
 <span><span class="co">## umap_coords, : On average, more than 10% of cells are shared between paired</span></span>
@@ -383,17 +387,16 @@ outputs are not directional.</p>
 <span><span class="co">## [1] "Models with errors:  0"</span></span>
 <span><span class="co">## [1] "Done"</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">##  5318 peak edges with a coaccess score &gt; 0 were found.</span></span>
-<span><span class="co">## Peak network construction time: 57.22891 Creating new multiplex :  peaks</span></span></code></pre>
-</div>
+<span><span class="co">##  5112 peak edges with a coaccess score &gt; 0 were found.</span></span>
+<span><span class="co">## Peak network construction time: 44.46373 Creating new multiplex :  peaks</span></span></code></pre>
 </div>
 </div>
 <div class="section level2">
 <h2 id="analyse-of-the-multilayer-and-definition-of-grn">Analyse of the multilayer and definition of GRN<a class="anchor" aria-label="anchor" href="#analyse-of-the-multilayer-and-definition-of-grn"></a>
 </h2>
-<div class="section level4">
-<h4 id="save-the-mulilayer-in-a-classic-hierarchical-structure">3.1. Save the mulilayer in a classic hierarchical structure<a class="anchor" aria-label="anchor" href="#save-the-mulilayer-in-a-classic-hierarchical-structure"></a>
-</h4>
+<div class="section level3">
+<h3 id="save-the-mulilayer-in-a-classic-hierarchical-structure">3.1. Save the mulilayer in a classic hierarchical structure<a class="anchor" aria-label="anchor" href="#save-the-mulilayer-in-a-classic-hierarchical-structure"></a>
+</h3>
 <p>The package used for the random walk with restart exploration
 (multixrank) requires currently to save all the network files on disk.
 To simplify the organisation of the file, it is possible to save
@@ -415,12 +418,42 @@ to compute HuMMuS outputs later)</p>
 <span><span class="co">##  Networks names:  TF_network[1] "TF TF_network"</span></span>
 <span><span class="co">## Multiplex of  1  networks with 2000 features.</span></span>
 <span><span class="co">##  Networks names:  RNA_GENIE3[1] "RNA RNA_GENIE3"</span></span>
-<span><span class="co">## Multiplex of  1  networks with 4135 features.</span></span>
+<span><span class="co">## Multiplex of  1  networks with 3994 features.</span></span>
 <span><span class="co">##  Networks names:  peak_network_cicero[1] "peaks peak_network_cicero"</span></span></code></pre>
 </div>
-<div class="section level4">
-<h4 id="define-grn">3.2. Define GRN<a class="anchor" aria-label="anchor" href="#define-grn"></a>
-</h4>
+<div class="section level3">
+<h3 id="retrieve-target-genes">3.2. Retrieve target genes<a class="anchor" aria-label="anchor" href="#retrieve-target-genes"></a>
+</h3>
+<p>With HuMMuS, inference of GRN and target gene of TFs are different
+outputs. Indeed, while GRN is computed making TFs compete to regulate
+genes (by random walk with restart starting from the genes and going to
+the TFs), target genes are computed making genes compete to be regulated
+by TFs (by random walk with restart starting from the TFs and going to
+the genes).<br> For target genes output, you can specify the list of TFs
+(<code>tf_list</code>) to use as seed (if NULL by default, all TFs will
+be used as seed). Only the links between the seed TFs and the genes will
+be computed. You can also specify the list of genes to use. Only the
+score of the genes present in the network and the <code>gene_list</code>
+will be returned.</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">target_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/define_target_genes.html">define_target_genes</a></span><span class="op">(</span></span>
+<span>  <span class="va">hummus</span>,</span>
+<span>  multilayer_f <span class="op">=</span> <span class="st">"chen_multilayer"</span>,</span>
+<span>  njobs <span class="op">=</span> <span class="fl">5</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">target_genes</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##   layer                   path_layer        score    tf    gene</span></span>
+<span><span class="co">## 1   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0002453203  CUX1  ANGEL2</span></span>
+<span><span class="co">## 2   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0001811161    AR C7orf49</span></span>
+<span><span class="co">## 3   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0001668951  CUX1   CDCA5</span></span>
+<span><span class="co">## 4   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0001667468 ATF6B    ATRN</span></span>
+<span><span class="co">## 5   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0001665477  CUX1   CDC5L</span></span>
+<span><span class="co">## 6   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0001659737 ATF6B   APBB1</span></span></code></pre>
+</div>
+<div class="section level3">
+<h3 id="define-grn">3.3. Define GRN<a class="anchor" aria-label="anchor" href="#define-grn"></a>
+</h3>
 <p>The GRN is defined using the multixrank algorithm. It requires to
 have the hummuspy python package installed (pip install hummuspy).<br>
 The function <code><a href="../reference/define_grn.html">define_grn()</a></code> will call hummuspy and compute
@@ -440,81 +473,85 @@ name. Output returned is a dataframe containing TF-gene links with their
 associated probability.</p>
 <p><strong>Similar options are available for the other outputs
 (enhancers, binding regions and target genes).</strong></p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grn</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/define_grn.html">define_grn</a></span><span class="op">(</span></span>
 <span>  <span class="va">hummus</span>,</span>
 <span>  multilayer_f <span class="op">=</span> <span class="st">"chen_multilayer"</span>,</span>
 <span>  njobs <span class="op">=</span> <span class="fl">5</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">grn</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] layer      path_layer score      gene       tf        </span></span>
-<span><span class="co">## &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre>
+<pre><code><span><span class="co">##   layer                  path_layer      score       gene     tf</span></span>
+<span><span class="co">## 0    TF multiplex/TF/TF_network.tsv 0.03473520      BEND4 BCL11A</span></span>
+<span><span class="co">## 1    TF multiplex/TF/TF_network.tsv 0.03389616 AC007204.2  CXXC1</span></span>
+<span><span class="co">## 2    TF multiplex/TF/TF_network.tsv 0.03381979       CCT7 BCL11A</span></span>
+<span><span class="co">## 3    TF multiplex/TF/TF_network.tsv 0.03360623   ARHGEF19 BCL11A</span></span>
+<span><span class="co">## 4    TF multiplex/TF/TF_network.tsv 0.03340583      CSMD2 BCL11A</span></span>
+<span><span class="co">## 5    TF multiplex/TF/TF_network.tsv 0.03336888    CSNK2A1 ARID3A</span></span></code></pre>
 </div>
-<div class="section level4">
-<h4 id="retrieve-enhancers">3.3. Retrieve enhancers<a class="anchor" aria-label="anchor" href="#retrieve-enhancers"></a>
-</h4>
+<div class="section level3">
+<h3 id="retrieve-enhancers">3.4. Retrieve enhancers<a class="anchor" aria-label="anchor" href="#retrieve-enhancers"></a>
+</h3>
 <p>For enhancers output, you can specify the list of genes
 (<code>gene_list</code>) to use as seed (if NULL by default, all genes
 will be used as seed). Only the links between the seed genes and the
 peaks will be computed. <br> You can also specify the list of peaks to
 use. Only the score of the peaks present in the network and the
 <code>peak_list</code> will be returned.</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">enhancers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/define_enhancers.html">define_enhancers</a></span><span class="op">(</span></span>
 <span>  <span class="va">hummus</span>,</span>
 <span>  multilayer_f <span class="op">=</span> <span class="st">"chen_multilayer"</span>,</span>
 <span>  njobs <span class="op">=</span> <span class="fl">5</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">enhancers</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] layer      path_layer score      gene       peak      </span></span>
-<span><span class="co">## &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre>
+<pre><code><span><span class="co">##   layer                              path_layer score       gene</span></span>
+<span><span class="co">## 1 peaks multiplex/peaks/peak_network_cicero.tsv   0.3       AAAS</span></span>
+<span><span class="co">## 2 peaks multiplex/peaks/peak_network_cicero.tsv   0.3      CDK12</span></span>
+<span><span class="co">## 3 peaks multiplex/peaks/peak_network_cicero.tsv   0.3      CELF1</span></span>
+<span><span class="co">## 4 peaks multiplex/peaks/peak_network_cicero.tsv   0.3      CECR2</span></span>
+<span><span class="co">## 5 peaks multiplex/peaks/peak_network_cicero.tsv   0.3      CDR2L</span></span>
+<span><span class="co">## 6 peaks multiplex/peaks/peak_network_cicero.tsv   0.3 CDKN2AIPNL</span></span>
+<span><span class="co">##                       peak</span></span>
+<span><span class="co">## 1  chr12-53324701-53325341</span></span>
+<span><span class="co">## 2  chr17-39461248-39462242</span></span>
+<span><span class="co">## 3  chr11-47564995-47566065</span></span>
+<span><span class="co">## 4  chr22-17369193-17369908</span></span>
+<span><span class="co">## 5  chr17-74987853-74988547</span></span>
+<span><span class="co">## 6 chr5-134411543-134412380</span></span></code></pre>
 </div>
-<div class="section level4">
-<h4 id="retrieve-binding-regions">3.4. Retrieve binding regions<a class="anchor" aria-label="anchor" href="#retrieve-binding-regions"></a>
-</h4>
+<div class="section level3">
+<h3 id="retrieve-binding-regions">3.5. Retrieve binding regions<a class="anchor" aria-label="anchor" href="#retrieve-binding-regions"></a>
+</h3>
 <p>For binding regions output, you can specify the list of TFs
 (<code>tf_list</code>) to use as seed (if NULL by default, all TFs will
 be used as seed). Only the links between the seed TFs and the peaks will
 be computed. You can also specify the list of peaks to use. Only the
 score of the peaks present in the network and the <code>peak_list</code>
 will be returned.</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">binding_regions</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/define_binding_regions.html">define_binding_regions</a></span><span class="op">(</span></span>
 <span>  <span class="va">hummus</span>,</span>
 <span>  multilayer_f <span class="op">=</span> <span class="st">"chen_multilayer"</span>,</span>
 <span>  njobs <span class="op">=</span> <span class="fl">5</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">binding_regions</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] layer      path_layer score      tf         peak      </span></span>
-<span><span class="co">## &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre>
-</div>
-<div class="section level4">
-<h4 id="retrieve-target-genes">3.5. Retrieve target genes<a class="anchor" aria-label="anchor" href="#retrieve-target-genes"></a>
-</h4>
-<p>With HuMMuS, inference of GRN and target gene of TFs are different
-outputs. Indeed, while GRN is computed making TFs compete to regulate
-genes (by random walk with restart starting from the genes and going to
-the TFs), target genes are computed making genes compete to be regulated
-by TFs (by random walk with restart starting from the TFs and going to
-the genes).<br> For target genes output, you can specify the list of TFs
-(<code>tf_list</code>) to use as seed (if NULL by default, all TFs will
-be used as seed). Only the links between the seed TFs and the genes will
-be computed. You can also specify the list of genes to use. Only the
-score of the genes present in the network and the <code>gene_list</code>
-will be returned.</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">target_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/define_target_genes.html">define_target_genes</a></span><span class="op">(</span></span>
-<span>  <span class="va">hummus</span>,</span>
-<span>  multilayer_f <span class="op">=</span> <span class="st">"chen_multilayer"</span>,</span>
-<span>  njobs <span class="op">=</span> <span class="fl">5</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">target_genes</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] layer      path_layer score      tf         gene      </span></span>
-<span><span class="co">## &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">binding_regions</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##   layer                              path_layer       score   tf</span></span>
+<span><span class="co">## 1 peaks multiplex/peaks/peak_network_cicero.tsv 0.004411765 CUX1</span></span>
+<span><span class="co">## 2 peaks multiplex/peaks/peak_network_cicero.tsv 0.004411765 CUX1</span></span>
+<span><span class="co">## 3 peaks multiplex/peaks/peak_network_cicero.tsv 0.004411765 CUX1</span></span>
+<span><span class="co">## 4 peaks multiplex/peaks/peak_network_cicero.tsv 0.004411765 CUX1</span></span>
+<span><span class="co">## 5 peaks multiplex/peaks/peak_network_cicero.tsv 0.004411765 CUX1</span></span>
+<span><span class="co">## 6 peaks multiplex/peaks/peak_network_cicero.tsv 0.004411765 CUX1</span></span>
+<span><span class="co">##                       peak</span></span>
+<span><span class="co">## 1  chr11-47767168-47767746</span></span>
+<span><span class="co">## 2 chr7-134547463-134547887</span></span>
+<span><span class="co">## 3   chr9-35071761-35073047</span></span>
+<span><span class="co">## 4 chr9-108933616-108934871</span></span>
+<span><span class="co">## 5   chr8-96160496-96162055</span></span>
+<span><span class="co">## 6   chr8-24955892-24956818</span></span></code></pre>
 </div>
 </div>
   </div>
