@@ -1,0 +1,29 @@
+destination: docs
+url: https://cantinilab.github.io/HuMMuS
+navbar:
+  structure:
+    left: [home, reference, articles]
+    right: [github, twitter, homepage]
+  components:
+     twitter:
+       icon: "fab fa-twitter fa-lg"
+       href: https://twitter.com/saezlab
+     homepage:
+       icon: "fas fa-university"
+       href: https://saezlab.org/
+  type: dark
+  bg: primary
+template:
+  params:
+    ganalytics: G-36XYS9J0B3
+    highlightcss: false
+  bootstrap: 5
+  bootswatch: cosmo
+  bslib:
+    primary: "#F7C673"
+    link-color: "#265668"
+    link-hover-color: "#FAAAE2"
+    nav-link-color: "#265668"
+    nav-link-hover-color: "#265668"
+    nav-tabs-link-active-color: "#95D874"
+    nav-tabs-link-active-bg: "#FFFFFF"
