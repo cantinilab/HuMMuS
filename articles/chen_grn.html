@@ -305,7 +305,7 @@ database are not directional nor return any weight here.</p>
 <span>                            tf_network_name <span class="op">=</span> <span class="st">"TF_network"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Computing TF network...</span></span>
 <span><span class="co">##   31 TFs expressed</span></span>
-<span><span class="co">##  TF network construction time: 4.246507 </span></span>
+<span><span class="co">##  TF network construction time: 5.768642 </span></span>
 <span><span class="co">## No TF-TF edges from Omnipath for the given parameters.</span></span>
 <span><span class="co">##         You can try to change the source_target parameter to 'OR' to get</span></span>
 <span><span class="co">##         TF-other protein interactions. Or try to import a network  </span></span>
@@ -346,7 +346,7 @@ proximity.</p>
 <pre><code><span><span class="co">## Computing gene network with  GENIE3  ...</span></span>
 <span><span class="co">##  No TFs list provided, fetching from hummus object...</span></span>
 <span><span class="co">##   31 TFs expressed</span></span>
-<span><span class="co">##  Gene network construction time: 10.78592 </span></span>
+<span><span class="co">##  Gene network construction time: 12.34993 </span></span>
 <span><span class="co">##  Creating new multiplex :  RNA</span></span></code></pre>
 </div>
 <div class="section level3">
@@ -372,7 +372,7 @@ outputs are not directional.</p>
 <pre><code><span><span class="co">## Overlap QC metrics:</span></span>
 <span><span class="co">## Cells per bin: 50</span></span>
 <span><span class="co">## Maximum shared cells bin-bin: 44</span></span>
-<span><span class="co">## Mean shared cells bin-bin: 7.00239234449761</span></span>
+<span><span class="co">## Mean shared cells bin-bin: 6.26759906759907</span></span>
 <span><span class="co">## Median shared cells bin-bin: 0</span></span></code></pre>
 <pre><code><span><span class="co">## Warning in cicero::make_cicero_cds(input_cds, reduced_coordinates =</span></span>
 <span><span class="co">## umap_coords, : On average, more than 10% of cells are shared between paired</span></span>
@@ -392,8 +392,8 @@ outputs are not directional.</p>
 <span><span class="co">## [1] "Models with errors:  0"</span></span>
 <span><span class="co">## [1] "Done"</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">##  5112 peak edges with a coaccess score &gt; 0 were found.</span></span>
-<span><span class="co">## Peak network construction time: 38.71998 Creating new multiplex :  peaks</span></span></code></pre>
+<span><span class="co">##  5318 peak edges with a coaccess score &gt; 0 were found.</span></span>
+<span><span class="co">## Peak network construction time: 52.01216 Creating new multiplex :  peaks</span></span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -423,7 +423,7 @@ to compute HuMMuS outputs later)</p>
 <span><span class="co">##  Networks names:  TF_network[1] "TF TF_network"</span></span>
 <span><span class="co">## Multiplex of  1  networks with 2000 features.</span></span>
 <span><span class="co">##  Networks names:  RNA_GENIE3[1] "RNA RNA_GENIE3"</span></span>
-<span><span class="co">## Multiplex of  1  networks with 3994 features.</span></span>
+<span><span class="co">## Multiplex of  1  networks with 4135 features.</span></span>
 <span><span class="co">##  Networks names:  peak_network_cicero[1] "peaks peak_network_cicero"</span></span></code></pre>
 </div>
 <div class="section level3">
@@ -448,13 +448,13 @@ will be returned.</p>
 <span>  <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">target_genes</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##   layer                   path_layer        score    tf    gene</span></span>
-<span><span class="co">## 1   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0002453203  CUX1  ANGEL2</span></span>
-<span><span class="co">## 2   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0001811161    AR C7orf49</span></span>
-<span><span class="co">## 3   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0001668951  CUX1   CDCA5</span></span>
-<span><span class="co">## 4   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0001667468 ATF6B    ATRN</span></span>
-<span><span class="co">## 5   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0001665477  CUX1   CDC5L</span></span>
-<span><span class="co">## 6   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0001659737 ATF6B   APBB1</span></span></code></pre>
+<pre><code><span><span class="co">##   layer                   path_layer        score    tf   gene</span></span>
+<span><span class="co">## 1   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0002898752  CUX1  CDCA5</span></span>
+<span><span class="co">## 2   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0001938394  CUX1  CDC5L</span></span>
+<span><span class="co">## 3   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0001913898  CUX1 CHRNB1</span></span>
+<span><span class="co">## 4   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0001887179  CUX1  ALG11</span></span>
+<span><span class="co">## 5   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0001884333  CUX1  AGBL5</span></span>
+<span><span class="co">## 6   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0001654671 ATF6B  DDX49</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="define-grn">3.3. Define GRN<a class="anchor" aria-label="anchor" href="#define-grn"></a>
@@ -487,12 +487,12 @@ associated probability.</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">grn</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   layer                  path_layer      score       gene     tf</span></span>
-<span><span class="co">## 0    TF multiplex/TF/TF_network.tsv 0.03473520      BEND4 BCL11A</span></span>
-<span><span class="co">## 1    TF multiplex/TF/TF_network.tsv 0.03389616 AC007204.2  CXXC1</span></span>
-<span><span class="co">## 2    TF multiplex/TF/TF_network.tsv 0.03381979       CCT7 BCL11A</span></span>
-<span><span class="co">## 3    TF multiplex/TF/TF_network.tsv 0.03360623   ARHGEF19 BCL11A</span></span>
-<span><span class="co">## 4    TF multiplex/TF/TF_network.tsv 0.03340583      CSMD2 BCL11A</span></span>
-<span><span class="co">## 5    TF multiplex/TF/TF_network.tsv 0.03336888    CSNK2A1 ARID3A</span></span></code></pre>
+<span><span class="co">## 0    TF multiplex/TF/TF_network.tsv 0.03402658 AC007204.2  CXXC1</span></span>
+<span><span class="co">## 1    TF multiplex/TF/TF_network.tsv 0.03367489       CCT7 BCL11A</span></span>
+<span><span class="co">## 2    TF multiplex/TF/TF_network.tsv 0.03345611   C9orf116   CTCF</span></span>
+<span><span class="co">## 3    TF multiplex/TF/TF_network.tsv 0.03338593      BEND4 BCL11A</span></span>
+<span><span class="co">## 4    TF multiplex/TF/TF_network.tsv 0.03338567      ACAT2 BCL11A</span></span>
+<span><span class="co">## 5    TF multiplex/TF/TF_network.tsv 0.03338421    DCLRE1C BCL11A</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="retrieve-enhancers">3.4. Retrieve enhancers<a class="anchor" aria-label="anchor" href="#retrieve-enhancers"></a>
@@ -511,20 +511,20 @@ use. Only the score of the peaks present in the network and the
 <span>  <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">enhancers</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##   layer                              path_layer score    gene</span></span>
-<span><span class="co">## 1 peaks multiplex/peaks/peak_network_cicero.tsv   0.3   DNPEP</span></span>
-<span><span class="co">## 2 peaks multiplex/peaks/peak_network_cicero.tsv   0.3    AAAS</span></span>
-<span><span class="co">## 3 peaks multiplex/peaks/peak_network_cicero.tsv   0.3    AAR2</span></span>
-<span><span class="co">## 4 peaks multiplex/peaks/peak_network_cicero.tsv   0.3  DNAJC5</span></span>
-<span><span class="co">## 5 peaks multiplex/peaks/peak_network_cicero.tsv   0.3 DNAJC18</span></span>
-<span><span class="co">## 6 peaks multiplex/peaks/peak_network_cicero.tsv   0.3  ABHD11</span></span>
-<span><span class="co">##                       peak</span></span>
-<span><span class="co">## 1 chr2-219387317-219388731</span></span>
-<span><span class="co">## 2  chr12-53324701-53325341</span></span>
-<span><span class="co">## 3  chr20-36236013-36236802</span></span>
-<span><span class="co">## 4  chr20-63894340-63895570</span></span>
-<span><span class="co">## 5 chr5-139439002-139439742</span></span>
-<span><span class="co">## 6   chr7-73738654-73739271</span></span></code></pre>
+<pre><code><span><span class="co">##   layer                              path_layer score     gene</span></span>
+<span><span class="co">## 1 peaks multiplex/peaks/peak_network_cicero.tsv   0.3     AAR2</span></span>
+<span><span class="co">## 2 peaks multiplex/peaks/peak_network_cicero.tsv   0.3 C20orf96</span></span>
+<span><span class="co">## 3 peaks multiplex/peaks/peak_network_cicero.tsv   0.3    CENPV</span></span>
+<span><span class="co">## 4 peaks multiplex/peaks/peak_network_cicero.tsv   0.3    CENPT</span></span>
+<span><span class="co">## 5 peaks multiplex/peaks/peak_network_cicero.tsv   0.3    CENPH</span></span>
+<span><span class="co">## 6 peaks multiplex/peaks/peak_network_cicero.tsv   0.3    CENPA</span></span>
+<span><span class="co">##                      peak</span></span>
+<span><span class="co">## 1 chr20-36236013-36236802</span></span>
+<span><span class="co">## 2     chr20-278135-279550</span></span>
+<span><span class="co">## 3 chr17-16352782-16353790</span></span>
+<span><span class="co">## 4 chr16-67846391-67847319</span></span>
+<span><span class="co">## 5  chr5-69189186-69190061</span></span>
+<span><span class="co">## 6  chr2-26764069-26764868</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="retrieve-binding-regions">3.5. Retrieve binding regions<a class="anchor" aria-label="anchor" href="#retrieve-binding-regions"></a>
@@ -544,19 +544,19 @@ will be returned.</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">binding_regions</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   layer                              path_layer       score   tf</span></span>
-<span><span class="co">## 1 peaks multiplex/peaks/peak_network_cicero.tsv 0.004411765 CUX1</span></span>
-<span><span class="co">## 2 peaks multiplex/peaks/peak_network_cicero.tsv 0.004411765 CUX1</span></span>
-<span><span class="co">## 3 peaks multiplex/peaks/peak_network_cicero.tsv 0.004411765 CUX1</span></span>
-<span><span class="co">## 4 peaks multiplex/peaks/peak_network_cicero.tsv 0.004411765 CUX1</span></span>
-<span><span class="co">## 5 peaks multiplex/peaks/peak_network_cicero.tsv 0.004411765 CUX1</span></span>
-<span><span class="co">## 6 peaks multiplex/peaks/peak_network_cicero.tsv 0.004411765 CUX1</span></span>
-<span><span class="co">##                        peak</span></span>
-<span><span class="co">## 1    chr1-25707252-25707521</span></span>
-<span><span class="co">## 2    chr1-65002512-65003322</span></span>
-<span><span class="co">## 3   chr16-27203359-27204355</span></span>
-<span><span class="co">## 4   chr10-48604609-48605325</span></span>
-<span><span class="co">## 5   chr17-29639252-29639855</span></span>
-<span><span class="co">## 6 chr11-122440238-122441115</span></span></code></pre>
+<span><span class="co">## 1 peaks multiplex/peaks/peak_network_cicero.tsv 0.005172414 CUX1</span></span>
+<span><span class="co">## 2 peaks multiplex/peaks/peak_network_cicero.tsv 0.005172414 CUX1</span></span>
+<span><span class="co">## 3 peaks multiplex/peaks/peak_network_cicero.tsv 0.005172414 CUX1</span></span>
+<span><span class="co">## 4 peaks multiplex/peaks/peak_network_cicero.tsv 0.005172414 CUX1</span></span>
+<span><span class="co">## 5 peaks multiplex/peaks/peak_network_cicero.tsv 0.005172414 CUX1</span></span>
+<span><span class="co">## 6 peaks multiplex/peaks/peak_network_cicero.tsv 0.005172414 CUX1</span></span>
+<span><span class="co">##                       peak</span></span>
+<span><span class="co">## 1   chrX-48918888-48919598</span></span>
+<span><span class="co">## 2    chr12-2794301-2796124</span></span>
+<span><span class="co">## 3 chr2-240435084-240436071</span></span>
+<span><span class="co">## 4  chr19-43463005-43464363</span></span>
+<span><span class="co">## 5  chr19-11355194-11355608</span></span>
+<span><span class="co">## 6  chr17-79809968-79810412</span></span></code></pre>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
