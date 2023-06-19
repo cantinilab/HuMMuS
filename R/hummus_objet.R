@@ -146,7 +146,7 @@ setMethod("show", "multilayer",
 
 #' The hummus_object class
 #'
-#' The SeuratPlus object is an extended \code{Seurat} object
+#' The hummus_object object is an extended \code{Seurat} object
 #' for the storage and analysis of a heterogeneous multilayer network
 #'
 #' @slot multilayer (multilayer) - Multilayer object
