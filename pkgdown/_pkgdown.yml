@@ -5,12 +5,9 @@ navbar:
     left: [home, reference, articles]
     right: [github, twitter, homepage]
   components:
-     twitter:
-       icon: "fab fa-twitter fa-lg"
-       href: https://twitter.com/saezlab
      homepage:
        icon: "fas fa-university"
-       href: https://saezlab.org/
+       href: https://research.pasteur.fr/en/team/machine-learning-for-integrative-genomics/
   type: dark
   bg: primary
 template:
