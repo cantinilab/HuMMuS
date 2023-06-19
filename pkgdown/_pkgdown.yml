@@ -3,7 +3,7 @@ url: https://cantinilab.github.io/HuMMuS
 navbar:
   structure:
     left: [home, reference, articles]
-    right: [github, twitter, homepage]
+    right: [github, homepage]
   components:
      homepage:
        icon: "fas fa-university"
