@@ -341,7 +341,7 @@ def setup_proba_config(
         lamb: pd.DataFrame):
     """ Setup the RWR probability for the exploration of hummus networks
     with the given eta and lambda values.
-    The lambda values are normalised (per rows) to sum to 1.
+    The lambda values are normalised (per columns) to sum to 1.
 
     Parameters
     ----------
@@ -391,7 +391,7 @@ def setup_proba_config(
         .format(len(eta), len(config['multiplex']))
 
     lamb = lamb.transpose()
-    # Normalise lamb per rows
+    # Normalise lamb per col
     lamb = lamb.div(lamb.sum(axis=0), axis=1)
     lamb = lamb.fillna(0)
 
