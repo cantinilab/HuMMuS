@@ -225,7 +225,7 @@ def define_grn_from_config(
         config,
         gene_list=None,
         tf_list=None,
-        config_name='grn_hummuspy.config.yml',
+        config_name='grn_config.yml',
         config_folder='config',
         tf_multiplex: str = 'TF',
         peak_multiplex: str = 'peaks',
@@ -239,6 +239,9 @@ def define_grn_from_config(
     Random walks are computed for each gene in the gene list and we keep
     the probability to reach each TF in the TF list.
     You can provide a list of genes and TFs to restrict the GRN.
+    The gene_list is used as individual seed for computing the random walks.
+    The list of TFs is used after the random walks, filtering the results to
+    only the TFs of interest.
     You can choose to save the result in a file and/or return it.
 
     Parameters
@@ -252,9 +255,12 @@ def define_grn_from_config(
     tf_list : list, optional
         List of TFs. The default is 'all'.
     config_name : str, optional
-        Name of the config file. The default is 'grn_hummuspy.config.yml'.
+        Name of the config file that will be saved.
+        The default is 'grn_config.yml'.
     config_folder : str, optional
-        Name of the config folder. The default is 'config'.
+        Name of the config folder where the config will be save.
+        ! For each seed (sometimes thousands), a file should be created in this
+        folder. The default is 'config'.
     tf_multiplex : str, optional
         Name of the TF multiplex. The default is 'TF'.
     peak_multiplex : str, optional
@@ -262,16 +268,19 @@ def define_grn_from_config(
     rna_multiplex : str, optional
         Name of the RNA multiplex. The default is 'RNA'.
     update_config : bool, optional
-        Update the config file. The default is True.
+        Update the config file. The default is True ; if False, the config
+        file won't be updated for the values of eta and lamb.
     save : bool, optional
-        Save the result. The default is False.
+        Save the result. The default is False. If True, you need to provide
+        an output_f name to save the GRN result.
     return_df : bool, optional
         Return the result. The default is True.
     output_f : str, optional
-        Name of the output file. The default is None.
+        Name of the output file. The default is None. Only used if save=True.
     njobs : int, optional
-        Number of jobs. The default is 1.
-
+        Number of jobs. The default is 1. If >1, the seeds will be saved in
+        different files (in the multilayer subfolder 'seed') and the random
+        walks will be parallelised.
     Returns
     -------
     df : pd.DataFrame
@@ -279,7 +288,6 @@ def define_grn_from_config(
         Columns:
             layer : str
                 Name of the target layer.
-
             path_layer : str
                 Name of the layer of the path.
             score : float
@@ -375,7 +383,7 @@ def define_enhancers_from_config(
         config,
         gene_list=None,
         peak_list=None,
-        config_name='enhancers_hummuspy.config.yml',
+        config_name='enhancers_config.yml',
         config_folder='config',
         tf_multiplex: str = 'TF',
         peak_multiplex: str = 'peaks',
@@ -385,8 +393,67 @@ def define_enhancers_from_config(
         return_df=True,
         output_f=None,
         njobs=1):
-    """
-    See define_grn_from_config docs.
+    """Return enhancers prediction from a multilayer network and a config file.
+    Random walks are computed for each gene in the gene list and we keep
+    the probability to reach each peak in the peak list.
+    You can provide a peak_list and a gene_list to restrict the predictions.
+    The gene_list is used as individual seed for computing the random walks.
+    The list of peaks is used after the random walks, filtering the results to
+    only the peaks of interest.
+    You can choose to save the result in a file and/or return it.
+
+    Parameters
+    ----------
+    multilayer_f : str
+        Path to the multilayer folder.
+    config : dict
+        Config dictionnary.
+    gene_list : list, optional
+        List of genes. The default is 'all'.
+    peak_list : list, optional
+        List of peaks. The default is 'all'.
+    config_name : str, optional
+        Name of the config file that will be saved.
+        The default is 'enhancers_config.yml'.
+    config_folder : str, optional
+        Name of the config folder where the config will be save.
+        ! For each seed (sometimes thousands), a file should be created in this
+        folder. The default is 'config'.
+    tf_multiplex : str, optional
+        Name of the TF multiplex. The default is 'TF'.
+    peak_multiplex : str, optional
+        Name of the peak multiplex. The default is 'peaks'.
+    rna_multiplex : str, optional
+        Name of the RNA multiplex. The default is 'RNA'.
+    update_config : bool, optional
+        Update the config file. The default is True ; if False, the config
+        file won't be updated for the values of eta and lamb.
+    save : bool, optional
+        Save the result. The default is False. If True, you need to provide
+        an output_f name to save the predictions.
+    return_df : bool, optional
+        Return the result. The default is True.
+    output_f : str, optional
+        Name of the output file. The default is None. Only used if save=True.
+    njobs : int, optional
+        Number of jobs. The default is 1. If >1, the seeds will be saved in
+        different files (in the multilayer subfolder 'seed') and the random
+        walks will be parallelised.
+    Returns
+    -------
+    df : pd.DataFrame
+        Dataframe of the random walks's results that defines the predictions.
+        Columns:
+            layer : str
+                Name of the target layer.
+            path_layer : str
+                Name of the layer of the path.
+            score : float
+                Score of the random walk.
+            gene : str
+                Name of the gene-seed.
+            peak : str
+                Name of the peak-target.
     """
     # store mutliplex already because it will be when saving yaml file,
     # while eta and lambda won't.
@@ -484,8 +551,69 @@ def define_binding_regions_from_config(
         return_df=True,
         output_f=None,
         njobs=1):
-    """
-    See define_grn_from_config docs.
+    """Return binding regions prediction from a multilayer network and a config
+    file. Random walks are computed for each TF in the TF list and we keep the
+    probability to reach each peak in the peak list.
+    You can provide a list of peaks and a tf_list to restrict the predictions.
+    The list of TFs is used as individual seed for computing the random walks.
+    The list of peaks is used after the random walks, filtering the results to
+    only the peaks of interest.
+    You can choose to save the result in a file and/or return it.
+
+
+    Parameters
+    ----------
+    multilayer_f : str
+        Path to the multilayer folder.
+    config : dict
+        Config dictionnary.
+    tf_list : list, optional
+        List of TFs. The default is 'all'.
+    peak_list : list, optional
+        List of peaks. The default is 'all'.
+    config_name : str, optional
+        Name of the config file that will be saved.
+        The default is 'binding_regions_config.yml'.
+    config_folder : str, optional
+        Name of the config folder where the config will be save.
+        ! For each seed (sometimes thousands), a file should be created in this
+         folder. The default is 'config'.
+    tf_multiplex : str, optional
+        Name of the TF multiplex. The default is 'TF'.
+    peak_multiplex : str, optional
+       Name of the peak multiplex. The default is 'peaks'.
+    rna_multiplex : str, optional
+        Name of the RNA multiplex. The default is 'RNA'.
+    update_config : bool, optional
+        Update the config file. The default is True ; if False, the config
+        file won't be updated for the values of eta and lamb.
+    save : bool, optional
+        Save the result. The default is False. If True, you need to provide
+        an output_f name to save the predictions.
+    return_df : bool, optional
+        Return the result. The default is True.
+    output_f : str, optional
+        Name of the output file. The default is None. Only used if save=True.
+    njobs : int, optional
+        Number of jobs. The default is 1. If >1, the seeds will be saved in
+        different files (in the multilayer subfolder 'seed') and the random
+        walks will be parallelised.
+
+    Returns
+    -------
+    df : pd.DataFrame
+        Dataframe of the random walks's results that defines the predictions.
+        Columns:
+            layer : str
+                Name of the target layer.
+            path_layer : str
+                Name of the layer of the path.
+            score : float
+                Score of the random walk.
+            tf : str
+                Name of the TF-seed.
+            peak : str
+                Name of the peak-target.
     """
     # store mutliplex already because it will be when saving yaml file,
     # while eta and lambda won't.
@@ -574,7 +702,7 @@ def define_target_genes_from_config(
         config,
         gene_list=None,
         tf_list=None,
-        config_name='grn_hummuspy.config.yml',
+        config_name='target_genes_config.yml',
         config_folder='config',
         tf_multiplex: str = 'TF',
         peak_multiplex: str = 'peaks',
@@ -584,10 +712,13 @@ def define_target_genes_from_config(
         return_df=True,
         output_f=None,
         njobs=1):
-    """Define a GRN from a multilayer network and a config file.
-    Random walks are computed for each gene in the gene list and we keep
-    the probability to reach each TF in the TF list.
-    You can provide a list of genes and TFs to restrict the GRN.
+    """Return target genes prediction from a multilayer network and a config
+    file. Random walks are computed for each TF in the TF list and we keep the
+    probability to reach each gene in the gene list.
+    You can provide a list of genes and a tf_list to restrict the predictions.
+    The list of TFs is used as individual seed for computing the random walks.
+    The list of genes is used after the random walks, filtering the results to
+    only the genes of interest.
     You can choose to save the result in a file and/or return it.
 
     Parameters
@@ -601,9 +732,12 @@ def define_target_genes_from_config(
     tf_list : list, optional
         List of TFs. The default is 'all'.
     config_name : str, optional
-        Name of the config file. The default is 'grn_hummuspy.config.yml'.
+        Name of the config file that will be saved.
+        The default is 'target_genes_config.yml'.
     config_folder : str, optional
-        Name of the config folder. The default is 'config'.
+        Name of the config folder where the config will be save.
+        ! For each seed (sometimes thousands), a file should be created in this
+        folder. The default is 'config'.
     tf_multiplex : str, optional
         Name of the TF multiplex. The default is 'TF'.
     peak_multiplex : str, optional
@@ -611,33 +745,35 @@ def define_target_genes_from_config(
     rna_multiplex : str, optional
         Name of the RNA multiplex. The default is 'RNA'.
     update_config : bool, optional
-        Update the config file. The default is True.
+        Update the config file. The default is True ; if False, the config
+        file won't be updated for the values of eta and lamb.
     save : bool, optional
-        Save the result. The default is False.
+        Save the result. The default is False. If True, you need to provide
+        an output_f name to save the predictions.
     return_df : bool, optional
         Return the result. The default is True.
     output_f : str, optional
-        Name of the output file. The default is None.
+        Name of the output file. The default is None. Only used if save=True.
     njobs : int, optional
-        Number of jobs. The default is 1.
+        Number of jobs. The default is 1. If >1, the seeds will be saved in
+        different files (in the multilayer subfolder 'seed') and the random
+        walks will be parallelised.
 
     Returns
     -------
     df : pd.DataFrame
-        Dataframe containing the random walks's results that defines the GRN.
+        Dataframe of the random walks's results that defines the predictions.
         Columns:
             layer : str
                 Name of the target layer.
-
             path_layer : str
                 Name of the layer of the path.
             score : float
                 Score of the random walk.
-            gene : str
-                Name of the gene-seed.
             tf : str
-                Name of the TF-target.
-
+                Name of the TF-seed.
+            gene : str
+                Name of the gene-target.
     """
     # store mutliplex already because it will be when saving yaml file,
     # while eta and lambda won't.
@@ -725,7 +861,7 @@ def get_output_from_dicts(
         gene_list=None,
         tf_list=None,
         peak_list=None,
-        config_filename='grn_hummuspy.config.yml',
+        config_filename='config.yml',
         config_folder='config',
         tf_multiplex: str = 'TF',
         peak_multiplex: str = 'peaks',
@@ -755,7 +891,7 @@ def get_output_from_dicts(
     tf_list : list, optional
         List of TFs. The default is 'all'.
     config_name : str, optional
-        Name of the config file. The default is 'grn_hummuspy.config.yml'.
+        Name of the config file. The default is 'config.yml'.
     config_folder : str, optional
         Name of the config folder. The default is 'config'.
     tf_multiplex : str, optional
