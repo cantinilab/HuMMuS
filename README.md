@@ -1,13 +1,13 @@
-![Build](https://github.com/cantinilab/HuMMuS/____/badge.svg?branch=main)
-
 # HuMMuS <img src="man/figures/hummus_logo.png" align="right" width="180"/>
-### Heterogeneous Multilayer network for Multi-omics Single-cell data 
+### Heterogeneous Multilayer network for Multi-omics Single-cell data
 
 HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory mechanisms.
 Inter-omics (e.g. peak-gene, TF-peak) and intra-omics interactions (e.g. peak-peak, gene-gene, TF-TF) are considered to capture both regulatory interactions and macromolecule cooperations.
 
 ## Overview
-The current outputs available from HuMMuS are 
+
+The current outputs available from HuMMuS are
+
 * gene regulatory networks (GRNs)
 * enhancers
 * TF - DNA binding regions
@@ -16,7 +16,7 @@ The current outputs available from HuMMuS are
 #### [Read our preprint](https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1) for more details !
 <img src="man/figures/Fig_0001.jpg" align="center" width="1000"/>
 
-### **scRNA + scATAC** 
+### **scRNA + scATAC**
 Like most of the current state-of-the-art methods to infer GRN, we propose a minimal version of HuMMuS based on scRNA-seq + scATAC-seq data (paired or **unpaired**).
 
 ### **Use of additional modalities**
@@ -48,7 +48,7 @@ py_install("hummuspy", envname = "r-reticulate", method="auto")
 ### HuMMuS R package
 Core R package can be installed directly from R:
 ```r
-devtools::install_github("cantinilab/HuMMuS") 
+devtools::install_github("cantinilab/HuMMuS")
 ```
 
 Before running HuMMuS, if you're using multiple conda environment you need to make sure to that reticulate points toward the one where hummuspy is installed. You can precise it at the beginning of your code :
@@ -66,7 +66,7 @@ To compute directly the scATAC data with HuMMuS, we currently only propose to us
 You then need to install both [Monocle3](https://cole-trapnell-lab.github.io/monocle3/docs/installation/), and Cicero:
 
 ```r
-devtools::install_github('cole-trapnell-lab/monocle3')
+devtools::install_github("cole-trapnell-lab/monocle3")
 devtools::install_github("cole-trapnell-lab/cicero-release", ref = "monocle3")
 ```
 *If you encounter some troubles with Monocle3 installation, on ubuntu you can try to run: `sudo apt-get install libgdal-dev libgeos-dev libproj-dev`. You can also go on [their github page](https://github.com/cole-trapnell-lab/monocle3/issues) for more help. Having a previous version of Monocle (1 or 2) still in your R session can cause some troubles. If you encounter some even after restarting your R session,, try to `remove.packages("monocle")` before to reinstall both Monocle**3** and Cicero*
@@ -77,4 +77,4 @@ To reproduce HuMMuS results presented in the manuscript, preprocessed data [are 
 <br> For quick tests, the Chen dataset preprocessed is accessible directly through the package as a Seurat object: `load(chen_data)`.
 
 ## Cite us
-Trimbour R., Deutschmann I. M., Cantini L. Molecular mechanisms reconstruction from single-cell multi-omics data with HuMMuS. bioXriv (2023). doi: https://doi.org/10.1101/2023.06.09.543828 
+Trimbour R., Deutschmann I. M., Cantini L. Molecular mechanisms reconstruction from single-cell multi-omics data with HuMMuS. bioXriv (2023). doi: https://doi.org/10.1101/2023.06.09.543828

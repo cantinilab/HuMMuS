@@ -1,0 +1,26 @@
+destination: docs
+url: https://cantinilab.github.io/HuMMuS
+navbar:
+  structure:
+    left: [home, reference, articles]
+    right: [github, homepage]
+  components:
+     homepage:
+       icon: "fas fa-university"
+       href: https://research.pasteur.fr/en/team/machine-learning-for-integrative-genomics/
+  type: dark
+  bg: primary
+template:
+  params:
+    ganalytics: G-36XYS9J0B3
+    highlightcss: false
+  bootstrap: 5
+  bootswatch: cosmo
+  bslib:
+    primary: "#F7C673"
+    link-color: "#265668"
+    link-hover-color: "#FAAAE2"
+    nav-link-color: "#265668"
+    nav-link-hover-color: "#265668"
+    nav-tabs-link-active-color: "#95D874"
+    nav-tabs-link-active-bg: "#FFFFFF"

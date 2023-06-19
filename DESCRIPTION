@@ -1,26 +1,26 @@
 Package: HuMMuS
 Title: Heterogeneous Multilayer Network for Multi-Omics Single-Cell Data
 Version: 0.0.1
-Authors@R: person(given = "Rémi", 
+Authors@R: person(given = "Rémi",
     family = "Trimbour",
     email = "remi.trimbour@pasteur.fr",
     role = c("aut", "cre"),
     comment = c(ORCID = "0000-0001-8770-8412"))
-Description: A general framework to infer regulatory mechanisms from multi-omics single-cell data. 
+Description: A general framework to infer regulatory mechanisms from multi-omics single-cell data.
     HuMMuS package provides functions to build individual networks
-    from different single-cell modalities, then to integrate them 
+    from different single-cell modalities, then to integrate them
     into a single-cell heterogeneous multilayer network. The package
     also provides functions to infer regulatory mechanisms from the
     heterogeneous multilayer network.
-    HuMMuS is based on a flexible framework that can be adapted to any 
+    HuMMuS is based on a flexible framework that can be adapted to any
     single-cell modalities. We provide study cases for scRNA+scATAC
     and scRNA+scATAC+snmC(methylation) that can be completed by PPI.
     Many regulatory mechanisms can be inferred with HuMMuS, notably
-    classical gene regulatory networks (GRN), but TF-target genes, 
-    enhancer-gene interactions, TF-enhancer bindings, or even research 
+    classical gene regulatory networks (GRN), but TF-target genes,
+    enhancer-gene interactions, TF-enhancer bindings, or even research
     of heterogeneous communnities of omics features (e.g. ensemble of
     peaks, genes and TFs cooperating to the same biological function).
-License: use_agpl3_license()
+License: AGPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
