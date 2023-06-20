@@ -55,7 +55,7 @@ bipartite_tfs2peaks <- function(
   if (verbose > 0) {
     cat("Computing TF-peak bipartite\n")
   }
-  # Check if tf_gene_assay is NULL
+  # Cck if tf_gene_assay is NULL
   if (!is.null(tf_expr_assay)) {
     # Check if the gene assay is present in the seurat object
     if (!tf_expr_assay %in% names(hummus_object@assays)) {

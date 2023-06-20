@@ -77,8 +77,8 @@ fast_aggregate <- function(
     fun = "sum",
     ...
 ) {
-    if (!is(x, "Matrix::Matrix")) {
-        x <- Matrix::Matrix(as.matrix(x), sparse = TRUE)
+    if (!is(x, "Matrix")) {
+        x <- Matrix(as.matrix(x), sparse = TRUE)
     }
     if (fun == "count") {
         x <- x != 0
@@ -201,8 +201,8 @@ aggregate_matrix <- function(
     groups = NULL,
     fun = "mean"
 ) {
-    if (length(groups) == nrow(x) && "character" %in% class(fun)) {
-        if (fun%in%c("count", "sum")) {
+    if (length(groups) == nrow(x) & "character" %in% class(fun)) {
+        if (fun %in% c("count", "sum")) {
             agg_mat <- fast_aggregate(x = x, groupings = groups, fun = fun)
             return(agg_mat)
         }
