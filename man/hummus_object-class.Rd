@@ -6,7 +6,7 @@
 \alias{hummus_object}
 \title{The hummus_object class}
 \description{
-The SeuratPlus object is an extended \code{Seurat} object
+The hummus_object object is an extended \code{Seurat} object
 for the storage and analysis of a heterogeneous multilayer network
 }
 \section{Slots}{
