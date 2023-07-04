@@ -6,7 +6,8 @@
 #' @param hummus (hummus_object) - Hummus object
 #' @param organism (integer)  - Specie identifier from Omnipath to fetch
 #' specific interactions
-#' @param tfs vector(character) - List of tfs considered.
+#' @param tfs vector(character) - List of tfs consider. If NA, tfs are extracted
+#' from the hummus object with get_tfs function.
 #' @param gene_assay (character) - Name of the assay to get tfs from if tfs is
 #' not provided. If NULL, all TFs with motifs in the hummus object are used.
 #' @param store_network (bool) - Save the network directly (\code{TRUE},
@@ -52,20 +53,30 @@ compute_tf_network <- function(
     organism = organism, partners = tfs, source_target = source_target
   )
 
-  # Get tfs list
-  tfs <- get_tfs(hummus = hummus,
-            assay = gene_assay,
-            store_tfs = FALSE,
-            output_file = NULL,
-            verbose = verbose)
+  if (verbose > 0) {
+    cat("\tNumber of edges from Omnipath:", nrow(TF_PPI),
+    "\nWill now be filtered to only those corresponding to specified tfs")
+  }
+  
+  if (is.na(tfs)) {
+    # Get tfs list
+    tfs <- get_tfs(hummus = hummus,
+              assay = gene_assay,
+              store_tfs = FALSE,
+              output_file = NULL,
+              verbose = verbose)
+  } else if (typeof(tfs) != "character") {
+      stop("'tfs' argument needs to be a vector of characters
+      (e.g.: c('MYC', 'JAK1')).")
+  }
 
   # add filtering if element is not a TF expressed in the dataset
   if (source_target == "AND") {
-    TF_PPI <- TF_PPI[which(TF_PPI$source %in% tfs &
-                           TF_PPI$target %in% tfs), ]
+    TF_PPI <- TF_PPI[which(TF_PPI$source_genesymbol %in% tfs &
+                           TF_PPI$target_genesymbol %in% tfs), ]
   } else if (source_target == "OR") {
-    TF_PPI <- TF_PPI[which(TF_PPI$source %in% tfs |
-                           TF_PPI$target %in% tfs), ]
+    TF_PPI <- TF_PPI[which(TF_PPI$source_genesymbol %in% tfs |
+                           TF_PPI$target_genesymbol %in% tfs), ]
   }
   # Get only source and target columns
   tf_network <- TF_PPI[, c(3, 4)]
