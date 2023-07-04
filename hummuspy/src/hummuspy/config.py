@@ -646,7 +646,8 @@ def get_max_lamb(config, draw=False):
 
     # Create an empty dataframe with layer names as index and columns
     # that we'll fill where it's possible according to the bipartites
-    max_lamb = pd.DataFrame(np.zeros((3, 3)),
+    max_lamb = pd.DataFrame(np.zeros((len(config['multiplex']),
+                                      len(config['multiplex']))),
                             index=config['multiplex'].keys(),
                             columns=config['multiplex'].keys())
 
@@ -659,7 +660,7 @@ def get_max_lamb(config, draw=False):
     # could be conditionned by bipartite directionality
     max_lamb += max_lamb.transpose()
     # filling the diagonal to allow intra-layer exploration
-    max_lamb += np.eye(3).astype(int)
+    max_lamb += np.eye(len(config['multiplex'])).astype(int)
     # normalise per rows
     max_lamb = max_lamb.div(max_lamb.sum(axis=1), axis=0)
 

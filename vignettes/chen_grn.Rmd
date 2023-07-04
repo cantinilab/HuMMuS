@@ -81,7 +81,6 @@ You can also request any "EnsDB" object adapted to your data
 # wrapper of Signac::GetGRangesFromEnsDb, adapting output to UCSC format
 genome_annotations <- get_genome_annotations(
   ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
-
 ```
 
 Add genome annotations to hummus/seurat object
@@ -148,7 +147,7 @@ hummus <- bipartite_peaks2genes(
 ```
 
 #### Compute layer networks and add it to hummus object
-Each one of the three layers is computed inidividually. 
+Each one of the three layers is computed individually. 
 
 ### 2.3. Compute the TF network from OmniPath database
 We currently use OmniPath R package to fetch TF interactions. 
@@ -221,7 +220,7 @@ hummus <- compute_atac_peak_network(hummus,
 ```
 
 
-## Analyse of the multilayer and definition of GRN
+## 3. Analyse of the multilayer and definition of GRN
 ### 3.1. Save the mulilayer in a classic hierarchical structure
 The package used for the random walk with restart exploration (multixrank)
  requires currently to save all the network files on disk. To simplify the
