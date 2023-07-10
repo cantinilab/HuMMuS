@@ -211,12 +211,20 @@ def general_config(
 
     # if type of bipartites not associated to their names already,
     # we create a dict with the same order as the bipartites
-    bipartites_type = make_values_list(bipartites_type)
     if type(bipartites_type) == list:
+        print("bipartites_type has been provided throguh a list, make sure " +
+              "the order matches the one of the 'bipartites' dictionary' keys."
+              )
         temp = dict()
         for i in range(len(bipartites)):
             temp[list(bipartites.keys())[i]] = bipartites_type[i]
         bipartites_type = temp
+    elif type(bipartites_type) == list:
+        assert list(bipartites.keys()).sort() == list(
+            bipartites_type.keys()).sort(),\
+            "The keys of the 'bipartites_type' and of the 'bipartites' " +\
+            "dictionary doesn't seem to match. " + \
+            "Please provide identical keys for each dictionary."
 
     # we add the bipartites
     for bipartite in bipartites:
@@ -337,8 +345,9 @@ def old_setup_proba_config(
 
 def setup_proba_config(
         config: dict,
-        eta,
-        lamb: pd.DataFrame):
+        eta: Union[pd.Series, np.ndarray, list[float]],
+        lamb: Union[pd.DataFrame, np.ndarray]
+        ):
     """ Setup the RWR probability for the exploration of hummus networks
     with the given eta and lambda values.
     The lambda values are normalised (per columns) to sum to 1.
@@ -347,11 +356,14 @@ def setup_proba_config(
     ----------
     config: dict
         The config dictionary.
-    eta: list[float]
+    eta: Union[pd.Series, np.array]
         The eta values for the RWR probability, must sum up to 1.
-        e.g.: [0.5, 0.5, 0]
+        e.g.: pd.Series([0.5, 0.5, 0], index = ['TF', 'peaks', 'RNA'])
+        If a pandas Series is provided, the index must be the layer names.
+        If a numpy array is provided, the order of the values must be
+        the same as the order of the layers in the config.
 
-    lamb: list[list[float]]
+    lamb: pd.DataFrame
         The lambda values for the RWR probability.
         e.g.: lamb = pd.DataFrame(np.ones((3,3)),
                            index = ['TF', 'Gene', 'Peak''],
@@ -384,11 +396,44 @@ def setup_proba_config(
                          [0.5, 0, 0.5],
                          [0, 0.5, 0.5]]}
     """
+    if type(eta) == np.array or type(eta) == list:
+        # Check that the length of eta is equal to the number of layers
+        assert len(config['multiplex']) == len(eta),\
+            "eta (length : {}) should be as long as the number of layers ({})"\
+            .format(len(eta), len(config['multiplex']))
+        # Transform eta to pandas Series
+        eta = pd.Series(eta, index=config['multiplex'].keys())
+    elif type(eta) == pd.Series:
+        # Check that the index of eta are the layer names
+        assert eta.index.tolist().sort() == list(
+            config['multiplex'].keys()).sort(),\
+            "eta index ({}) should be the same as the layer names ({})"\
+            .format(eta.index.tolist(), list(config['multiplex'].keys()))
+    else:
+        raise TypeError("eta should be a numpy array or a pandas Series")
 
-    # Check that the length of eta is equal to the number of layers
-    assert len(config['multiplex']) == len(eta),\
-        "eta (length of {}) should be as long as the number of layers ({})"\
-        .format(len(eta), len(config['multiplex']))
+    if type(lamb) == np.array:
+        # Check that lamb is a square matrix of size len(config['multiplex'])
+        assert lamb.shape[0] == lamb.shape[1],\
+            "lamb should be a square matrix"
+        assert lamb.shape[0] == len(config['multiplex']),\
+            "lamb should be a square matrix of size {}".format(
+            len(config['multiplex']))
+        # Transform lamb to pandas DataFrame
+        lamb = pd.DataFrame(lamb, index=config['multiplex'].keys(),
+                            columns=config['multiplex'].keys())
+    elif type(lamb) == pd.DataFrame:
+        # Check that lamb index and columns are the layer names
+        assert lamb.index.tolist().sort() == list(
+            config['multiplex'].keys()).sort(),\
+            "lamb index ({}) should be the same as the layer names ({})"\
+            .format(lamb.index.tolist(), list(config['multiplex'].keys()))
+        assert lamb.columns.tolist().sort() == list(
+            config['multiplex'].keys()).sort(),\
+            "lamb columns ({}) should be the same as the layer names ({})"\
+            .format(lamb.columns.tolist(), list(config['multiplex'].keys()))
+    else:
+        raise TypeError("lamb should be a numpy array or a pandas DataFrame")
 
     lamb = lamb.transpose()
     # Normalise lamb per col
@@ -398,6 +443,11 @@ def setup_proba_config(
     # Check that lamb is a valid probability matrix
     assert check_lamb(lamb, config),\
         "lamb is not a valid probability matrix according to bipartites"
+
+    # Order eta and lamb according to the order of the layers in the config
+    eta = eta[config['multiplex'].keys()]
+    lamb = lamb.loc[config['multiplex'].keys(), config['multiplex'].keys()]
+
     # Transform eta to list if it's a pandas Series or a numpy array
     if type(eta) == pd.Series:
         eta = eta.values.tolist()
@@ -443,20 +493,9 @@ def get_single_layer_eta(config, starting_multiplex='RNA'):
     assert starting_multiplex in ordered_multiplex,\
         "It seems starting_multiplex not in config['multiplex']"
 
-    eta = [0 if multiplex != starting_multiplex else 1
-           for multiplex in ordered_multiplex]
-    return eta
-
-
-def get_eta_from_dict(config,
-                      multiplexes_scores: dict):
-
-    ordered_multiplex = config['multiplex'].keys()
-    for multiplex in list(multiplexes_scores.keys()):
-        assert multiplex in ordered_multiplex,\
-            "It seems starting_multiplex not in config['multiplex']"
-
-    eta = list(map(multiplexes_scores.get, list(multiplexes_scores.keys())))
+    eta = pd.Series([0 for k in ordered_multiplex],
+                    index=ordered_multiplex)
+    eta[starting_multiplex] = 1
     return eta
 
 
