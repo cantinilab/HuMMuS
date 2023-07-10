@@ -55,7 +55,7 @@ get_tf2motifs <- function(species = "human") {
     opts <- list(collection = "CORE",
               species    = "Mus musculus",
               all_versions = FALSE)
-    JASPAR_PWM <- TFBSTools::toPWM(getMatrixSet(JASPAR::JASPAR2020, opts))
+    JASPAR_PWM <- TFBSTools::toPWM(getMatrixSet(JASPAR2020::JASPAR2020, opts))
     # Load data from JASPAR2020
     data("mouse_pwms_v2")
     # Load data from chromVARmotifs
