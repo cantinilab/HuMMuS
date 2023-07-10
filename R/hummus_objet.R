@@ -20,7 +20,7 @@ motifs_db <- setClass("motifs_db",
                            representation(
                              motifs = "PWMatrixList",
                              tf2motifs = "data.frame",
-                             tfs = "NULL"
+                             tfs = "character"
                            ))
 setMethod("show", "motifs_db",
   function(object) {
