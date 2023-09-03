@@ -472,7 +472,7 @@ define_output <- function(
   hummus_object,
   multiplex_names = NULL,
   bipartites_names = NULL,
-  config_name = "target_genes_config.yml",
+  config_name = "config.yml",
   config_folder = "config",
   tf_multiplex = "TF",
   atac_multiplex = "peaks",
@@ -526,4 +526,90 @@ define_output <- function(
 
   # return target_genes
   return(output)
+ }
+
+#' @title Define general config file for hummuspy
+#' 
+#' @description Define general config file for hummuspy
+#' 
+#' @param hummus_object A hummus object
+#' @param multiplex_names A vector of multiplex names considered.
+#'  It must be a subset of the names of the multiplexes in the hummus object, or NULL
+#'  if all multiplexes should be considered.
+#' @param bipartites_names A vector of bipartites names considered.
+#' It must be a subset of the names of the bipartites in the hummus object, or NULL
+#' if all bipartites should be considered.
+#' @param folder_multiplexes The folder where the multiplexes are stored
+#' @param folder_bipartites The folder where the bipartites are stored
+#' @param seed_path The path to the seed file
+#' @param suffix_bipartites A suffix to add to the bipartites names (to indicate
+#' the exact file name)
+#' @param self_loops A boolean indicating if self loops should be considered.
+#' @param restart_proba The restart probability for the random walk (default = 0.7)
+#' @param save_configfile A boolean indicating if the config file should be saved
+#' @param config_name The name of the config file to be created by hummuspy
+#' @param config_folder The folder where the config file will be created (inside multilayer_f)
+#' @param multilayer_f The folder where the multilayer is stored
+#' 
+#' @return A config file for hummuspy 
+#' @export
+#' 
+#' @examples config <- define_general_config(hummus_object = hummus,
+#'                                           multilayer_f = multilayer_folder)
+define_general_config <- function(
+  hummus_object,
+  multiplex_names = NULL,
+  bipartites_names = NULL,
+  folder_multiplexes="multiplex",
+  folder_bipartites="bipartites",
+  seed_path = 'seed/seeds.txt',
+  suffix = ".tsv",
+  self_loops = FALSE,
+  restart_proba = 0.7,
+  save_configfile = FALSE,
+  config_name = "config.yml",
+  config_folder = "config",
+  multilayer_f = "multilayer"
+  ) {
+
+  # Check if hummuspy is installed and import it
+  hummuspy <- tryCatch({
+    reticulate::import("hummuspy")
+    }, error = function(err) {
+      stop("hummuspy package not found. Make sure that Reticulate \
+      is pointing to the right Python binary.")
+      }
+  )
+  # Format multiplexes names
+  multiplexes_dictionary <- format_multiplex_names(
+    hummus_object,
+    multiplex_names = multiplex_names)
+  # Format bipartites names
+  bipartites_dictionary <- format_bipartites_names(
+    hummus_object,
+    bipartites_names = bipartites_names,
+    suffix_bipartites = suffix_bipartites)
+
+  self_loops <- as.integer(self_loops)
+
+  if (save_configfile == TRUE) {
+    config_filename <- file.path(mutlilayer_f, config_folder, config_name)
+  } else {
+    config_filename <- NULL
+  }
+
+  # define target_genes with hummuspy function
+  config <- hummuspy$config$general_config(
+    multiplexes = multiplexes_dictionary,
+    bipartites = bipartites_dictionary,
+    folder_multiplexes = folder_multiplexes,
+    folder_bipartites = folder_bipartites,
+    seed_path = seed_path,
+    self_loops = self_loops,
+    restart_prob = restart_proba,
+    config_filename = config_filename,
+    save_configfile = save_configfile,
+    suffix = suffix)
+
+  return(config)
  }
