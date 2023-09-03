@@ -1,5 +1,6 @@
 from typing import Union
 import yaml
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -657,7 +658,7 @@ def get_target_genes_lamb(config,
 ##############################
 # Check proba transitions    #
 ##############################
-def get_max_lamb(config, draw=False):
+def get_max_lamb(config, directed=False, draw=False):
     """Calculate the maximum lamb matrix according to bipartites
     indicated in the config in input.
     Bipartites are used to know which layers can be connected to each other.
@@ -679,8 +680,13 @@ def get_max_lamb(config, draw=False):
                         columns = ['TF', 'Peak', 'RNA'])
     """
     # Get layer names connected by bipartites
-    positions_bipartites = [(config['bipartite'][bipartite]['source'],
+    if directed != 'inversed':
+        positions_bipartites = [(config['bipartite'][bipartite]['source'],
                              config['bipartite'][bipartite]['target'])
+                            for bipartite in config['bipartite']]
+    else: # if we want to inverse source and target layers
+        positions_bipartites = [(config['bipartite'][bipartite]['target'],
+                             config['bipartite'][bipartite]['source'])
                             for bipartite in config['bipartite']]
 
     # Create an empty dataframe with layer names as index and columns
@@ -697,7 +703,10 @@ def get_max_lamb(config, draw=False):
         max_lamb.loc[position] = 1
     # Future : Since we can inverse source and target layers)
     # could be conditionned by bipartite directionality
-    max_lamb += max_lamb.transpose()
+    if directed:
+        pass
+    else:
+        max_lamb += max_lamb.transpose()
     # filling the diagonal to allow intra-layer exploration
     max_lamb += np.eye(len(config['multiplex'])).astype(int)
     # normalise per rows
