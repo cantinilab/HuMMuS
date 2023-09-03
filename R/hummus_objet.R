@@ -354,15 +354,15 @@ add_network <- function(
       stop("You need to specify the multiplex name.")
     }
     # Check if multiplex_name already exists
-    if (!(multiplex_name %in% names(object@multilayer@multiplex))) {
+    if (!(multiplex_name %in% names(object@multiplex))) {
       if (verbose > 0) {
         cat("\tCreating new multiplex : ", multiplex_name, "\n")
       }
       # Create new multiplex if not
-      object@multilayer@multiplex[[multiplex_name]] <- new("multiplex")
+      object@multiplex[[multiplex_name]] <- new("multiplex")
     }
     # Get working multiplex
-    multiplex <- object@multilayer@multiplex[[multiplex_name]]
+    multiplex <- object@multiplex[[multiplex_name]]
   } else if (inherits(object, "hummus_object")) {
     # Check if multiplex_name is NULL
     if (is.null(multiplex_name)) {
