@@ -23,7 +23,8 @@ compute_tf_network(
 \item{organism}{(integer)  - Specie identifier from Omnipath to fetch
 specific interactions}
 
-\item{tfs}{vector(character) - List of tfs considered.}
+\item{tfs}{vector(character) - List of tfs consider. If NA, tfs are extracted
+from the hummus object with get_tfs function.}
 
 \item{gene_assay}{(character) - Name of the assay to get tfs from if tfs is
 not provided. If NULL, all TFs with motifs in the hummus object are used.}

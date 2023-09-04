@@ -9,7 +9,7 @@ define_output(
   hummus_object,
   multiplex_names = NULL,
   bipartites_names = NULL,
-  config_name = "target_genes_config.yml",
+  config_name = "config.yml",
   config_folder = "config",
   tf_multiplex = "TF",
   atac_multiplex = "peaks",
