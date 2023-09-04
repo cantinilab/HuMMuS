@@ -58,8 +58,7 @@ config*
 test_hummuspy.ipynb
 temp
 chen_multilayer
-examples/chen_multilayer/seed*
-examples/multilayer_1
+examples/*
 inst/doc
 docs
 hummuspy/dist/
