@@ -212,7 +212,7 @@ def general_config(
 
     # if type of bipartites not associated to their names already,
     # we create a dict with the same order as the bipartites
-    if type(bipartites_type) == list:
+    if type(bipartites_type) == list or type(bipartites_type) == tuple:
         print("bipartites_type has been provided throguh a list, make sure " +
               "the order matches the one of the 'bipartites' dictionary' keys."
               )
@@ -220,12 +220,14 @@ def general_config(
         for i in range(len(bipartites)):
             temp[list(bipartites.keys())[i]] = bipartites_type[i]
         bipartites_type = temp
-    elif type(bipartites_type) == list:
+    elif type(bipartites_type) == dict:
         assert list(bipartites.keys()).sort() == list(
             bipartites_type.keys()).sort(),\
             "The keys of the 'bipartites_type' and of the 'bipartites' " +\
             "dictionary doesn't seem to match. " + \
             "Please provide identical keys for each dictionary."
+    else:
+        raise TypeError("bipartites_type should be a list, a tuple or a dictionary")
 
     # we add the bipartites
     for bipartite in bipartites:

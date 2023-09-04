@@ -866,6 +866,7 @@ def get_output_from_dicts(
         tf_multiplex: str = 'TF',
         peak_multiplex: str = 'peaks',
         rna_multiplex: str = 'RNA',
+        bipartites_type=('00', '00'),
         update_config=True,
         save=False,
         return_df=True,
@@ -959,7 +960,7 @@ def get_output_from_dicts(
         suffix='.tsv',
         self_loops=0,
         restart_prob=0.7,
-        bipartites_type=('00', '00'),
+        bipartites_type=bipartites_type,
         save_configfile=False,
         config_filename=config_filename)
 
