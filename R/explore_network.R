@@ -551,17 +551,15 @@ define_output <- function(
 #' @param config_folder The folder where the config file will be created (inside multilayer_f)
 #' @param multilayer_f The folder where the multilayer is stored
 #' 
-#' @return A config file for hummuspy 
+#' @return A config file for hummuspy
 #' @export
 #' 
-#' @examples config <- define_general_config(hummus_object = hummus,
-#'                                           multilayer_f = multilayer_folder)
 define_general_config <- function(
   hummus_object,
   multiplex_names = NULL,
   bipartites_names = NULL,
-  folder_multiplexes="multiplex",
-  folder_bipartites="bipartites",
+  folder_multiplexes = "multiplex",
+  folder_bipartites = "bipartites",
   seed_path = 'seed/seeds.txt',
   suffix = ".tsv",
   self_loops = FALSE,
