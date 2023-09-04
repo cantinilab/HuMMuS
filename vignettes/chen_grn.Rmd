@@ -8,10 +8,9 @@ output:
   pdf_document: default
 ---
 
-
 ```{r setup, include=FALSE}
 #knitr::opts_chunk$set(eval = FALSE)
-devtools::install_github("cantinilab/HuMMuS")
+#devtools::install_github("cantinilab/HuMMuS")
 ```
 ## General description of the vignette
 ##### 0. Preparation of the environment
@@ -162,7 +161,7 @@ interactions involving at least one TF present in the dataset will be kept.
 network that will be added to the hummus object.
 The added network will be undirected and unweighted since PPI and OmniPath
 database are not directional nor return any weight here.
-```{r}
+#```{r}
 hummus <- compute_tf_network(hummus,
                             gene_assay = "RNA", # default = None ;
                                                 # If a assay is provided,
@@ -172,7 +171,7 @@ hummus <- compute_tf_network(hummus,
                             #source_target = "OR",
                             multiplex_name = "TF",
                             tf_network_name = "TF_network")
-```
+#```
 
 
 ### 2.4. Compute gene network from scRNA-seq w/ GENIE3
@@ -187,7 +186,7 @@ The returned network will be considered undirected and weighted. While GENIE3
 returns a directed network, we symmetrize it for the random walk with restart
 exploration of the genes proximity.
 
-```{r}
+#```{r}
 hummus <- compute_gene_network(
               hummus,
               gene_assay = "RNA",
@@ -199,7 +198,7 @@ hummus <- compute_gene_network(
                                      # each network can be saved 
                                      # when computed with hummus
               output_file = "gene_network.tsv")
-```
+#```
 
 ### 2.5. Compute the peak network from scATAC-seq w/ Cicero
 Different methods can be used to compute the peak network. For now, only Cicero
@@ -211,12 +210,17 @@ the network, you will need to specify the output file name (`output_file`).
 The returned network will be considered undirected and weighted, since cis-regulatory
 interaction and Cicero outputs are not directional. 
 
-```{r}
+# ```{r}
 hummus <- compute_atac_peak_network(hummus,
               atac_assay = "peaks",
               verbose = 1,
               genome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,
               store_network = FALSE)  
+# ```
+
+
+```{r}
+hummus <- chen_subset_hummus
 ```
 
 
