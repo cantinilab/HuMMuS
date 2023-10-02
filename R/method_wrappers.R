@@ -167,7 +167,7 @@ run_omnipath_wrapper <- function(
     cat("\tNumber of edges from Omnipath:", nrow(TF_PPI),
     "\nWill now be filtered to only those corresponding to specified tfs")
   }
-  
+
   if (is.na(tfs)) {
     # Get tfs list
     tfs <- get_tfs(hummus = hummus,
@@ -191,9 +191,6 @@ run_omnipath_wrapper <- function(
   # Get only source and target columns
   tf_network <- TF_PPI[, c(3, 4)]
 
-  if (verbose > 0) {
-    cat("\tTF network construction time:", Sys.time() - a, "\n")
-  }
   # Convert to data.frame from tibble
   tf_network <- as.data.frame(tf_network)
 
@@ -207,7 +204,12 @@ run_omnipath_wrapper <- function(
         to a fake node is created, for HuMMuS analysis.\n It has no biological
         meaning but will allow to run the pipeline as if no edges were present.
         \n")
-    run_tf_null_wrapper()
+    tf_network <- run_tf_null_wrapper(
+      hummus = hummus,
+      organism = organism,
+      tfs = tfs,
+      gene_assay = gene_assay,
+      verbose = )
 
   }
   return(tf_network)
