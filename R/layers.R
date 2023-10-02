@@ -10,6 +10,10 @@
 #' from the hummus object with get_tfs function.
 #' @param gene_assay (character) - Name of the assay to get tfs from if tfs is
 #' not provided. If NULL, all TFs with motifs in the hummus object are used.
+#' @param method (character) - Method used to infer network edges.
+#' * \code{'Omnipath'} - Use Omnipath to infer tf-tf networks.
+#' * \code{'NULL'} - A fake connected network is computed.
+#' * \code{'Other method'} - TO DO.
 #' @param store_network (bool) - Save the network directly (\code{TRUE},
 #'  default) or return without saving on disk (\code{FALSE}).
 #' @param output_file (character) - Name of the output_file
@@ -36,6 +40,10 @@ compute_tf_network <- function(
   tfs = NA, # List of tfs considered.
   gene_assay = NULL, # Name of the assay to get tfs from
                      # if tfs is not provided
+  method = "Omnipath", # Method used to infer network edges.
+                      # * 'Omnipath' - Use Omnipath to infer tf-tf networks.
+                      # * 'NULL' - A fake connected network is computed.
+                      # * 'Other method' - TO DO.
   store_network = FALSE, # Save the network on disk (TRUE, default)
   output_file = NULL, # Name of the output_file (if store_network == TRUE)
   source_target = "AND", # 'AND' | 'OR'
@@ -44,64 +52,38 @@ compute_tf_network <- function(
   verbose = 1
   ) {
 
+  a <- Sys.time()
+  # Check if method is implemented
+  if (method == "Omnipath") {
+      if (!requireNamespace("OmnipathR", quietly = TRUE)) {
+        stop("Please install Omnipath.\n",
+          "github.com/saezlab/OmnipathR")
+      } else {
+        # infer network with cicero
+        tf_network <- run_omnipath_wrapper(
+          hummus = hummus,
+          organism = organism,
+          tfs = tfs,
+          gene_assay = gene_assay,
+          source_target = source_target,
+          verbose = verbose)
+      }
+  } else if (method == "NULL") {
+        tf_network <- run_tf_null_wrapper(
+          hummus = hummus,
+          organism = organism,
+          tfs = tfs,
+          gene_assay = gene_assay,
+          verbose)
+  } else {
+    stop(cat("Method not implemented yet, choose between Omnipath and NULL..",
+    "that's it for now.\n But you can always compute the network",
+    "independently and add it to the hummus object manually !"))
+  }
   if (verbose > 0) {
-    cat("Computing TF network...\n")
-    a <- Sys.time()
-  }
-  # Get TF-TF interactions from Omnipath
-  TF_PPI <- OmnipathR::import_post_translational_interactions(
-    organism = organism, partners = tfs, source_target = source_target
-  )
-
-  if (verbose > 0) {
-    cat("\tNumber of edges from Omnipath:", nrow(TF_PPI),
-    "\nWill now be filtered to only those corresponding to specified tfs")
-  }
-  
-  if (is.na(tfs)) {
-    # Get tfs list
-    tfs <- get_tfs(hummus = hummus,
-              assay = gene_assay,
-              store_tfs = FALSE,
-              output_file = NULL,
-              verbose = verbose)
-  } else if (typeof(tfs) != "character") {
-      stop("'tfs' argument needs to be a vector of characters
-      (e.g.: c('MYC', 'JAK1')).")
+    cat("TF network construction time:", Sys.time() - a)
   }
 
-  # add filtering if element is not a TF expressed in the dataset
-  if (source_target == "AND") {
-    TF_PPI <- TF_PPI[which(TF_PPI$source_genesymbol %in% tfs &
-                           TF_PPI$target_genesymbol %in% tfs), ]
-  } else if (source_target == "OR") {
-    TF_PPI <- TF_PPI[which(TF_PPI$source_genesymbol %in% tfs |
-                           TF_PPI$target_genesymbol %in% tfs), ]
-  }
-  # Get only source and target columns
-  tf_network <- TF_PPI[, c(3, 4)]
-
-  if (verbose > 0) {
-    cat("\tTF network construction time:", Sys.time() - a, "\n")
-  }
-  # Convert to data.frame from tibble
-  tf_network <- as.data.frame(tf_network)
-
-  # Check if there is any TF-TF edges otherwise add a fake node
-  # and connect all TFs to it (to allow HuMMuS to run without impacting result)
-  if (nrow(tf_network) == 0) {
-    cat("No TF-TF edges from Omnipath for the given parameters.
-        You can try to change the source_target parameter to 'OR' to get
-        TF-other protein interactions. Or try to import a network  
-        computed externally. Right now, a network with all TFs connected
-        to a fake node is created, for HuMMuS analysis.\n It has no biological
-        meaning but will allow to run the pipeline as if no edges were present.
-        \n")
-    FAKE_NODE <- "fake_node"
-    for (tf in tfs) {
-      tf_network <- rbind(tf_network, data.frame(source = tf, target = FAKE_NODE))
-    }
-  }
   # Save gene network
   store_network(network = tf_network,
                 store_network = store_network,
@@ -309,137 +291,6 @@ compute_atac_peak_network <- function(
     
   a <- Sys.time()
   # Check if method is implemented
-  if (method == "cicero") {
-      if (!requireNamespace("cicero", quietly = TRUE)) {
-        stop("Please install cicero.\n",
-         "https://cole-trapnell-lab.github.io/cicero-release/docs_m3/")
-      } else {
-        # infer network with cicero
-        atac_peak_network <- run_cicero_wrapper(
-                                hummus,
-                                atac_assay,
-                                genome,
-                                window,
-                                number_cells_per_clusters,
-                                sample_num,
-                                seed,
-                                verbose,
-                                threshold,
-                                reduction_method)
-      }
-  } else {
-    stop(cat("Method not implemented yet, choose between Cicero and..",
-    "that's it for now.\n but you can always compute the network",
-    "independently and add it to the hummus object manually."))
-  }
-  if (verbose > 0) {
-    cat("Peak network construction time:", Sys.time() - a)
-  }
-  # Save peak network
-  store_network(network = atac_peak_network,
-                store_network = store_network,
-                output_file = output_file,
-                verbose = verbose)
-  # If no multiplex name provided, use assay name
-  if (is.null(multiplex_name)) {
-    multiplex_name <- atac_assay
-    }
-  # If no network name provided, use method name + assay name
-  if (is.null(network_name)) {
-    network_name <- paste0("peak_network_", method)
-    }
-
-  # Add network to hummus object
-  hummus <- add_network(
-    object = hummus,
-    network = atac_peak_network,
-    network_name = network_name,
-    multiplex_name = multiplex_name,
-    weighted = TRUE,
-    directed = FALSE,
-    verbose = verbose)
-
-}
-
-
-# 
-compute_tf_network <- function(
-  hummus = null, # Hummus object
-  organism = 9606, # Human by default
-  tfs = NA, # List of tfs considered.
-  gene_assay = NULL, # Name of the assay to get tfs from
-                     # if tfs is not provided
-  method = "Omnipath", # Method used to infer network edges.
-                      # * 'Omnipath' - Use Omnipath to infer tf-tf networks.
-                      # * 'NULL' - A fake connected network is computed.
-                      # * 'Other method' - TO DO.
-  store_network = FALSE, # Save the network on disk (TRUE, default)
-  output_file = NULL, # Name of the output_file (if store_network == TRUE)
-  source_target = "AND", # 'AND' | 'OR'
-  multiplex_name = "TF", # Name of the multiplex to add the network to
-  tf_network_name = "TF_network", # Name of the network in the multiplex
-  verbose = 1
-  ) {
-
-  a <- Sys.time()
-  # Check if method is implemented
-  if (method == "Omnipath") {
-      if (!requireNamespace("OmnipathR", quietly = TRUE)) {
-        stop("Please install Omnipath.\n",
-          "github.com/saezlab/OmnipathR")
-      } else {
-        # infer network with cicero
-        tf_network <- run_omnipath_wrapper(
-          hummus = hummus,
-          organism = organism,
-          tfs = tfs,
-          gene_assay = gene_assay,
-          source_target = source_target,
-          verbose = verbose)
-      }
-  } else if (method == "NULL") {
-        tf_network <- run_tf_null_wrapper(
-          hummus = hummus,
-          organism = organism,
-          tfs = tfs,
-          gene_assay = gene_assay,
-          verbose)
-      }
-  } else {
-    stop(cat("Method not implemented yet, choose between Omnipath and NULL..",
-    "that's it for now.\n But you can always compute the network",
-    "independently and add it to the hummus object manually !"))
-  }
-  if (verbose > 0) {
-    cat("TF network construction time:", Sys.time() - a)
-  }
-
-  # Save gene network
-  store_network(network = tf_network,
-                store_network = store_network,
-                output_file = output_file,
-                verbose = verbose)
-
-  # Add network to hummus object
-  hummus <- add_network(hummus,
-                        multiplex_name = multiplex_name,
-                        network = tf_network,
-                        network_name = tf_network_name,
-                        weighted = FALSE, # PPI could be weighted,
-                                          # could be added later
-                        directed = FALSE, # PPI are not directed
-                        verbose = verbose)
-
-  return(hummus)
-}
-
-
-
-
-
-
-
-
   if (method == "cicero") {
       if (!requireNamespace("cicero", quietly = TRUE)) {
         stop("Please install cicero.\n",
