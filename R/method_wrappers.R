@@ -246,7 +246,7 @@ run_tf_null_wrapper <- function(
 
 
   FAKE_NODE <- "fake_node"
-  tf_network <- data.frame(colnames = c("source", "target"))
+  tf_network <- data.frame(source = c(), target = c())
   for (tf in tfs) {
     tf_network <- rbind(tf_network, data.frame(source = tf, target = FAKE_NODE))
   }
