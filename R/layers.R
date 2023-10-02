@@ -35,12 +35,12 @@
 #'                                        gene_assay = "RNA",
 #'                                        verbose = 1)
 compute_tf_network <- function(
-  hummus = null, # Hummus object
+  hummus, # Hummus object
   organism = 9606, # Human by default
   tfs = NA, # List of tfs considered.
   gene_assay = NULL, # Name of the assay to get tfs from
                      # if tfs is not provided
-  method = "Omnipath", # Method used to infer network edges.
+  method = NULL, # Method used to infer network edges.
                       # * 'Omnipath' - Use Omnipath to infer tf-tf networks.
                       # * 'NULL' - A fake connected network is computed.
                       # * 'Other method' - TO DO.
@@ -54,7 +54,14 @@ compute_tf_network <- function(
 
   a <- Sys.time()
   # Check if method is implemented
-  if (method == "Omnipath") {
+  if (is.null(method)) {
+        tf_network <- run_tf_null_wrapper(
+          hummus = hummus,
+          organism = organism,
+          tfs = tfs,
+          gene_assay = gene_assay,
+          verbose)
+  } else if (method == "Omnipath") {
       if (!requireNamespace("OmnipathR", quietly = TRUE)) {
         stop("Please install Omnipath.\n",
           "github.com/saezlab/OmnipathR")
@@ -68,14 +75,7 @@ compute_tf_network <- function(
           source_target = source_target,
           verbose = verbose)
       }
-  } else if (method == "NULL") {
-        tf_network <- run_tf_null_wrapper(
-          hummus = hummus,
-          organism = organism,
-          tfs = tfs,
-          gene_assay = gene_assay,
-          verbose)
-  } else {
+  }  else {
     stop(cat("Method not implemented yet, choose between Omnipath and NULL..",
     "that's it for now.\n But you can always compute the network",
     "independently and add it to the hummus object manually !"))
