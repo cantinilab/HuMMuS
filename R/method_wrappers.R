@@ -142,3 +142,111 @@ run_cicero_wrapper <- function(
     # Return peak network including edges with positive coaccess score
     return(peak_network)
 }
+
+
+#' @title Omnipath wrapper function for the compute_tf_network function
+#' @description This function is a wrapper for the compute_tf_network function
+#' in layers.R. It computes the TF network from using Omnipath database.
+#' It returns a data frame with the TF network. The data frame is not weighted
+#' and does not contain scores for the edges.
+#' @param hummus A hummus object
+  # Get TF-TF interactions from Omnipath
+run_omnipath_wrapper <- function(
+  hummus = hummus,
+  organism = organism,
+  tfs = tfs,
+  gene_assay = gene_assay,
+  source_target = source_target,
+  verbose = 1) {
+
+  TF_PPI <- OmnipathR::import_post_translational_interactions(
+    organism = organism, partners = tfs, source_target = source_target
+  )
+
+  if (verbose > 0) {
+    cat("\tNumber of edges from Omnipath:", nrow(TF_PPI),
+    "\nWill now be filtered to only those corresponding to specified tfs")
+  }
+  
+  if (is.na(tfs)) {
+    # Get tfs list
+    tfs <- get_tfs(hummus = hummus,
+              assay = gene_assay,
+              store_tfs = FALSE,
+              output_file = NULL,
+              verbose = verbose)
+  } else if (typeof(tfs) != "character") {
+      stop("'tfs' argument needs to be a vector of characters
+      (e.g.: c('MYC', 'JAK1')).")
+  }
+
+  # add filtering if element is not a TF expressed in the dataset
+  if (source_target == "AND") {
+    TF_PPI <- TF_PPI[which(TF_PPI$source_genesymbol %in% tfs &
+                           TF_PPI$target_genesymbol %in% tfs), ]
+  } else if (source_target == "OR") {
+    TF_PPI <- TF_PPI[which(TF_PPI$source_genesymbol %in% tfs |
+                           TF_PPI$target_genesymbol %in% tfs), ]
+  }
+  # Get only source and target columns
+  tf_network <- TF_PPI[, c(3, 4)]
+
+  if (verbose > 0) {
+    cat("\tTF network construction time:", Sys.time() - a, "\n")
+  }
+  # Convert to data.frame from tibble
+  tf_network <- as.data.frame(tf_network)
+
+  # Check if there is any TF-TF edges otherwise add a fake node
+  # and connect all TFs to it (to allow HuMMuS to run without impacting result)
+  if (nrow(tf_network) == 0) {
+    cat("No TF-TF edges from Omnipath for the given parameters.
+        You can try to change the source_target parameter to 'OR' to get
+        TF-other protein interactions. Or try to import a network  
+        computed externally. Right now, a network with all TFs connected
+        to a fake node is created, for HuMMuS analysis.\n It has no biological
+        meaning but will allow to run the pipeline as if no edges were present.
+        \n")
+    run_tf_null_wrapper()
+
+  }
+  return(tf_network)
+}
+
+#' @title tf_null wrapper function for the tf_network function
+#' @description This function is a wrapper for the tf_network function
+#' 
+#' @param hummus A hummus object
+#' 
+#' 
+run_tf_null_wrapper <- function(
+  hummus = hummus,
+  organism = organism,
+  tfs = tfs,
+  gene_assay = gene_assay,
+  verbose = 1) {
+    
+  if verbose > 0 {
+    cat("Creating a fake TF network with all TFs connected to a fake node.\n")
+  }
+
+  if (is.na(tfs)) {
+    # Get tfs list
+    tfs <- get_tfs(hummus = hummus,
+              assay = gene_assay,
+              store_tfs = FALSE,
+              output_file = NULL,
+              verbose = verbose)
+  } else if (typeof(tfs) != "character") {
+      stop("'tfs' argument needs to be a vector of characters
+      (e.g.: c('MYC', 'JAK1')).")
+  }
+
+
+  FAKE_NODE <- "fake_node"
+  tf_network <- data.frame(colnames = c("source", "target"))
+  for (tf in tfs) {
+    tf_network <- rbind(tf_network, data.frame(source = tf, target = FAKE_NODE))
+  }
+  return(tf_network)
+}
