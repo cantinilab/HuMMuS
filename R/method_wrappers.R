@@ -226,7 +226,7 @@ run_tf_null_wrapper <- function(
   gene_assay = gene_assay,
   verbose = 1) {
     
-  if verbose > 0 {
+  if (verbose > 0) {
     cat("Creating a fake TF network with all TFs connected to a fake node.\n")
   }
 
