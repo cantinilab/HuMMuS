@@ -88,5 +88,5 @@ get_tf2motifs <- function(species = "human") {
   return(new("motifs_db",
              tf2motifs = tf2motifs,
              motifs = motifs,
-             tfs = tfs)) # Return motifs_db <- TF2motifs + motifs PWMs
+             tfs = unique(tf2motifs$tf))) # Return motifs_db <- TF2motifs + motifs PWMs
 }
