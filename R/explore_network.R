@@ -517,7 +517,7 @@ define_output <- function(
     config_folder = config_folder,
     output_f = output_f,
     tf_multiplex = tf_multiplex,
-    peak_multiplex = peak_multiplex,
+    peak_multiplex = atac_multiplex,
     rna_multiplex = rna_multiplex,
     update_config = TRUE,
     save = save,
