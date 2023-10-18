@@ -33,7 +33,7 @@ format_multiplex_names <- function(
 
   # Check if multiplex_names is NULL
   if (is.null(multiplex_names)) {
-    multiplexes_names <- names(multiplex_list)
+    multiplex_names <- names(multiplex_list)
   }
 
   # Create a named list containing the multiplexes infos
@@ -41,11 +41,11 @@ format_multiplex_names <- function(
   # each element of the list is a list of the network types (weighted/directed)
   # and the name of the networks as named in the hummus object
   multiplexes_dictionary <- lapply(
-    hummus_object@multilayer@multiplex[multiplexes_names],
+    hummus_object@multilayer@multiplex[multiplex_names],
     function(x) list(paste0(as.integer(x@weighted), as.integer(x@directed))))
 
   # Add the names of the networks as named in the hummus object
-  for (multiplex in names(hummus_object@multilayer@multiplex[multiplexes_names])){
+  for (multiplex in names(hummus_object@multilayer@multiplex[multiplex_names])){
     # Check if multiplex exists in hummus object
     if (is.null(hummus_object@multilayer@multiplex[[multiplex]])) {
       cat("Multiplex ", multiplex, " is NULL\n")
