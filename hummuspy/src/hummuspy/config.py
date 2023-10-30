@@ -521,6 +521,7 @@ def get_grn_lamb(config,
     # Remove proba between TF and RNA layers
     lamb.loc[tf_multiplex, rna_multiplex] = 0
     lamb.loc[rna_multiplex, tf_multiplex] = 0
+    lamb.loc[peak_multiplex, tf_multiplex] = 0  # can't go back up to TF
     lamb = lamb.div(lamb.sum(axis=1),
                     axis=0)
 
@@ -596,6 +597,7 @@ def get_binding_regions_lamb(config,
     print(lamb)
 
     # Add proba between TF and peaks layers
+    lamb.loc[tf_multiplex, tf_multiplex] = 1
     lamb.loc[tf_multiplex, peak_multiplex] = 1
     lamb.loc[peak_multiplex, peak_multiplex] = 1
     lamb.loc[peak_multiplex, tf_multiplex] = 1
