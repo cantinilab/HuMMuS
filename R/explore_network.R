@@ -5,7 +5,7 @@
 #' a subset of the names of the multiplexes in the hummus object.
 #'
 #' @return A list of multiplexes names formatted for hummuspy config funtions
-#' each element of the list is a list of the network types (weighted/directed)
+#' each element of the list is a list of the network types (directed/weighted)
 #' and the name of the networks as named in the hummus object
 #' @export
 #'
@@ -38,11 +38,11 @@ format_multiplex_names <- function(
 
   # Create a named list containing the multiplexes infos
   # formatted for hummuspy config funtions
-  # each element of the list is a list of the network types (weighted/directed)
+  # each element of the list is a list of the network types (directed/weighted)
   # and the name of the networks as named in the hummus object
   multiplexes_dictionary <- lapply(
     hummus_object@multilayer@multiplex[multiplex_names],
-    function(x) list(paste0(as.integer(x@weighted), as.integer(x@directed))))
+    function(x) list(paste0(as.integer(x@directed), as.integer(x@weighted))))
 
   # Add the names of the networks as named in the hummus object
   for (multiplex in names(hummus_object@multilayer@multiplex[multiplex_names])){
