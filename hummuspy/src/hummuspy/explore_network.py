@@ -190,7 +190,7 @@ def compute_RandomWalk(
         config['seed'] = seeds_folder+'/'+seeds_filename+'.txt'
     with open(multilayer_f+'/{}/'.format(config_folder)
               + seeds_filename + '_' + config_name, 'w') as f:
-        yaml.dump(config, f)
+        yaml.dump(config, f, sort_keys=False)
 
     # multixrank
     multixrank_obj = mxr.Multixrank(
@@ -199,7 +199,7 @@ def compute_RandomWalk(
         wdir=multilayer_f)
     ranking_df = multixrank_obj.random_walk_rank()
 
-    # and filter df results andadd seeds name
+    # and filter df results and add seeds name
     ranking_df['seed'] = seeds_filename
     ranking_df = ranking_df[ranking_df.score > 0]  # ??
     ranking_df.columns = ['layer', 'target', 'path_layer', 'score', 'seed']
