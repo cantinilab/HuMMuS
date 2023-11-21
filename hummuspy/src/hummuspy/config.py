@@ -556,7 +556,6 @@ def get_enhancers_lamb(config,
     print(lamb)
 
     # Add proba between peaks and RNA layers
-    lamb.loc[peak_multiplex, rna_multiplex] = 1
     lamb.loc[peak_multiplex, peak_multiplex] = 1
     lamb.loc[rna_multiplex, peak_multiplex] = 1
     lamb.loc[tf_multiplex, peak_multiplex] = 1
