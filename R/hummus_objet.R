@@ -172,7 +172,7 @@ hummus_object <- setClass(
 setMethod("show", "hummus_object",
   function(object) {
     #object <- SeuratObject::UpdateSlots(object = object)
-    assays <- SeuratObject::FilterObjects(object = object,
+    assays <- SeuratObject::.FilterObjects(object = object,
                                           classes.keep = "Assay")
     nfeatures <- sum(vapply(
       X = assays,
