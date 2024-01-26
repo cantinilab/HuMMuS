@@ -592,7 +592,7 @@ define_general_config <- function(
   self_loops <- as.integer(self_loops)
 
   if (save_configfile == TRUE) {
-    config_filename <- file.path(mutlilayer_f, config_folder, config_name)
+    config_filename <- file.path(multilayer_f, config_folder, config_name)
   } else {
     config_filename <- NULL
   }
