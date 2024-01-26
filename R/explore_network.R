@@ -567,7 +567,8 @@ define_general_config <- function(
   save_configfile = FALSE,
   config_name = "config.yml",
   config_folder = "config",
-  multilayer_f = "multilayer"
+  multilayer_f = "multilayer",
+  suffix_bipartites = ".tsv"
   ) {
 
   # Check if hummuspy is installed and import it
