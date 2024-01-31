@@ -567,7 +567,8 @@ define_general_config <- function(
   save_configfile = FALSE,
   config_name = "config.yml",
   config_folder = "config",
-  multilayer_f = "multilayer"
+  multilayer_f = "multilayer",
+  suffix_bipartites = ".tsv"
   ) {
 
   # Check if hummuspy is installed and import it
@@ -591,7 +592,7 @@ define_general_config <- function(
   self_loops <- as.integer(self_loops)
 
   if (save_configfile == TRUE) {
-    config_filename <- file.path(mutlilayer_f, config_folder, config_name)
+    config_filename <- file.path(multilayer_f, config_folder, config_name)
   } else {
     config_filename <- NULL
   }
