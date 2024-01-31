@@ -14,15 +14,10 @@ name: pkgdown
 jobs:
   pkgdown:
     runs-on: ubuntu-latest
-    # Only restrict concurrency for non-PR jobs
-    concurrency:
-      group: pkgdown-${{ github.event_name != 'pull_request' || github.run_id }}
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-    permissions:
-      contents: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -32,8 +27,12 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, local::., any::devtools
+          extra-packages: any::pkgdown, local::.
           needs: website
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
           
       - name: Setup hummuspy env
         run: reticulate::virtualenv_create("r-reticulate", Sys.which("python"), packages="hummuspy")
