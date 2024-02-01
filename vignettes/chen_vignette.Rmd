@@ -3,51 +3,51 @@ title: "Predict GRN from scRNA+scATAC data (Chen 2018 dataset)"
 author: "Trimbour Rémi"
 date: "2023-05-16"
 output:
+  html_document:
+    css: pkgdown/extra.css
   github_document: default
-  html_document: default
   pdf_document: default
+pkgdown:
+  as_is: true
 ---
 
+## Useful links:
+*Paper*: https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1
+
+*Github repo*: https://github.com/cantinilab/HuMMuS
+
+*Documentation*: https://cantinilab.github.io/HuMMuS/
+
 ```{r setup, include=FALSE}
-#knitr::opts_chunk$set(eval = FALSE)
-devtools::install_github("cantinilab/HuMMuS")
+knitr::opts_chunk$set(eval = TRUE)
+#devtools::install_github("cantinilab/HuMMuS")
 ```
-## General description of the vignette
+# General description of the pipeline
+![Overall pipeline](man/figures/Hub meeting - HuMMuS.png)
+## Useful ressources
+#### Preprint detailing the method: [https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1](https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1)
+#### Github repo detailing the installation: [https://github.com/cantinilab/HuMMuS](https://github.com/cantinilab/HuMMuS/tree/main)
+#### Documentation and vignette: [https://cantinilab.github.io/HuMMuS](https://cantinilab.github.io/HuMMuS)
+
+
+### General plan
 ##### 0. Preparation of the environment
 ##### 1. Initialisation of a hummus object 
-
 ##### 2. Construction of the multilayer
-  We want to link TFs to peaks (atac regions), then peaks (atac regions) to 
-  genes. We thus need 2 bipartites:
-  
-  - 2.1. **TF - peaks bipartite**
-  - 2.2. **peaks - genes bipartite**
-  
-  We also need one layer per type of features : TF, peaks and genes.
-  
-  - 2.3. **TFs/Proteins layer**
-  - 2.4 **Peaks/ATAC layer**
-  - 2.5 **Genes/RNA layer**
-  
 ##### 3. Analyse multilayer and define gene regulatory network (GRN)
-  This part requires first have hummuspy python package (pip install hummuspy)
-  installed, and second to save locally the multilayer files
-  
-  - 3.1. Save the network files
-  - 3.2. Create GRN output
-  - 3.3. Create enhancers output
-  - 3.4. Create binding regions output
-  - 3.5. Create target genes output
     
 
+
+## 0. Setting up the environment
+```{r import_packages}
+library(reticulate)
+# install python dependency
+py_install("hummuspy", envname = "r-reticulate", method="auto")
+library(HuMMuS)
+```
 ## Download the single-cell data
 The data used in this tutorial can be [downloaded here](https://figshare.com/account/home#/projects/168899)
 
-## 0. Setting up the environment
-```{r}
-library(HuMMuS)
-library(reticulate)
-```
 
 ## 1. Initialisation of HuMMuS object
 HuMMuS R objects are instances developed on top of seurat objects. It means it’s created from a seurat object and the contained assays can be accessed the same way.
@@ -56,10 +56,11 @@ Additionally, it contains a motifs_db object, providing tf motifs informations, 
 
   - list of multiplex networks (one per modality) 
   - list of bipartites (one per connection between layers)
-  
+![hummus object schema](man/figures/hummus object description.png)
+
 
 ### 1.1. Transform data into a hummus object
-```{r}
+```{r initiate_hummus_object}
 # Load the Chen dataset, which is a Seurat object containing scRNA-seq and scATAC-seq data
 data("chen_dataset_subset")
 chen_dataset_subset
@@ -67,24 +68,24 @@ chen_dataset_subset
 # Create an hummus object from seurat object
 hummus <- as(chen_dataset_subset, 'hummus_object')
 ```
-
+  
 ### 1.2. Add genome and motif annotations to hummus object
 Fetch genome annotations online (necessitate an internet connection).
 You can also request any "EnsDB" object adapted to your data 
 (e.g. EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86 for human genome annotations)
  or use your own genome annotations in the same format.
 
-```{r warning=FALSE}
+```{r genome_annotations, warning=FALSE}
 # get human genome annotation from EndDb data
 # wrapper of Signac::GetGRangesFromEnsDb, adapting output to UCSC format
 genome_annotations <- get_genome_annotations(
   ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
+
+# can also be downloaded, saved as an RDS objects for example
 ```
 
 Add genome annotations to hummus/seurat object
-```{r}
-# We add annotation to the ATAC/peak assay
-# (will be used to define peak-gene links)
+```{r add_genome_annotations}
 Signac::Annotation(hummus@assays$peaks) <- genome_annotations
 rm(genome_annotations)
 ```
@@ -101,16 +102,21 @@ correspondance table between TFs and motifs. tfs is a named vector of the TFs.
 You can also use your own motifs_db object, as long as it contains the same
 slots.
 
-```{r}
+```{r get_tf2motifs}
 # Load TF motifs from JASPAR2020 and chromVARmotifs in hummus object
 hummus@motifs_db <- get_tf2motifs() # by default human motifs
 ```
 
-
 ## 2. Construction of the multilayer
 
-Since it's a long sttep (several hours, at least to build the scATAC layer, but also probably the scRNA layer depending of the number of cores), you can also directly import a multilayer completed with : `data(chen_subset_hummus)`. This object corresponds to a multilayer from chen_dataset_subset completed. You can then go to the part 3, replacing `hummus` by `chen_subset_hummus` in each step.
-#### Compute bipartites and add it to hummus object
+![hummus object schema](man/figures/build_multilayer.png)
+
+You can also directly import an example multilayer completed with : `data(chen_subset_hummus)`. This object corresponds to a multilayer from chen_dataset_subset completed. You can then go to the part 3, replacing `hummus` by `chen_subset_hummus` in each step.
+
+
+### Compute 3 layers and 2 bipartites
+![hummus object schema](man/figures/5_steps.png)
+
 
 ### 2.1. TF - peaks bipartite reconstruction
 
@@ -122,7 +128,7 @@ BSGenome object is used to identify location of motifs and intersect them with
 peak 
 <br>You can also specify the name of the bipartite that will be added to the
  hummus object. By default, it will be named "tf_peak".
-```{r}
+```{r bipartite_tf_peak}
 hummus <- bipartite_tfs2peaks(
               hummus_object = hummus,
               tf_expr_assay = "RNA", # use to filter TF on only expressed TFs,
@@ -135,7 +141,7 @@ hummus <- bipartite_tfs2peaks(
 
 ### 2.2. Genes - peaks bipartite reconstruction
 Peaks - genes bipartite is computed 
-```{r}
+```{r bipartite_peaks2genes}
 hummus <- bipartite_peaks2genes(
                       hummus_object = hummus,
                       gene_assay = "RNA",
@@ -160,7 +166,7 @@ interactions involving at least one TF present in the dataset will be kept.
 network that will be added to the hummus object.
 The added network will be undirected and unweighted since PPI and OmniPath
 database are not directional nor return any weight here.
-```{r}
+```{r tf_network}
 hummus <- compute_tf_network(hummus,
                             gene_assay = "RNA", # default = None ;
                                                 # If a assay is provided,
@@ -185,7 +191,7 @@ The returned network will be considered undirected and weighted. While GENIE3
 returns a directed network, we symmetrize it for the random walk with restart
 exploration of the genes proximity.
 
-```{r}
+```{r gene_network}
 hummus <- compute_gene_network(
               hummus,
               gene_assay = "RNA",
@@ -209,7 +215,7 @@ the network, you will need to specify the output file name (`output_file`).
 The returned network will be considered undirected and weighted, since cis-regulatory
 interaction and Cicero outputs are not directional. 
 
-```{r}
+```{r peak_network}
 hummus <- compute_atac_peak_network(hummus,
               atac_assay = "peaks",
               verbose = 1,
@@ -234,8 +240,9 @@ It will create a folder (specified through `folder_name`) containing all the
     outputs later)
   * **config** : that will contain the config files (necessary to compute
     HuMMuS outputs later)
-
-```{r}
+    
+![hummus object schema](man/figures/explore_multilayer.png)
+```{r save_multilayer}
 save_multilayer(hummus = hummus,
                 folder_name = "chen_multilayer")
 ```
@@ -252,64 +259,58 @@ the seed TFs and the genes will be computed. You can also specify the list of
 genes to use. Only the score of the genes present in the network and the
 `gene_list` will be returned.
 
-```{r}
+```{r target_genes_ATF2}
+ATF2_genes <- define_target_genes(
+  hummus,
+  tf_list = list("ATF2"),
+  multilayer_f = "chen_multilayer",
+  njobs = 5
+  )
+```
+```{r head_target_genes_ATF2}
+head(ATF2_genes)
+```
+
+
+```{r target_genes}
 target_genes <- define_target_genes(
   hummus,
   multilayer_f = "chen_multilayer",
   njobs = 5
   )
 ```
-```{r}
+```{r head_target_genes}
 head(target_genes)
 ```
 
 ### 3.3. Define GRN
 The GRN is defined using the multixrank algorithm. It requires to have
  the hummuspy python package installed (pip install hummuspy).<br>
-The function `define_grn()` will call hummuspy and compute random walk with
- restart from each gene to find the most probable TFs regulating it. It will
- return a dataframe containing the TF-gene links with their associated
- probability.<br> This can be parallelised using the njobs argument.
- You can also specify the list of genes to use as seed (if NULL by default,
- all genes will be used as seed). Only the links between the seed genes and
- the TFs will be computed.<br> You can also specify the list of TFs to use.
- If not NULL, the score of the TFs present in the network and the `tf_list`
- will be returned.
- <br> In addition, you can also specify the location of each file if you didn't
-  use the default option when saving the multilayer. Finally, you can also
-  specify if you want to return or to save the output. If you choose to save
-  the output, you will need to specify the output file name. Output returned
-  is a dataframe containing TF-gene links with their associated probability.
-  
- __Similar options are available for the other outputs (enhancers, binding
-  regions and target genes).__
+ <br> This can be parallelised using the njobs argument.
+ You can also specify the list of genes and the list of TFs to use.
 
-```{r}
+```{r grn}
 grn <- define_grn(
   hummus,
   multilayer_f = "chen_multilayer",
   njobs = 5
   )
 ```
-```{r}
+```{r head_grn}
 head(grn)
 ```
 
 ### 3.4. Retrieve enhancers
-For enhancers output, you can specify the list of genes (`gene_list`) to use as seed 
-(if NULL by default, all genes will be used as seed). Only the links between 
-the seed genes and the peaks will be computed.
-<br> You can also specify the list of peaks to use. Only the score of the peaks
-present in the network and the `peak_list` will be returned.
+<br> You can also specify the list of peaks to use.
 
-```{r}
+```{r enhancers}
 enhancers <- define_enhancers(
   hummus,
   multilayer_f = "chen_multilayer",
   njobs = 5
   )
 ```
-```{r}
+```{r head_enhancers}
 head(enhancers)
 ```
 
