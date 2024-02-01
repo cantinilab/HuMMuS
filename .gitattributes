@@ -1,1 +1,2 @@
 hummuspy/dist/* linguist-detectable=false
+*.html linguist-detectable=false
