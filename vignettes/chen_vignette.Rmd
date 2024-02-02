@@ -3,8 +3,7 @@ title: "Predict GRN from scRNA+scATAC data (Chen 2018 dataset)"
 author: "Trimbour Rémi"
 date: "2023-05-16"
 output:
-  html_document:
-    css: pkgdown/extra.css
+  html_document: default
   github_document: default
   pdf_document: default
 pkgdown:
