@@ -31,7 +31,7 @@ It is then possible to add any additional network to an already **existing modal
 ## Installation
 HuMMuS is for now ready only in R but requires some python dependencies (hummuspy).
 
-### HuMMuS python depency
+### HuMMuS python dependency
 Python package **hummuspy** should preferably be installed using pip (from the terminal in a conda environment for e.g)
 ```r
 conda create -n hummuspy_env python

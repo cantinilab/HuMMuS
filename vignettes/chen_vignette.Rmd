@@ -10,6 +10,13 @@ output:
 pkgdown:
   as_is: true
 ---
+<style type="text/css">
+.main-container {
+  max-width: 100% !important;
+  margin: auto;
+}
+</style>
+
 
 ## Useful links:
 *Paper*: https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1
@@ -23,11 +30,14 @@ knitr::opts_chunk$set(eval = TRUE)
 #devtools::install_github("cantinilab/HuMMuS")
 ```
 # General description of the pipeline
-![Overall pipeline](man/figures/Hub meeting - HuMMuS.png)
+![Overall pipeline](man/figures/schema_HuMMuS.png)
+
 ## Useful ressources
-#### Preprint detailing the method: [https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1](https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1)
-#### Github repo detailing the installation: [https://github.com/cantinilab/HuMMuS](https://github.com/cantinilab/HuMMuS/tree/main)
-#### Documentation and vignette: [https://cantinilab.github.io/HuMMuS](https://cantinilab.github.io/HuMMuS)
+*Preprint detailing the method:* [https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1](https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1)
+
+*Github repo detailing the installation:* [https://github.com/cantinilab/HuMMuS](https://github.com/cantinilab/HuMMuS/tree/main)
+
+*Documentation and vignette:* [https://cantinilab.github.io/HuMMuS](https://cantinilab.github.io/HuMMuS)
 
 
 ### General plan
@@ -56,7 +66,7 @@ Additionally, it contains a motifs_db object, providing tf motifs informations, 
 
   - list of multiplex networks (one per modality) 
   - list of bipartites (one per connection between layers)
-![hummus object schema](man/figures/hummus object description.png)
+![hummus object schema](man/figures/hummus_object_description.png)
 
 
 ### 1.1. Transform data into a hummus object
@@ -75,7 +85,7 @@ You can also request any "EnsDB" object adapted to your data
 (e.g. EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86 for human genome annotations)
  or use your own genome annotations in the same format.
 
-```{r genome_annotations, warning=FALSE}
+```{r genome_annotations, eval=FALSE, warning=FALSE}
 # get human genome annotation from EndDb data
 # wrapper of Signac::GetGRangesFromEnsDb, adapting output to UCSC format
 genome_annotations <- get_genome_annotations(
@@ -85,7 +95,7 @@ genome_annotations <- get_genome_annotations(
 ```
 
 Add genome annotations to hummus/seurat object
-```{r add_genome_annotations}
+```{r add_genome_annotations, eval=FALSE}
 Signac::Annotation(hummus@assays$peaks) <- genome_annotations
 rm(genome_annotations)
 ```
@@ -102,7 +112,7 @@ correspondance table between TFs and motifs. tfs is a named vector of the TFs.
 You can also use your own motifs_db object, as long as it contains the same
 slots.
 
-```{r get_tf2motifs}
+```{r get_tf2motifs, eval=FALSE}
 # Load TF motifs from JASPAR2020 and chromVARmotifs in hummus object
 hummus@motifs_db <- get_tf2motifs() # by default human motifs
 ```
@@ -111,12 +121,20 @@ hummus@motifs_db <- get_tf2motifs() # by default human motifs
 
 ![hummus object schema](man/figures/build_multilayer.png)
 
-You can also directly import an example multilayer completed with : `data(chen_subset_hummus)`. This object corresponds to a multilayer from chen_dataset_subset completed. You can then go to the part 3, replacing `hummus` by `chen_subset_hummus` in each step.
+You can compute the different layers and bipartites as indicated below.
 
+An example multilayer completed can also be imported with : `data(chen_subset_hummus)`.
+This object corresponds to a multilayer from chen_dataset_subset completed. You can then go to the part 3, replacing `hummus` by `chen_subset_hummus` in each step.
+
+Finally, [you can compute the different layers before, and add them afterwards](Add_network_vignette.).
+It allows to use faster methods to compute the networks
+(e.g. [Arboreto](https://arboreto.readthedocs.io/en/latest/) for the gene network,
+ [ATACNet](https://github.com/r-trimbour/ATACNet) for the peak network, etc.).
 
 ### Compute 3 layers and 2 bipartites
 ![hummus object schema](man/figures/5_steps.png)
 
+**!! Long step !!** You can also go directly to the part 3 for your "discovery tour". :)
 
 ### 2.1. TF - peaks bipartite reconstruction
 
@@ -128,7 +146,7 @@ BSGenome object is used to identify location of motifs and intersect them with
 peak 
 <br>You can also specify the name of the bipartite that will be added to the
  hummus object. By default, it will be named "tf_peak".
-```{r bipartite_tf_peak}
+```{r bipartite_tf_peak, eval=FALSE}
 hummus <- bipartite_tfs2peaks(
               hummus_object = hummus,
               tf_expr_assay = "RNA", # use to filter TF on only expressed TFs,
@@ -141,7 +159,7 @@ hummus <- bipartite_tfs2peaks(
 
 ### 2.2. Genes - peaks bipartite reconstruction
 Peaks - genes bipartite is computed 
-```{r bipartite_peaks2genes}
+```{r bipartite_peaks2genes, eval=FALSE}
 hummus <- bipartite_peaks2genes(
                       hummus_object = hummus,
                       gene_assay = "RNA",
@@ -166,7 +184,7 @@ interactions involving at least one TF present in the dataset will be kept.
 network that will be added to the hummus object.
 The added network will be undirected and unweighted since PPI and OmniPath
 database are not directional nor return any weight here.
-```{r tf_network}
+```{r tf_network, eval=FALSE}
 hummus <- compute_tf_network(hummus,
                             gene_assay = "RNA", # default = None ;
                                                 # If a assay is provided,
@@ -191,7 +209,7 @@ The returned network will be considered undirected and weighted. While GENIE3
 returns a directed network, we symmetrize it for the random walk with restart
 exploration of the genes proximity.
 
-```{r gene_network}
+```{r gene_network, eval=FALSE}
 hummus <- compute_gene_network(
               hummus,
               gene_assay = "RNA",
@@ -215,7 +233,7 @@ the network, you will need to specify the output file name (`output_file`).
 The returned network will be considered undirected and weighted, since cis-regulatory
 interaction and Cicero outputs are not directional. 
 
-```{r peak_network}
+```{r peak_network, eval=FALSE}
 hummus <- compute_atac_peak_network(hummus,
               atac_assay = "peaks",
               verbose = 1,
@@ -223,7 +241,13 @@ hummus <- compute_atac_peak_network(hummus,
               store_network = FALSE)  
 ```
 
+
 ## 3. Analyse of the multilayer and definition of GRN
+```{r load_precomputed}
+data(chen_subset_hummus) 
+hummus <- chen_subset_hummus
+```
+
 ### 3.1. Save the mulilayer in a classic hierarchical structure
 The package used for the random walk with restart exploration (multixrank)
  requires currently to save all the network files on disk. To simplify the
@@ -259,15 +283,15 @@ the seed TFs and the genes will be computed. You can also specify the list of
 genes to use. Only the score of the genes present in the network and the
 `gene_list` will be returned.
 
-```{r target_genes_ATF2}
+```{r target_genes_ATF2, eval=TRUE}
 ATF2_genes <- define_target_genes(
   hummus,
   tf_list = list("ATF2"),
   multilayer_f = "chen_multilayer",
-  njobs = 5
+  njobs = 1
   )
 ```
-```{r head_target_genes_ATF2}
+```{r head_target_genes_ATF2, eval=FALSE}
 head(ATF2_genes)
 ```
 
@@ -276,7 +300,7 @@ head(ATF2_genes)
 target_genes <- define_target_genes(
   hummus,
   multilayer_f = "chen_multilayer",
-  njobs = 5
+  njobs = 1
   )
 ```
 ```{r head_target_genes}
@@ -289,14 +313,14 @@ The GRN is defined using the multixrank algorithm. It requires to have
  <br> This can be parallelised using the njobs argument.
  You can also specify the list of genes and the list of TFs to use.
 
-```{r grn}
+```{r grn, eval=FALSE}
 grn <- define_grn(
   hummus,
   multilayer_f = "chen_multilayer",
-  njobs = 5
+  njobs = 1
   )
 ```
-```{r head_grn}
+```{r head_grn, eval=FALSE}
 head(grn)
 ```
 
@@ -306,8 +330,9 @@ head(grn)
 ```{r enhancers}
 enhancers <- define_enhancers(
   hummus,
+  gene_list = list("ATF2"),
   multilayer_f = "chen_multilayer",
-  njobs = 5
+  njobs = 1
   )
 ```
 ```{r head_enhancers}
@@ -324,7 +349,7 @@ peaks to use. Only the score of the peaks present in the network and the
 binding_regions <- define_binding_regions(
   hummus,
   multilayer_f = "chen_multilayer",
-  njobs = 5
+  njobs = 1
   )
 ```
 ```{r}
