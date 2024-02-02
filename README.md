@@ -73,7 +73,7 @@ devtools::install_github("cole-trapnell-lab/cicero-release", ref = "monocle3")
 
 ## Data accessibility
 
-To reproduce HuMMuS results presented in the manuscript, preprocessed data [are accessible here](https://figshare.com/account/home#/projects/168899)
+To reproduce HuMMuS results presented in the manuscript, preprocessed data [are accessible here](https://figshare.com/projects/Molecular_mechanisms_reconstruction_from_single-cell_multi-omics_data_with_HuMMuS/168899)
 <br> For quick tests, the Chen dataset preprocessed is accessible directly through the package as a Seurat object: `load(chen_data)`.
 
 ## Cite us
