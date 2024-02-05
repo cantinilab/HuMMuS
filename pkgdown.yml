@@ -2,6 +2,10 @@ pandoc: 2.19.2
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
+  add_networks: add_networks.html
   chen_vignette: chen_vignette.html
-last_built: 2024-02-02T17:58Z
+last_built: 2024-02-05T14:49Z
+urls:
+  reference: https://cantinilab.github.io/HuMMuS/reference
+  article: https://cantinilab.github.io/HuMMuS/articles
 
