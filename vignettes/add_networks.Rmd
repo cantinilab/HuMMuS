@@ -86,22 +86,22 @@ Bipartites can be 2 or 3 columns data.frame, depending on if weighted or not.
 Bipartites not computed through HuMMuS have to be added directly to the object as below:
 ```{r load_bipartite_tf_peak}
 ## Add TF peaks bipartite
-tf_peak_path = "chen_multilayer/bipartite/tf_peak.tsv"
-tf_peak <- read.table(tf_peak_path, sep = "\t", header = FALSE)
-head(tf_peak)
+atac_rna_path = "chen_multilayer/bipartite/atac_rna.tsv"
+atac_rna <- read.table(atac_rna_path, sep = "\t", header = FALSE)
+head(atac_rna)
 ```
 
 ```{r add_tf_peak bipartite}
-hummus@multilayer@bipartites[["tf_peak"]] <- new("bipartite",
-                           "network" = tf_peak,
-                           "multiplex_left" = "peaks",
-                           "multiplex_right" = "TF")
+hummus@multilayer@bipartites[["atac_rna"]] <- new("bipartite",
+                           "network" = atac_rna,
+                           "multiplex_left" = "RNA",
+                           "multiplex_right" = "peaks")
 ```
 
 Display HuMMuS object 
 ```{r show_hummus}
 hummus
-hummus@multilayer
+hummus@multilayer@multiplex
 ```
 
 
