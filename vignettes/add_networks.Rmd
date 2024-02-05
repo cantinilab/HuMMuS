@@ -54,7 +54,8 @@ hummus@motifs_db <- get_tf2motifs() # by default human motifs
 ```
 
 ## 2. Add networks
-![hummus object schema](figures/5_steps.png)
+
+![Steps to build HuMMuS objects](figures/5_steps.png)
 
 ### 2.1 Add a new multiplex through a network
 ```{r load_rna_network}
@@ -81,7 +82,7 @@ hummus <- add_network(
 ```
 
 ### 3 Add external bipartites
-Bipartites cna be 2 or 3 columns data.frame, depending on if weighted or not.
+Bipartites can be 2 or 3 columns data.frame, depending on if weighted or not.
 Bipartites not computed through HuMMuS have to be added directly to the object as below:
 ```{r load_bipartite_tf_peak}
 ## Add TF peaks bipartite
@@ -97,8 +98,9 @@ hummus@multilayer@bipartites[["tf_peak"]] <- new("bipartite",
                            "multiplex_right" = "TF")
 ```
 
-## Peaks - genes bipartite is computed 
+Display HuMMuS object 
 ```{r show_hummus}
+hummus
 hummus@multilayer
 ```
 
