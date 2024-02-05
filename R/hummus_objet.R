@@ -212,7 +212,7 @@ setMethod("show", "hummus_object",
         strwrap(x = paste(other.assays, collapse = ', '))
       )
     }
-    reductions <- SeuratObject::FilterObjects(object = object, classes.keep = 'DimReduc')
+    reductions <- SeuratObject::.FilterObjects(object = object, classes.keep = 'DimReduc')
     if (length(x = reductions) > 0) {
       cat(
         '\n',
@@ -223,7 +223,7 @@ setMethod("show", "hummus_object",
         strwrap(x = paste(reductions, collapse = ', '))
       )
     }
-    fovs <- SeuratObject::FilterObjects(object = object, classes.keep = 'FOV')
+    fovs <- SeuratObject::.FilterObjects(object = object, classes.keep = 'FOV')
     if (length(x = fovs)) {
       cat(
         '\n',
@@ -234,7 +234,7 @@ setMethod("show", "hummus_object",
         strwrap(x = paste(fovs, sep = ', '))
       )
     }
-    images <- SeuratObject::FilterObjects(object = object, classes.keep = 'SpatialImage')
+    images <- SeuratObject::.FilterObjects(object = object, classes.keep = 'SpatialImage')
     images <- setdiff(x = images, y = fovs)
     if (length(x = images)) {
       cat(
