@@ -3,19 +3,16 @@ title: "Predict GRN from scRNA+scATAC data (Chen 2018 dataset)"
 author: "Trimbour Rémi"
 date: "2023-05-16"
 output:
-  html_document:
-    css: pkgdown/extra.css
+  html_document: default
   github_document: default
   pdf_document: default
-pkgdown:
-  as_is: true
+resource_files:
+  - figures/schema_HuMMuS.png
+  - figures/hummus_object_description.png
+  - figures/build_multilayer.png
+  - figures/5_steps.png
+  - figures/explore_multilayer.png
 ---
-<style type="text/css">
-.main-container {
-  max-width: 100% !important;
-  margin: auto;
-}
-</style>
 
 
 ## Useful links:
@@ -30,7 +27,7 @@ knitr::opts_chunk$set(eval = TRUE)
 #devtools::install_github("cantinilab/HuMMuS")
 ```
 # General description of the pipeline
-![Overall pipeline](man/figures/schema_HuMMuS.png)
+![Overall pipeline](figures/schema_HuMMuS.png)
 
 ## Useful ressources
 *Preprint detailing the method:* [https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1](https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1)
@@ -66,7 +63,7 @@ Additionally, it contains a motifs_db object, providing tf motifs informations, 
 
   - list of multiplex networks (one per modality) 
   - list of bipartites (one per connection between layers)
-![hummus object schema](man/figures/hummus_object_description.png)
+![hummus object schema](figures/hummus_object_description.png)
 
 
 ### 1.1. Transform data into a hummus object
@@ -119,20 +116,20 @@ hummus@motifs_db <- get_tf2motifs() # by default human motifs
 
 ## 2. Construction of the multilayer
 
-![hummus object schema](man/figures/build_multilayer.png)
+![hummus object schema](figures/build_multilayer.png)
 
 You can compute the different layers and bipartites as indicated below.
 
 An example multilayer completed can also be imported with : `data(chen_subset_hummus)`.
 This object corresponds to a multilayer from chen_dataset_subset completed. You can then go to the part 3, replacing `hummus` by `chen_subset_hummus` in each step.
 
-Finally, [you can compute the different layers before, and add them afterwards](Add_network_vignette.).
+Finally, [you can compute the different layers before, and add them afterwards](add_networks.Rmd).
 It allows to use faster methods to compute the networks
 (e.g. [Arboreto](https://arboreto.readthedocs.io/en/latest/) for the gene network,
  [ATACNet](https://github.com/r-trimbour/ATACNet) for the peak network, etc.).
 
 ### Compute 3 layers and 2 bipartites
-![hummus object schema](man/figures/5_steps.png)
+![hummus object schema](figures/5_steps.png)
 
 **!! Long step !!** You can also go directly to the part 3 for your "discovery tour". :)
 
@@ -265,7 +262,7 @@ It will create a folder (specified through `folder_name`) containing all the
   * **config** : that will contain the config files (necessary to compute
     HuMMuS outputs later)
     
-![hummus object schema](man/figures/explore_multilayer.png)
+![hummus object schema](figures/explore_multilayer.png)
 ```{r save_multilayer}
 save_multilayer(hummus = hummus,
                 folder_name = "chen_multilayer")
@@ -291,7 +288,7 @@ ATF2_genes <- define_target_genes(
   njobs = 1
   )
 ```
-```{r head_target_genes_ATF2, eval=FALSE}
+```{r head_target_genes_ATF2}
 head(ATF2_genes)
 ```
 
