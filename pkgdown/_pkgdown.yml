@@ -1,13 +1,20 @@
 destination: docs
 url: https://cantinilab.github.io/HuMMuS
+authors:
+  Rémi Trimbour:
+    href: https://research.pasteur.fr/en/member/remi-trimbour/
+    email: remi.trimbour@pasteur.fr
 navbar:
   structure:
     left: [home, reference, articles]
     right: [github, homepage]
   components:
-     homepage:
-       icon: "fas fa-university"
-       href: https://research.pasteur.fr/en/team/machine-learning-for-integrative-genomics/
+    github:
+      icon: "fab fa-github"
+      href: https://github.com/cantinilab/HuMMuS
+    homepage:
+      icon: "fas fa-university"
+      href: https://research.pasteur.fr/en/team/machine-learning-for-integrative-genomics/
   type: dark
   bg: primary
 template:
