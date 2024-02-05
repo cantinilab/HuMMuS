@@ -1,0 +1,105 @@
+---
+title: "Add external networks to HuMMuS object"
+author: "Trimbour Rémi"
+date: "2023-05-16"
+output:
+  html_document:
+    css: pkgdown/extra.css
+  github_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = TRUE)
+#devtools::install_github("cantinilab/HuMMuS")
+```
+
+### General plan
+##### 1. Initialisation of a hummus object 
+##### 2. Add a new multiplex
+##### 3. Add a new bipartite
+
+```{r import_packages}
+library(reticulate)
+# install python dependency
+py_install("hummuspy", envname = "r-reticulate", method="auto")
+library(HuMMuS)
+```
+
+
+## 1. Initialisation of HuMMuS object
+HuMMuS R objects are instances developed on top of seurat objects. It means it’s created from a seurat object and the contained assays can be accessed the same way.
+
+Additionally, it contains a motifs_db object, providing tf motifs informations, and a multilayer objects, that will be completed while going through this tutorial. It will mostly include :
+  - list of multiplex networks (one per modality) 
+  - list of bipartites (one per connection between layers)
+![hummus object schema](figures/hummus_object_description.png)
+
+```{r genome_annotations, warning=FALSE}
+# Create an hummus object from seurat object
+# Load the Chen dataset, which is a Seurat object containing scRNA-seq and scATAC-seq data
+data("chen_dataset_subset")
+chen_dataset_subset
+hummus <- as(chen_dataset_subset, 'hummus_object')
+
+# wrapper of Signac::GetGRangesFromEnsDb, adapting output to UCSC format
+genome_annotations <- get_genome_annotations(
+  ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86)
+# Add annotations to peak assay
+Signac::Annotation(hummus@assays$peaks) <- genome_annotations
+rm(genome_annotations)
+
+# Load TF motifs from JASPAR2020 and chromVARmotifs in hummus object
+hummus@motifs_db <- get_tf2motifs() # by default human motifs
+```
+
+## 2. Add networks
+![hummus object schema](figures/5_steps.png)
+
+### 2.1 Add a new multiplex through a network
+```{r load_rna_network}
+# The networks should be imported as 3 columns data.frame: (source, target, weight)
+rna_network_path = "chen_multilayer/multiplex/RNA/RNA_GENIE3.tsv"
+rna_network <- read.table(rna_network_path, sep = "\t", header = FALSE)
+head(rna_network)
+```
+
+```{r add_network_new_multiplex}
+hummus <- add_network(
+    hummus, rna_network,
+    multiplex_name = "RNA",
+    network_name = "GENIE3",
+    verbose = 1)
+```
+
+### 2.2 Add a network to an existing multiplex
+```{r add_network_existing_multiplex}
+hummus <- add_network(
+    hummus, rna_network,
+    multiplex_name = "RNA",
+    network_name = "GENIE3_other")
+```
+
+### 3 Add external bipartites
+Bipartites cna be 2 or 3 columns data.frame, depending on if weighted or not.
+Bipartites not computed through HuMMuS have to be added directly to the object as below:
+```{r load_bipartite_tf_peak}
+## Add TF peaks bipartite
+tf_peak_path = "chen_multilayer/bipartite/tf_peak.tsv"
+tf_peak <- read.table(tf_peak_path, sep = "\t", header = FALSE)
+head(tf_peak)
+```
+
+```{r add_tf_peak bipartite}
+hummus@multilayer@bipartites[["tf_peak"]] <- new("bipartite",
+                           "network" = tf_peak,
+                           "multiplex_left" = "peaks",
+                           "multiplex_right" = "TF")
+```
+
+## Peaks - genes bipartite is computed 
+```{r show_hummus}
+hummus@multilayer
+```
+
+
