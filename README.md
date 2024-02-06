@@ -1,6 +1,6 @@
 # HuMMuS <img src="man/figures/hummus_logo.png" align="right" width="180"/>
 
-![pkgdown](https://github.com/cantinilab/HuMMuS/actions/workflows/pkgdown/badge.svg)
+![pkgdown](https://github.com/cantinilab/HuMMuS/actions/workflows/pkgdown.yaml/badge.svg)
 
 ### Heterogeneous Multilayer network for Multi-omics Single-cell data
 
