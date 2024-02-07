@@ -1,8 +1,8 @@
 # HuMMuS <img src="man/figures/hummus_logo.png" align="right" width="180"/>
 
 ![pkgdown](https://github.com/cantinilab/HuMMuS/actions/workflows/pkgdown.yaml/badge.svg)
-[![doc-deployment](https://github.com/cantinilab/HuMMuS/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/cantinilab/HuMMuS/actions/workflows/pages/pages-build-deployment?color=pink)
-[![PyPI version](https://img.shields.io/pypi/v/hummuspy?color=blue)](https://img.shields.io/pypi/v/hummuspy?color=blue)
+[![doc-deployment](https://github.com/cantinilab/HuMMuS/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/cantinilab/HuMMuS/actions/workflows/pages/pages-build-deployment?theme=flickr)
+[![PyPI version](https://img.shields.io/pypi/v/hummuspy?color=blue)](https://img.shields.io/pypi/v/hummuspy?color=pink)
 
 ### Heterogeneous Multilayer network for Multi-omics Single-cell data
 
