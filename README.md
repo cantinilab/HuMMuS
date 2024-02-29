@@ -31,7 +31,7 @@ It is then possible to add any additional network to an already **existing modal
 
 ## Tutorials/Vignettes
 
-* [**Infer a gene regulatory network and other outputs from unpaired/paired scRNA+scATAC data**](https://github.com/cantinilab/HuMMuS/blob/main/vignettes/chen_grn.md) shows the application of HuMMuS to the Chen dataset, used in the benchmark of [HuMMuS publication](https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1).
+* [**Infer a gene regulatory network and other outputs from unpaired/paired scRNA+scATAC data**](https://cantinilab.github.io/HuMMuS/articles/chen_vignette.html) shows the application of HuMMuS to the Chen dataset, used in the benchmark of [HuMMuS publication](https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1).
 
 ## Installation
 HuMMuS is for now ready only in R but requires some python dependencies (hummuspy).
