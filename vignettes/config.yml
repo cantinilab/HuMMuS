@@ -1,0 +1,42 @@
+bipartite:
+  bipartite/atac_rna.tsv:
+    graph_type: '00'
+    source: RNA
+    target: peaks
+  bipartite/tf_rna.tsv:
+    graph_type: '00'
+    source: peaks
+    target: TF
+eta:
+- 0
+- 1
+- 0
+lamb:
+- - 0.5
+  - 0.0
+  - 0.5
+- - 0.0
+  - 0.5
+  - 0.0
+- - 0.5
+  - 0.5
+  - 0.5
+multiplex:
+  RNA:
+    graph_type:
+    - '00'
+    layers:
+    - multiplex/RNA/GENIE3.tsv
+  TF:
+    graph_type:
+    - '00'
+    layers:
+    - multiplex/TF/PPI.tsv
+  peaks:
+    graph_type:
+    - '00'
+    layers:
+    - multiplex/peaks/Cicero.tsv
+r: 0.7
+seed: seeds/seeds.txt
+self_loops: 0
