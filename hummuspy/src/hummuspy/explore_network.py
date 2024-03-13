@@ -1000,5 +1000,7 @@ def get_output_from_dicts(
     elif output_request == 'target_genes':
         del parameters['peak_list']
         df = define_target_genes_from_config(**parameters)
+    else:
+        raise ValueError("Please select an output_request value in ('grn', 'enhancers', 'binding_regions', 'target_genes').")
 
     return df

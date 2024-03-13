@@ -42,7 +42,7 @@ format_multiplex_names <- function(
   # and the name of the networks as named in the hummus object
   multiplexes_dictionary <- lapply(
     hummus_object@multilayer@multiplex[multiplex_names],
-    function(x) list(paste0(as.integer(x@directed), as.integer(x@weighted))))
+    function(x) c(paste0(as.integer(x@directed), as.integer(x@weighted))))
 
   # Add the names of the networks as named in the hummus object
   for (multiplex in names(hummus_object@multilayer@multiplex[multiplex_names])){
@@ -52,11 +52,16 @@ format_multiplex_names <- function(
       # Skip to next multiplex
       next
     }
+   
     names(multiplexes_dictionary[[multiplex]]) <- names(
       hummus_object@multilayer@multiplex[[multiplex]]@networks)
+    multiplexes_dictionary[[multiplex]] = reticulate::py_dict(
+      keys = names(multiplexes_dictionary[[multiplex]]),
+      values = multiplexes_dictionary[[multiplex]]
+    )
   }
   return(multiplexes_dictionary)
-  }
+}
 
 #' Format bipartites names for python hummuspy package config functions
 #'
