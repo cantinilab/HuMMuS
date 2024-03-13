@@ -263,6 +263,16 @@ def save_config(config, filename):
     None
     """
 
+    config = dict(config)
+    multiplex_order = list(config['multiplex'].keys())
+    # we sort eta, lamb and multiplexes to make sure the order is always the same
+    multiplex_order.sort()
+    config['multiplex'] = {k: config['multiplex'][k] for k in multiplex_order}
+    config['eta'] = config['eta'].loc[multiplex_order]
+    config['lamb'] = config['lamb'].loc[multiplex_order, multiplex_order]
+
+    config = setup_proba_config(config, lamb=config["lamb"], eta=config["eta"])
+
     with open(filename, 'w') as f:
         yaml.dump(config, f)
 
@@ -270,6 +280,17 @@ def save_config(config, filename):
 def open_config(filename):
     with open(filename) as file:
         config_dic = yaml.load(file, Loader=yaml.BaseLoader)
+
+    config_dic["lamb"] = pd.DataFrame(
+        config_dic["lamb"],
+        index=list(config_dic["multiplex"].keys()),
+        columns=list(config_dic["multiplex"].keys())
+        ).astype(float)
+    config_dic["eta"] = pd.Series(
+        config_dic["eta"],
+        index=list(config_dic["multiplex"].keys())
+        ).astype(float)
+
     return config_dic
 
 
@@ -372,7 +393,7 @@ def setup_proba_config(
                            index = ['TF', 'Gene', 'Peak''],
                            columns = ['TF', 'Gene', 'Peak'])
         lamb.loc[i, j] corresponds to the probability
-        to go from layer i to layer j.
+        to go from layer j to layer i.
 
     Returns
     -------
@@ -438,7 +459,7 @@ def setup_proba_config(
     else:
         raise TypeError("lamb should be a numpy array or a pandas DataFrame")
 
-    lamb = lamb.transpose()
+#    lamb = lamb.transpose()
     # Normalise lamb per col
     lamb = lamb.div(lamb.sum(axis=0), axis=1)
     lamb = lamb.fillna(0)
@@ -478,9 +499,9 @@ def initialise_lamb(config,
     ordered_multiplexes = config['multiplex'].keys()
 
     if value == 1:
-        array = np.ones((3, 3))
+        array = np.ones((len(ordered_multiplexes), len(ordered_multiplexes)))
     elif value == 0:
-        array = np.zeros((3, 3))
+        array = np.zeros((len(ordered_multiplexes), len(ordered_multiplexes)))
     else:
         raise ValueError('value param of initialise_lamb should be 1 or 0')
 
@@ -509,7 +530,7 @@ def get_grn_lamb(config,
                  tf_multiplex='TF',
                  peak_multiplex='peaks',
                  rna_multiplex='RNA',
-                 draw=True
+                 draw=False
                  ):
 
     lamb = initialise_lamb(config,
@@ -521,8 +542,9 @@ def get_grn_lamb(config,
     # Remove proba between TF and RNA layers
     lamb.loc[tf_multiplex, rna_multiplex] = 0
     lamb.loc[rna_multiplex, tf_multiplex] = 0
-    lamb = lamb.div(lamb.sum(axis=1),
-                    axis=0)
+    lamb = lamb.transpose()
+    lamb = lamb.div(lamb.sum(axis=0),
+                    axis=1)
 
     # max_lambd check to see
     assert check_lamb(config=config, lamb=lamb), "There seem to be a " +\
@@ -545,7 +567,7 @@ def get_enhancers_lamb(config,
                        tf_multiplex='TF',
                        peak_multiplex='peaks',
                        rna_multiplex='RNA',
-                       draw=True
+                       draw=False
                        ):
 
     lamb = initialise_lamb(config,
@@ -553,16 +575,16 @@ def get_enhancers_lamb(config,
                            peak_multiplex,
                            rna_multiplex,
                            value=0)  # because enhancer lamb is mostly 0s
-    print(lamb)
 
     # Add proba between peaks and RNA layers
     lamb.loc[peak_multiplex, peak_multiplex] = 1
     lamb.loc[rna_multiplex, peak_multiplex] = 1
     lamb.loc[tf_multiplex, peak_multiplex] = 1
-    lamb = lamb.div(lamb.sum(axis=1),
-                    axis=0)
+
+    lamb = lamb.transpose()
+    lamb = lamb.div(lamb.sum(axis=0),
+                    axis=1)
     lamb = lamb.fillna(0)
-    print(lamb)
 
     # max_lambd check to see
     assert check_lamb(config=config, lamb=lamb), "There seem to be a " +\
@@ -584,7 +606,7 @@ def get_binding_regions_lamb(config,
                              tf_multiplex='TF',
                              peak_multiplex='peaks',
                              rna_multiplex='RNA',
-                             draw=True
+                             draw=False
                              ):
 
     lamb = initialise_lamb(config,
@@ -592,7 +614,6 @@ def get_binding_regions_lamb(config,
                            peak_multiplex,
                            rna_multiplex,
                            value=0)  # because enhancer lamb is mostly 0s
-    print(lamb)
 
     # Add proba between TF and peaks layers
     lamb.loc[tf_multiplex, tf_multiplex] = 1
@@ -601,10 +622,10 @@ def get_binding_regions_lamb(config,
     lamb.loc[peak_multiplex, tf_multiplex] = 1
     lamb.loc[rna_multiplex, peak_multiplex] = 1
 
-    lamb = lamb.div(lamb.sum(axis=1),
-                    axis=0)
+    lamb = lamb.transpose()
+    lamb = lamb.div(lamb.sum(axis=0),
+                    axis=1)
     lamb = lamb.fillna(0)
-    print(lamb)
 
     # max_lambd check to see
     assert check_lamb(config=config, lamb=lamb), "There seem to be a " +\
@@ -626,7 +647,7 @@ def get_target_genes_lamb(config,
                           tf_multiplex='TF',
                           peak_multiplex='peaks',
                           rna_multiplex='RNA',
-                          draw=True
+                          draw=False
                           ):
 
     lamb = initialise_lamb(config,
@@ -634,16 +655,16 @@ def get_target_genes_lamb(config,
                            peak_multiplex,
                            rna_multiplex,
                            value=1)  # because enhancer lamb is mostly 0s
-    print(lamb)
 
     # Remove proba between TF and RNA layers
     lamb.loc[tf_multiplex, rna_multiplex] = 0
     lamb.loc[rna_multiplex, tf_multiplex] = 0
     lamb.loc[peak_multiplex, tf_multiplex] = 0  # can't go back up to TF
-    lamb = lamb.div(lamb.sum(axis=1),
-                    axis=0)
+
+    lamb = lamb.transpose()
+    lamb = lamb.div(lamb.sum(axis=0),
+                    axis=1)
     lamb = lamb.fillna(0)
-    print(lamb)
 
     # max_lambd check to see
     assert check_lamb(config=config, lamb=lamb), "There seem to be a " +\
@@ -661,7 +682,7 @@ def get_target_genes_lamb(config,
 ##############################
 # Check proba transitions    #
 ##############################
-def get_max_lamb(config, directed=False, draw=False):
+def get_max_lamb(config, directed=True, draw=False, figsize=(7, 7)):
     """Calculate the maximum lamb matrix according to bipartites
     indicated in the config in input.
     Bipartites are used to know which layers can be connected to each other.
@@ -683,14 +704,26 @@ def get_max_lamb(config, directed=False, draw=False):
                         columns = ['TF', 'Peak', 'RNA'])
     """
     # Get layer names connected by bipartites
+
+    bipartites = dict(config['bipartite'])
+    bip_keys = list(bipartites.keys())
+    for bipartite in bip_keys:
+        # if the bipartite is undirected, we add the inversed bipartite
+        if bipartites[bipartite]["graph_type"][0]=="0":
+            bipartites[bipartite+"_inversed"] = {
+                "source": bipartites[bipartite]["target"],
+                "target": bipartites[bipartite]["source"],
+                "graph_type": bipartites[bipartite]["graph_type"]
+                }
+            
     if directed != 'inversed':
-        positions_bipartites = [(config['bipartite'][bipartite]['source'],
-                             config['bipartite'][bipartite]['target'])
-                            for bipartite in config['bipartite']]
+        positions_bipartites = [(bipartites[bipartite]['target'],
+                                 bipartites[bipartite]['source'])
+                                 for bipartite in bipartites]
     else: # if we want to inverse source and target layers
-        positions_bipartites = [(config['bipartite'][bipartite]['target'],
-                             config['bipartite'][bipartite]['source'])
-                            for bipartite in config['bipartite']]
+        positions_bipartites = [(bipartites[bipartite]['source'],
+                                 bipartites[bipartite]['target'])
+                                 for bipartite in bipartites]
 
     # Create an empty dataframe with layer names as index and columns
     # that we'll fill where it's possible according to the bipartites
@@ -701,8 +734,6 @@ def get_max_lamb(config, directed=False, draw=False):
 
     # fill each position corresponding to bipartite options
     for position in positions_bipartites:
-        if draw is True:
-            print(position[0], '<-->', position[1])
         max_lamb.loc[position] = 1
     # Future : Since we can inverse source and target layers)
     # could be conditionned by bipartite directionality
@@ -713,12 +744,15 @@ def get_max_lamb(config, directed=False, draw=False):
     # filling the diagonal to allow intra-layer exploration
     max_lamb += np.eye(len(config['multiplex'])).astype(int)
     # normalise per rows
-    max_lamb = max_lamb.div(max_lamb.sum(axis=1), axis=0)
+    max_lamb = max_lamb.div(max_lamb.sum(axis=0), axis=1)
+
+    if draw is True:
+        draw_lamb(max_lamb, figsize=figsize)
 
     return max_lamb
 
 
-def check_lamb(lamb, config, draw=False):
+def check_lamb(lamb, config, directed=True, draw=False):
     """Check that lamb is a valid probability matrix according to bipartites
     indicated in the config in input.
     Bipartites are used to know which layers can be connected to each other.
@@ -738,11 +772,11 @@ def check_lamb(lamb, config, draw=False):
     """
 
     # Calculate the maximum lamb matrix according to bipartites
-    max_lamb = (get_max_lamb(config, draw=draw) > 0).astype(int)
+    max_lamb = (get_max_lamb(config, directed=directed, draw=draw) > 0).astype(int)
 
     # Count number of locations where lamb has no non-zero value
     # and max_lamb is zero
-    X = np.sum(np.sum((max_lamb - lamb) < 0))
+    X = np.sum(np.sum((max_lamb - lamb) < 0, axis=0), axis=0)
 
     # If X > 0, lamb is not a valid probability matrix according to bipartites.
     if X > 0:
@@ -750,13 +784,35 @@ def check_lamb(lamb, config, draw=False):
     # Else, lamb is a valid probability matrix according to bipartites.
     else:
         return True
+    
 
 
 ##############################
 # Draw proba transitions     #
 ##############################
+def draw_config(config, figsize=(7, 7)):
+    """Draw the lamb argument config as a networkx graph.
+    
+    Parameters
+    ----------
+    config: dict
+        The config dictionary.
+    figsize: A tuple containing the dimensions of the plot.
 
-def draw_lamb(df):
+    Returns
+    -------
+    None
+    """
+
+    # Base node color on starting multiplex (from eta)
+    node_color = config["eta"][config['lamb'].columns].values
+    node_color = ["blue" if color == 0 else "green"
+                  for color in node_color]
+
+    draw_lamb(config["lamb"], figsize=figsize, node_color=node_color)
+
+
+def draw_lamb(df, figsize=(7, 7), node_color='blue'):
     """Draw the lamb matrix as a networkx graph.
 
     Parameters
@@ -769,6 +825,14 @@ def draw_lamb(df):
                             [0, 0.5, 0.5]],
                             index = ['TF', 'Peak', 'RNA'],
                             columns = ['TF', 'Peak', 'RNA'])
+
+    figsize: A tuple containing the dimensions of the plot.
+    node_color: Union[str, list[str]]
+        The color of the nodes.
+        If str, the color of all the nodes.
+        If list[str], colors of each node.
+        e.g.: node_color = 'blue'
+              node_color = ['blue', 'red', 'blue']
 
     Returns
     -------
@@ -789,10 +853,10 @@ def draw_lamb(df):
     """
 
     # Create a figure and an axis
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=figsize)
 
     # Create a directed graph from the lamb matrix
-    G = nx.from_pandas_adjacency(df, create_using=nx.DiGraph())
+    G = nx.from_pandas_adjacency(df.transpose(), create_using=nx.DiGraph())
     pos = {list(G.nodes)[-i-1]: np.array((0, i))
            for i in range(-len(G.nodes), 0)}
 
@@ -802,10 +866,11 @@ def draw_lamb(df):
                      pos=pos,
                      node_size=1500,
                      width=4,
+                     node_color=node_color,
                      alpha=0.8,
                      font_weight="bold",
                      arrows=True,
-                     connectionstyle='arc3, rad = 0.8')
+                     connectionstyle='arc3, rad = 0.6')
 
     # Get edge weights that will be used as edge labels
     edge_labels = nx.get_edge_attributes(G, 'weight')
@@ -832,7 +897,7 @@ def draw_lamb(df):
                                  font_color='k',
                                  font_size=12,
                                  label_pos=12,
-                                 rad=0.8,
+                                 rad=0.6,
                                  rotate=False)
 
     # Draw non self edges labels
@@ -847,8 +912,6 @@ def draw_lamb(df):
 
     ax.set_ylim([list(pos.values())[0][1] - 0.5,
                  list(pos.values())[-1][1] + 0.5])
-    plt.show()
-
 
 def my_draw_networkx_edge_labels(
     G,

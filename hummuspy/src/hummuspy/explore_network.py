@@ -41,6 +41,9 @@ def compute_multiple_RandomWalk(
         Return the result. The default is False.
     spec_layer_result_saved : str, optional
         Name of the layer to save. The default is 'all'.
+        Specify here if you want to keep only the scores of going to one of the layer 
+            (e.g.: If you're interested only in TF-genes 
+            interactions and not in peaks-related scores, put ['RNA']
     njobs : int, optional
         Number of jobs. The default is 1.
 
