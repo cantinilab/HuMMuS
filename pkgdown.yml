@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   add_networks: add_networks.html
   chen_vignette: chen_vignette.html
-last_built: 2024-03-14T13:41Z
+last_built: 2024-03-14T16:41Z
 urls:
   reference: https://cantinilab.github.io/HuMMuS/reference
   article: https://cantinilab.github.io/HuMMuS/articles
