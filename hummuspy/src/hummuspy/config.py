@@ -268,8 +268,10 @@ def save_config(config, filename):
     # we sort eta, lamb and multiplexes to make sure the order is always the same
     multiplex_order.sort()
     config['multiplex'] = {k: config['multiplex'][k] for k in multiplex_order}
-    config['eta'] = config['eta'].loc[multiplex_order]
-    config['lamb'] = config['lamb'].loc[multiplex_order, multiplex_order]
+    if 'eta' in config.keys():
+        config['eta'] = config['eta'].loc[multiplex_order]
+    if 'lamb' in config.keys():
+        config['lamb'] = config['lamb'].loc[multiplex_order, multiplex_order]
 
     config = setup_proba_config(config, lamb=config["lamb"], eta=config["eta"])
 
@@ -281,15 +283,17 @@ def open_config(filename):
     with open(filename) as file:
         config_dic = yaml.load(file, Loader=yaml.BaseLoader)
 
-    config_dic["lamb"] = pd.DataFrame(
-        config_dic["lamb"],
-        index=list(config_dic["multiplex"].keys()),
-        columns=list(config_dic["multiplex"].keys())
-        ).astype(float)
-    config_dic["eta"] = pd.Series(
-        config_dic["eta"],
-        index=list(config_dic["multiplex"].keys())
-        ).astype(float)
+    if "lamb" in config_dic.keys():
+        config_dic["lamb"] = pd.DataFrame(
+            config_dic["lamb"],
+            index=list(config_dic["multiplex"].keys()),
+            columns=list(config_dic["multiplex"].keys())
+            ).astype(float)
+    if "eta" in config_dic.keys():
+        config_dic["eta"] = pd.Series(
+            config_dic["eta"],
+            index=list(config_dic["multiplex"].keys())
+            ).astype(float)
 
     return config_dic
 
