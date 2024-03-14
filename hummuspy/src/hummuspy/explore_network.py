@@ -316,7 +316,7 @@ def define_grn_from_config(
                                             rna_multiplex,
                                             draw=False)
 
-        config = hummuspy.config.setup_proba_config(config, eta, lamb)
+        # config = hummuspy.config.setup_proba_config(config, eta, lamb)
 
     config_path = multilayer_f+'/'+config_folder+'/'+config_name
     hummuspy.config.save_config(config, config_path)
@@ -475,7 +475,7 @@ def define_enhancers_from_config(
                                                   rna_multiplex,
                                                   draw=False)
 
-        config = hummuspy.config.setup_proba_config(config, eta, lamb)
+        # config = hummuspy.config.setup_proba_config(config, eta, lamb)
 
     config_path = multilayer_f+'/'+config_folder+'/'+config_name
     hummuspy.config.save_config(config, config_path)
@@ -635,7 +635,7 @@ def define_binding_regions_from_config(
                                                         rna_multiplex,
                                                         draw=False)
 
-        config = hummuspy.config.setup_proba_config(config, eta, lamb)
+        # config = hummuspy.config.setup_proba_config(config, eta, lamb)
 
     config_path = multilayer_f+'/'+config_folder+'/'+config_name
     hummuspy.config.save_config(config, config_path)
@@ -793,7 +793,7 @@ def define_target_genes_from_config(
                                                      rna_multiplex,
                                                      draw=False)
 
-        config = hummuspy.config.setup_proba_config(config, eta, lamb)
+        # config = hummuspy.config.setup_proba_config(config, eta, lamb)
 
     config_path = multilayer_f+'/'+config_folder+'/'+config_name
     hummuspy.config.save_config(config, config_path)
