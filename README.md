@@ -18,7 +18,7 @@ The current outputs available from HuMMuS are
 * TF - DNA binding regions
 * TF - target genes.
 
-#### [Read our preprint](https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1) for more details !
+#### [Read our publication](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btae143/7625061) for more details !
 <img src="man/figures/Fig_0001.jpg" align="center" width="1000"/>
 
 ### **scRNA + scATAC**
@@ -31,7 +31,7 @@ It is then possible to add any additional network to an already **existing modal
 
 ## Tutorials/Vignettes
 
-* [**Infer a gene regulatory network and other outputs from unpaired/paired scRNA+scATAC data**](https://cantinilab.github.io/HuMMuS/articles/chen_vignette.html) shows the application of HuMMuS to the Chen dataset, used in the benchmark of [HuMMuS publication](https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1).
+* [**Infer a gene regulatory network and other outputs from unpaired/paired scRNA+scATAC data**](https://cantinilab.github.io/HuMMuS/articles/chen_vignette.html) shows the application of HuMMuS to the Chen dataset, used in the benchmark of [HuMMuS publication](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btae143/7625061).
 
 ## Installation
 HuMMuS is for now ready only in R but requires some python dependencies (hummuspy).
@@ -82,4 +82,4 @@ To reproduce HuMMuS results presented in the manuscript, preprocessed data [are 
 <br> For quick tests, the Chen dataset preprocessed is accessible directly through the package as a Seurat object: `load(chen_data)`.
 
 ## Cite us
-Trimbour R., Deutschmann I. M., Cantini L. Molecular mechanisms reconstruction from single-cell multi-omics data with HuMMuS. bioXriv (2023). doi: https://doi.org/10.1101/2023.06.09.543828
+Trimbour R., Deutschmann I. M., Cantini L. Molecular mechanisms reconstruction from single-cell multi-omics data with HuMMuS. Bioinformatics (2024), btae143. doi: https://doi.org/10.1093/bioinformatics/btae143
