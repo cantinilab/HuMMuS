@@ -158,16 +158,68 @@ setMethod("show", "multilayer",
 #' @exportClass hummus_object
 #' @export
 #'
-#' @examples hummus_object <- hummus_object(seurat_object)
-#'
 hummus_object <- setClass(
     Class = "hummus_object",
-    contains = "Seurat",
     slots = list(
+        "assays" = "list",
         "multilayer" = "multilayer",
         "motifs_db" = "motifs_db"
     )
 )
+
+#' @title Initiate a hummus object
+#' 
+#' @description Initiate a hummus object
+#' 
+#' @param seurat_assays A Seurat object or a list of Seurat assays
+#' @param multilayer A multilayer object. Default: NULL
+#' @param motifs_db A motifs_db object. Default: NULL
+#' @return A hummus object
+#' @export
+#' 
+#' @examples seurat_object <- Seurat::CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 100, ncol = 10))
+#'          hummus <- InitiateHuMMuSObject(seurat_object)
+#'          hummus
+InitiateHuMMuSObject<- function(
+  seurat_assays,
+  multilayer = NULL,
+  motifs_db = NULL) {
+
+  # Check if seurat_assays is a Seurat object or a list of Seurat assays
+  if (inherits(seurat_assays, "Seurat")) {
+    assays <- seurat_assays@assays
+  } else if (inherits(seurat_assays, "list")) {
+    assays <- seurat_assays
+  } else {
+    stop("seurat_assays must be a Seurat object or a list of Seurat assays.")
+  }
+
+  # Check if multilayer is a multilayer object or NULL
+  if (!inherits(multilayer, "multilayer")) {
+    if (!is.null(multilayer)) {
+      stop("multilayer must be a multilayer object or NULL.")
+    } else {
+      multilayer <- new("multilayer")
+    }
+  }
+
+  # Check if motifs_db is a motifs_db object or NULL
+  if (!inherits(motifs_db, "motifs_db")) {
+    if (!is.null(motifs_db)) {
+      stop("motifs_db must be a motifs_db object or NULL.")
+    } else {
+      motifs_db <- new("motifs_db")
+    }
+  }
+
+  object <- new(
+    Class = "hummus_object",
+    assays = assays,
+    multilayer = multilayer,
+    motifs_db = motifs_db
+  )
+  return(object)
+}
 
 setMethod("show", "hummus_object",
   function(object) {
