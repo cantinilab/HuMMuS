@@ -40,7 +40,7 @@ Additionally, it contains a motifs_db object, providing tf motifs informations, 
 # Load the Chen dataset, which is a Seurat object containing scRNA-seq and scATAC-seq data
 data("chen_dataset_subset")
 chen_dataset_subset
-hummus <- InitiateHuMMuSObject(chen_dataset_subset)
+hummus <- Initiate_HuMMuS_Object(chen_dataset_subset)
 
 
 # wrapper of Signac::GetGRangesFromEnsDb, adapting output to UCSC format
