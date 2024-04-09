@@ -73,7 +73,7 @@ data("chen_dataset_subset")
 chen_dataset_subset
 
 # Create an hummus object from seurat object
-hummus <- Initiate_HuMMuS_Object(chen_dataset_subset)
+hummus <- Initiate_Hummus_Object(chen_dataset_subset)
 ```
   
 ### 1.2. Add genome and motif annotations to hummus object

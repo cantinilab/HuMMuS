@@ -183,7 +183,7 @@ Hummus_Object <- setClass(
 #' @examples seurat_object <- Seurat::CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 100, ncol = 10))
 #'          hummus <- InitiateHummus_Object(seurat_object)
 #'          hummus
-Initiate_Hummus_Object<- function(
+Initiate_Hummus_Object <- function(
   seurat_assays,
   active.assay = NULL,
   multilayer = NULL,
