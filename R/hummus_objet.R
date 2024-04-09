@@ -144,52 +144,66 @@ setMethod("show", "multilayer",
   })
 
 
-#' The hummus_object class
+#' The Hummus_Object class
 #'
-#' The hummus_object object is an extended \code{Seurat} object
+#' The Hummus_Object object is an extended \code{Seurat} object
 #' for the storage and analysis of a heterogeneous multilayer network
 #'
 #' @slot multilayer (multilayer) - Multilayer object
 #' @slot motifs_db (motifs_db) - Motifs database
 #' @slot assay (list) - List of assays
 #'
-#' @name hummus_object-class
-#' @rdname hummus_object-class
-#' @exportClass hummus_object
+#' @name Hummus_Object-class
+#' @rdname Hummus_Object-class
+#' @exportClass Hummus_Object
 #' @export
 #'
-hummus_object <- setClass(
-    Class = "hummus_object",
+Hummus_Object <- setClass(
+    Class = "Hummus_Object",
     slots = list(
         "assays" = "list",
+        "active.assay" = "character",
         "multilayer" = "multilayer",
         "motifs_db" = "motifs_db"
     )
 )
+
 
 #' @title Initiate a hummus object
 #' 
 #' @description Initiate a hummus object
 #' 
 #' @param seurat_assays A Seurat object or a list of Seurat assays
+#' @param active.assay The name of the active assay. Default: NULL
 #' @param multilayer A multilayer object. Default: NULL
 #' @param motifs_db A motifs_db object. Default: NULL
 #' @return A hummus object
 #' @export
 #' 
 #' @examples seurat_object <- Seurat::CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 100, ncol = 10))
-#'          hummus <- InitiateHuMMuSObject(seurat_object)
+#'          hummus <- InitiateHummus_Object(seurat_object)
 #'          hummus
-InitiateHuMMuSObject<- function(
+Initiate_Hummus_Object<- function(
   seurat_assays,
+  active.assay = NULL,
   multilayer = NULL,
   motifs_db = NULL) {
 
   # Check if seurat_assays is a Seurat object or a list of Seurat assays
   if (inherits(seurat_assays, "Seurat")) {
     assays <- seurat_assays@assays
+    # setup active assay name
+    active.assay <- seurat_assays@active.assay
   } else if (inherits(seurat_assays, "list")) {
     assays <- seurat_assays
+    # setup active assay name
+    if (is.null(active.assay)) {
+      active.assay <- names(x = assays)[1]
+    } else if (!(active.assay %in% names(x = assays))) {
+      stop("active.assay must be a valid assay name.")
+    } else {
+      active.assay <- active.assay
+    }
   } else {
     stop("seurat_assays must be a Seurat object or a list of Seurat assays.")
   }
@@ -213,15 +227,153 @@ InitiateHuMMuSObject<- function(
   }
 
   object <- new(
-    Class = "hummus_object",
+    Class = "Hummus_Object",
     assays = assays,
+    active.assay = active.assay,
     multilayer = multilayer,
     motifs_db = motifs_db
   )
+
   return(object)
 }
 
-setMethod("show", "hummus_object",
+
+#' @rdname DefaultAssay
+#' @export
+#' @method DefaultAssay Hummus_Object
+#'
+#' @examples
+#' # Get current default assay
+#' DefaultAssay(object = pbmc_small)
+#'
+"DefaultAssay.Hummus_Object" <- function(object, ...) {
+  SeuratObject::CheckDots(...)
+  default <- slot(object = object, name = 'active.assay')
+  if (!length(x = default)) {
+    default <- NULL
+  }
+  return(default)
+}
+
+#' @rdname VariableFeatures
+#' @export
+#' @method VariableFeatures Hummus_Object
+#' 
+#' @name [[<-,Seurat
+#' 
+#' @aliases [[<-.Hummus_Object \S4method{[[<-}{Hummus_Object,character,missing,Assay}
+#'
+"VariableFeatures.Hummus_Object" <- function(
+  object,
+  method = NULL,
+  assay = NULL,
+  nfeatures = NULL,
+  layer = NA,
+  simplify = TRUE,
+  selection.method = lifecycle::deprecated(),
+  ...
+) {
+  SeuratObject::CheckDots(...)
+  if (lifecycle::is_present(arg = selection.method)) {
+    SeuratObject.Deprecate(
+      when = '5.0.0',
+      what = 'VariableFeatures(selection.method = )',
+      with = 'VariableFeatures(method = )'
+    )
+    method <- selection.method
+  }
+  assay <- assay %||% SeuratObject::DefaultAssay(object = object)
+  return(SeuratObject::VariableFeatures(
+    object = object[[assay]],
+    method = method,
+    nfeatures = nfeatures,
+    layer = layer,
+    simplify = simplify,
+    ...
+  ))
+}
+
+#' @method [[ Hummus_Object
+#' @name [[<-,Hummus_Object
+#' @export
+#' @aliases [[<-.Hummus_Object \S4method{[[<-}{Hummus_Object,character,missing,Assay}
+#' 
+"[[.Hummus_Object" <- function(x, i = missing_arg(), ..., drop = FALSE, na.rm = FALSE) {
+  md <- slot(object = x, name = 'assays')
+  if (rlang::is_missing(x = i)) {
+    return(md)
+  } else if (is.null(x = i)) {
+    return(NULL)
+  } else if (!length(x = i)) {
+    return(data.frame(row.names = row.names(x = md)))
+  }
+  # Correct invalid `i`
+  meta.cols <- names(x = md)
+  if (rlang::is_bare_integerish(x = i)) {
+    if (all(i > length(x = meta.cols))) {
+      abort(message = paste(
+        "Invalid integer indexing:",
+        "all integers greater than the number of meta columns"
+      ))
+    }
+    i <- meta.cols[as.integer(x = i[i <= length(x = meta.cols)])]
+  }
+  if (!is.character(x = i)) {
+    abort(message = "'i' must be a character vector")
+  }
+  print(0)
+  # Determine if we're pulling cell-level meta data
+  # or a sub-object
+  slot.use <- if (length(x = i) == 1L) {
+    SeuratObject::.FindObject(object = x, name = i)
+  } else {
+    NULL
+  }
+  print(1)
+  # Pull cell-level meta data
+  if (is.null(x = slot.use)) {
+    i <- tryCatch(
+      expr = arg_match(arg = i, values = meta.cols, multiple = TRUE),
+      error = function(e) {
+        #error message that indicates which colnames not found
+        abort(
+          message = paste(
+            paste(sQuote(x = setdiff(x = i, y = meta.cols)), collapse = ', '),
+            "not found in this HuMMuS object\n",
+            e$body
+          ),
+          call = rlang::caller_env(n = 4L)
+        )
+      }
+    )
+    print(2)
+    # Pull the cell-level meta data
+    data.return <- md[, i, drop = FALSE, ...]
+    # If requested, remove NAs
+    if (isTRUE(x = na.rm)) {
+      idx.na <- apply(X = is.na(x = data.return), MARGIN = 1L, FUN = all)
+      data.return <- data.return[!idx.na, , drop = FALSE]
+    } else {
+      idx.na <- rep_len(x = FALSE, length.out = ncol(x = x))
+    }
+    print(3)
+    # If requested, coerce to a vector
+    if (isTRUE(x = drop)) {
+      data.return <- unlist(x = data.return, use.names = FALSE)
+      names(x = data.return) <- rep.int(
+        x = colnames(x = x)[!idx.na],
+        times = length(x = i)
+      )
+    }
+    return(data.return)
+  }
+  print(4)
+  # Pull a sub-object
+  return(slot(object = x, name = slot.use)[[i]])
+}
+
+
+setMethod("show", "Hummus_Object",
   function(object) {
     #object <- SeuratObject::UpdateSlots(object = object)
     assays <- SeuratObject::.FilterObjects(object = object,
@@ -304,7 +456,7 @@ setMethod("show", "hummus_object",
 
 #' @title Save multilayer object files in a hierarchical structure on disk
 #'
-#' @description Save multilayer files from a hummus_object
+#' @description Save multilayer files from a Hummus_Object
 #' in a hierarchical structure on disk, inside a folder specified through
 #'  folder_name
 #'
@@ -415,7 +567,7 @@ add_network <- function(
     }
     # Get working multiplex
     multiplex <- object@multiplex[[multiplex_name]]
-  } else if (inherits(object, "hummus_object")) {
+  } else if (inherits(object, "Hummus_Object")) {
     # Check if multiplex_name is NULL
     if (is.null(multiplex_name)) {
       stop("You need to specify the multiplex name.")
@@ -461,7 +613,7 @@ add_network <- function(
   } else if (inherits(object, "multilayer")) {
     object@multiplex[[multiplex_name]] <- multiplex
     return(object)
-  } else if (inherits(object, "hummus_object")) {
+  } else if (inherits(object, "Hummus_Object")) {
     object@multilayer@multiplex[[multiplex_name]] <- multiplex
     return(object)
   }

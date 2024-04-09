@@ -1,3 +1,5 @@
+`%||%` <- rlang::`%||%`
+
 #' @title Extract TF names from scRNA data and tf2motifs
 #'
 #' @param species (character) - Species name. Default: "human".

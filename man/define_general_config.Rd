@@ -17,7 +17,8 @@ define_general_config(
   save_configfile = FALSE,
   config_name = "config.yml",
   config_folder = "config",
-  multilayer_f = "multilayer"
+  multilayer_f = "multilayer",
+  suffix_bipartites = ".tsv"
 )
 }
 \arguments{

@@ -5,10 +5,11 @@
 \title{Compute TF network and add it to hummus object}
 \usage{
 compute_tf_network(
-  hummus = null,
+  hummus,
   organism = 9606,
   tfs = NA,
   gene_assay = NULL,
+  method = NULL,
   store_network = FALSE,
   output_file = NULL,
   source_target = "AND",
@@ -28,6 +29,13 @@ from the hummus object with get_tfs function.}
 
 \item{gene_assay}{(character) - Name of the assay to get tfs from if tfs is
 not provided. If NULL, all TFs with motifs in the hummus object are used.}
+
+\item{method}{(character) - Method used to infer network edges.
+\itemize{
+\item \code{'Omnipath'} - Use Omnipath to infer tf-tf networks.
+\item \code{'NULL'} - A fake connected network is computed.
+\item \code{'Other method'} - TO DO.
+}}
 
 \item{store_network}{(bool) - Save the network directly (\code{TRUE},
 default) or return without saving on disk (\code{FALSE}).}

@@ -14,7 +14,7 @@ a subset of the names of the multiplexes in the hummus object.}
 }
 \value{
 A list of multiplexes names formatted for hummuspy config funtions
-each element of the list is a list of the network types (weighted/directed)
+each element of the list is a list of the network types (directed/weighted)
 and the name of the networks as named in the hummus object
 }
 \description{
