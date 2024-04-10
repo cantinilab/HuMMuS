@@ -237,6 +237,7 @@ Initiate_Hummus_Object <- function(
   return(object)
 }
 
+
 #' @title Get Default assays of Hummus_Object (based on Seurat)
 #' @name DefaultAssay
 #' @export
