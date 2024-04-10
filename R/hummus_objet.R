@@ -238,7 +238,6 @@ Initiate_Hummus_Object <- function(
 }
 
 #' @title Get Default assays of Hummus_Object (based on Seurat)
-#' @method DefaultAssay Hummus_Object
 #' @name DefaultAssay
 #' @export
 #'
@@ -246,7 +245,7 @@ Initiate_Hummus_Object <- function(
 #' # Get current default assay
 #' DefaultAssay(object = pbmc_small)
 #'
-"DefaultAssay.Hummus_Object" <- function(object, ...) {
+DefaultAssay.Hummus_Object <- function(object, ...) {
   SeuratObject::CheckDots(...)
   default <- slot(object = object, name = 'active.assay')
   if (!length(x = default)) {
@@ -255,16 +254,40 @@ Initiate_Hummus_Object <- function(
   return(default)
 }
 
+#' Default Assay
+#'
+#' Get and set the default assay
+#'
+#' @param object An object
+#'
+#' @return \code{DefaultAssay}: The name of the default assay
+#'
+#' @rdname DefaultAssay
+#' @export DefaultAssay
+#'
+#' @concept data-access
+#'
+DefaultAssay <- function(object, ...) {
+  UseMethod(generic = 'DefaultAssay', object = object)
+}
+
+#' @param value Name of assay to set as default
+#'
+#' @return \code{DefaultAssay<-}: An object with the default assay updated
+#'
+#' @rdname DefaultAssay
+#' @export DefaultAssay<-
+#'
+"DefaultAssay<-" <- function(object, ..., value) {
+  UseMethod(generic = 'DefaultAssay<-', object = object)
+}
+
+
 #' @title Variable features of assays in Hummus_Object (based on Seurat)
-#' @method VariableFeatures Hummus_Object
 #' @name VariableFeatures
 #' @export
-#' 
-#' @name [[<-,Seurat
-#' 
-#' @aliases [[<-.Hummus_Object \S4method{[[<-}{Hummus_Object,character,missing,Assay}
 #'
-"VariableFeatures.Hummus_Object" <- function(
+VariableFeatures.Hummus_Object <- function(
   object,
   method = NULL,
   assay = NULL,
@@ -293,6 +316,25 @@ Initiate_Hummus_Object <- function(
     ...
   ))
 }
+#' @return \code{VariableFeatures}: a vector of the variable features
+#'
+#' @rdname VariableFeatures
+#' @export VariableFeatures
+#'
+#'
+VariableFeatures <- function(object, method = NULL, ...) {
+  UseMethod(generic = 'VariableFeatures', object = object)
+}
+
+#' @param value A character vector of variable features
+#'
+#' @rdname VariableFeatures
+#' @export VariableFeatures<-
+#'
+"VariableFeatures<-" <- function(object, ..., value) {
+  UseMethod(generic = 'VariableFeatures<-', object = object)
+}
+
 
 #' @title Access assays in Hummus_Object (based on Seurat)
 #' @method [[ Hummus_Object
@@ -323,7 +365,6 @@ Initiate_Hummus_Object <- function(
   if (!is.character(x = i)) {
     abort(message = "'i' must be a character vector")
   }
-  print(0)
   # Determine if we're pulling cell-level meta data
   # or a sub-object
   slot.use <- if (length(x = i) == 1L) {
@@ -331,7 +372,6 @@ Initiate_Hummus_Object <- function(
   } else {
     NULL
   }
-  print(1)
   # Pull cell-level meta data
   if (is.null(x = slot.use)) {
     i <- tryCatch(
@@ -348,7 +388,6 @@ Initiate_Hummus_Object <- function(
         )
       }
     )
-    print(2)
     # Pull the cell-level meta data
     data.return <- md[, i, drop = FALSE, ...]
     # If requested, remove NAs
@@ -358,7 +397,6 @@ Initiate_Hummus_Object <- function(
     } else {
       idx.na <- rep_len(x = FALSE, length.out = ncol(x = x))
     }
-    print(3)
     # If requested, coerce to a vector
     if (isTRUE(x = drop)) {
       data.return <- unlist(x = data.return, use.names = FALSE)
@@ -369,7 +407,6 @@ Initiate_Hummus_Object <- function(
     }
     return(data.return)
   }
-  print(4)
   # Pull a sub-object
   return(slot(object = x, name = slot.use)[[i]])
 }
