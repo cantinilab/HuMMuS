@@ -53,7 +53,10 @@ py_install("hummuspy", envname = "r-reticulate", method="auto")
 ### HuMMuS R package
 Core R package can be installed directly from R:
 ```r
-devtools::install_github("cantinilab/HuMMuS")
+devtools::install_github("cantinilab/HuMMuS", ref="dev_SeuratV5")
+
+# If you only work SeuratV4, you can also use main branch that will soon be deprecated
+#devtools::install_github("cantinilab/HuMMuS")
 ```
 
 Before running HuMMuS, if you're using multiple conda environment you need to make sure to that reticulate points toward the one where hummuspy is installed. You can precise it at the beginning of your code :
