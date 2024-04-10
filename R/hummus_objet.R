@@ -237,7 +237,7 @@ Initiate_Hummus_Object <- function(
   return(object)
 }
 
-
+#' @title Get Default assays of Hummus_Object (based on Seurat)
 #' @rdname DefaultAssay
 #' @export
 #' @method DefaultAssay Hummus_Object
@@ -255,6 +255,7 @@ Initiate_Hummus_Object <- function(
   return(default)
 }
 
+#' @title Variable features of assays in Hummus_Object (based on Seurat)
 #' @rdname VariableFeatures
 #' @export
 #' @method VariableFeatures Hummus_Object
@@ -293,6 +294,7 @@ Initiate_Hummus_Object <- function(
   ))
 }
 
+#' @title Access assays in Hummus_Object (based on Seurat)
 #' @method [[ Hummus_Object
 #' @name [[<-,Hummus_Object
 #' @export
