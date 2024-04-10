@@ -238,9 +238,9 @@ Initiate_Hummus_Object <- function(
 }
 
 #' @title Get Default assays of Hummus_Object (based on Seurat)
-#' @rdname DefaultAssay
-#' @export
 #' @method DefaultAssay Hummus_Object
+#' @name DefaultAssay
+#' @export
 #'
 #' @examples
 #' # Get current default assay
@@ -256,9 +256,9 @@ Initiate_Hummus_Object <- function(
 }
 
 #' @title Variable features of assays in Hummus_Object (based on Seurat)
-#' @rdname VariableFeatures
-#' @export
 #' @method VariableFeatures Hummus_Object
+#' @name VariableFeatures
+#' @export
 #' 
 #' @name [[<-,Seurat
 #' 
