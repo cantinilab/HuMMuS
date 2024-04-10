@@ -195,9 +195,9 @@ hummus <- compute_tf_network(hummus,
 
 ### 2.4. Compute gene network from scRNA-seq w/ GENIE3
 ### *!! This step can be very slow if you have thousands of cells !!*
-#### Current recommendation if you have a big dataset is to compute the network
-#### before with [GRNBoost2 thorugh arboreto](https://arboreto.readthedocs.io/en/latest/)
-#### and [add it to the hummus object afterwards](https://cantinilab.github.io/HuMMuS/articles/add_networks.html).
+_Current recommendation if you have a big dataset is to compute the network_
+_before with [GRNBoost2 thorugh arboreto](https://arboreto.readthedocs.io/en/latest/)_
+_and [add it to the hummus object afterwards](https://cantinilab.github.io/HuMMuS/articles/add_networks.html)._
 Different methods can be used to compute the gene network. For now, only GENIE3
 is implemented in HuMMuS. You can specify which assay to use to compute the
 network (`gene_assay`).
