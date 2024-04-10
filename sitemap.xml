@@ -22,6 +22,18 @@
     <loc>https://cantinilab.github.io/HuMMuS/index.html</loc>
   </url>
   <url>
+    <loc>https://cantinilab.github.io/HuMMuS/reference/DefaultAssay.html</loc>
+  </url>
+  <url>
+    <loc>https://cantinilab.github.io/HuMMuS/reference/Hummus_Object-class.html</loc>
+  </url>
+  <url>
+    <loc>https://cantinilab.github.io/HuMMuS/reference/Initiate_Hummus_Object.html</loc>
+  </url>
+  <url>
+    <loc>https://cantinilab.github.io/HuMMuS/reference/VariableFeatures.html</loc>
+  </url>
+  <url>
     <loc>https://cantinilab.github.io/HuMMuS/reference/add_network.html</loc>
   </url>
   <url>
@@ -88,9 +100,6 @@
     <loc>https://cantinilab.github.io/HuMMuS/reference/get_tfs.html</loc>
   </url>
   <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/hummus_object-class.html</loc>
-  </url>
-  <url>
     <loc>https://cantinilab.github.io/HuMMuS/reference/index.html</loc>
   </url>
   <url>
@@ -109,9 +118,15 @@
     <loc>https://cantinilab.github.io/HuMMuS/reference/run_cicero_wrapper.html</loc>
   </url>
   <url>
+    <loc>https://cantinilab.github.io/HuMMuS/reference/run_tf_null_wrapper.html</loc>
+  </url>
+  <url>
     <loc>https://cantinilab.github.io/HuMMuS/reference/save_multilayer.html</loc>
   </url>
   <url>
     <loc>https://cantinilab.github.io/HuMMuS/reference/store_network.html</loc>
+  </url>
+  <url>
+    <loc>https://cantinilab.github.io/HuMMuS/reference/sub-subset-Hummus_Object.html</loc>
   </url>
 </urlset>

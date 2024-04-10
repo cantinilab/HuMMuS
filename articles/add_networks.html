@@ -40,7 +40,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">HuMMuS</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -148,7 +148,8 @@ connection between layers) <img src="figures/hummus_object_description.png" alt=
 <span><span class="co">##  2 layers present: counts, data</span></span>
 <span><span class="co">##  1 other assay present: peaks</span></span></code></pre>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">hummus</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">chen_dataset_subset</span>, <span class="st">'hummus_object'</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">hummus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Initiate_Hummus_Object.html">Initiate_Hummus_Object</a></span><span class="op">(</span><span class="va">chen_dataset_subset</span><span class="op">)</span></span>
+<span></span>
 <span></span>
 <span><span class="co"># wrapper of Signac::GetGRangesFromEnsDb, adapting output to UCSC format</span></span>
 <span><span class="va">genome_annotations</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_genome_annotations.html">get_genome_annotations</a></span><span class="op">(</span></span>
@@ -233,8 +234,8 @@ to the object as below:</p>
 <span><span class="co">## </span></span>
 <span><span class="co">## And a Seurat object :</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## 12000 features across 385 samples within 2 assays </span></span>
-<span><span class="co">## Active assay: RNA (2000 features, 0 variable features)</span></span>
+<span><span class="co">## 12000 features across samples within 2 assays </span></span>
+<span><span class="co">## Active assay: RNA ( features, 0 variable features)</span></span>
 <span><span class="co">##  1 other assay present: peaks</span></span></code></pre>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hummus</span><span class="op">@</span><span class="va">multilayer</span><span class="op">@</span><span class="va">multiplex</span></span></code></pre></div>

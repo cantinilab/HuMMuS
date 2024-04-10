@@ -40,7 +40,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">HuMMuS</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -188,7 +188,7 @@ going through this tutorial. It will mostly include :</p>
 <span><span class="co">##  1 other assay present: peaks</span></span></code></pre>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create an hummus object from seurat object</span></span>
-<span><span class="va">hummus</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="va">chen_dataset_subset</span>, <span class="st">'hummus_object'</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">hummus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Initiate_Hummus_Object.html">Initiate_Hummus_Object</a></span><span class="op">(</span><span class="va">chen_dataset_subset</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="add-genome-and-motif-annotations-to-hummus-object">1.2. Add genome and motif annotations to hummus object<a class="anchor" aria-label="anchor" href="#add-genome-and-motif-annotations-to-hummus-object"></a>
@@ -316,6 +316,26 @@ database are not directional nor return any weight here.</p>
 <div class="section level4">
 <h4 id="compute-gene-network-from-scrna-seq-w-genie3">2.4. Compute gene network from scRNA-seq w/ GENIE3<a class="anchor" aria-label="anchor" href="#compute-gene-network-from-scrna-seq-w-genie3"></a>
 </h4>
+</div>
+<div class="section level4">
+<h4 id="this-step-can-be-very-slow-if-you-have-thousands-of-cells">
+<em>!! This step can be very slow if you have thousands of cells
+!!</em><a class="anchor" aria-label="anchor" href="#this-step-can-be-very-slow-if-you-have-thousands-of-cells"></a>
+</h4>
+<div class="section level5">
+<h5 id="current-recommendation-if-you-have-a-big-dataset-is-to-compute-the-network">Current recommendation if you have a big dataset is to compute the
+network<a class="anchor" aria-label="anchor" href="#current-recommendation-if-you-have-a-big-dataset-is-to-compute-the-network"></a>
+</h5>
+</div>
+<div class="section level5">
+<h5 id="before-with-grnboost2-thorugh-arboreto">before with <a href="https://arboreto.readthedocs.io/en/latest/" class="external-link">GRNBoost2 thorugh
+arboreto</a><a class="anchor" aria-label="anchor" href="#before-with-grnboost2-thorugh-arboreto"></a>
+</h5>
+</div>
+<div class="section level5">
+<h5 id="and-add-it-to-the-hummus-object-afterwards-">and <a href="https://cantinilab.github.io/HuMMuS/articles/add_networks.html">add
+it to the hummus object afterwards</a>.<a class="anchor" aria-label="anchor" href="#and-add-it-to-the-hummus-object-afterwards-"></a>
+</h5>
 <p>Different methods can be used to compute the gene network. For now,
 only GENIE3 is implemented in HuMMuS. You can specify which assay to use
 to compute the network (<code>gene_assay</code>). <br>You can specify
@@ -340,6 +360,7 @@ proximity.</p>
 <span>                                     <span class="co"># each network can be saved </span></span>
 <span>                                     <span class="co"># when computed with hummus</span></span>
 <span>              output_file <span class="op">=</span> <span class="st">"gene_network.tsv"</span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level4">
 <h4 id="compute-the-peak-network-from-scatac-seq-w-cicero">2.5. Compute the peak network from scATAC-seq w/ Cicero<a class="anchor" aria-label="anchor" href="#compute-the-peak-network-from-scatac-seq-w-cicero"></a>
