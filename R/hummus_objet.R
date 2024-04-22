@@ -624,7 +624,7 @@ add_network <- function(
     multiplex <- object@multilayer@multiplex[[multiplex_name]]
 
   } else {
-    stop("Object is not a multiplex, a multilayer nor an hummus object.")
+    stop("Object is not a multiplex, a multilayer nor an hummus object.: ", class(object))
   }
 
   # Check if network name already exists in the multiplex

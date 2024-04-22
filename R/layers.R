@@ -3,7 +3,7 @@
 #' Compute a protein-protein interaction layer from Omnipath request that will represent tf cooperativity.
 #' This network is the top-layer of HuMMuS multilayer.
 #'
-#' @param hummus (hummus_object) - Hummus object
+#' @param hummus (Hummus_Object) - Hummus object
 #' @param organism (integer)  - Specie identifier from Omnipath to fetch
 #' specific interactions
 #' @param tfs vector(character) - List of tfs consider. If NA, tfs are extracted
@@ -28,7 +28,7 @@
 #' @param verbose (integer) - Display function messages. Set to 0 for no message
 #'  displayed, >= 1 for more details.
 #'
-#' @return (hummus_object) - Return hummus object with the new network added.
+#' @return (Hummus_Object) - Return hummus object with the new network added.
 #' @export
 #'
 #' @examples hummus <- compute_tf_network(hummus,
@@ -116,7 +116,7 @@ compute_tf_network <- function(
 #'      Use tree random forest to infer regulatory networks :
 #'      https://bioconductor.org/packages/release/bioc/html/GENIE3.html
 #' 
-#' @param hummus (hummus_object) - Hummus object
+#' @param hummus (Hummus_Object) - Hummus object
 #' @param gene_assay (character) - Name of the assay containing the gene
 #'  expression data.
 #' @param tfs vector(character) - List of tfs considered. If NULL, all TFs with
@@ -237,7 +237,7 @@ compute_gene_network <- function(
 #'      Use patial corelation between peaks that are in a given window (e.g. :
 #'      less distant than 500K base pairs)
 #'
-#' @param hummus (hummus_object) - Hummus object
+#' @param hummus (Hummus_Object) - Hummus object
 #' @param atac_assay (character) - Name of the assay containing the atac
 #'  peaks data.
 #' @param genome (BSgenome) - Genome used to compute the distance between peaks.
