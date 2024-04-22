@@ -19,7 +19,7 @@ compute_tf_network(
 )
 }
 \arguments{
-\item{hummus}{(hummus_object) - Hummus object}
+\item{hummus}{(Hummus_Object) - Hummus object}
 
 \item{organism}{(integer)  - Specie identifier from Omnipath to fetch
 specific interactions}
@@ -57,7 +57,7 @@ add the network to. Default is \code{'TF_network'}.}
 displayed, >= 1 for more details.}
 }
 \value{
-(hummus_object) - Return hummus object with the new network added.
+(Hummus_Object) - Return hummus object with the new network added.
 }
 \description{
 Compute a protein-protein interaction layer from Omnipath request that will represent tf cooperativity.

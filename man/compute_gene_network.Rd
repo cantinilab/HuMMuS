@@ -19,7 +19,7 @@ compute_gene_network(
 )
 }
 \arguments{
-\item{hummus}{(hummus_object) - Hummus object}
+\item{hummus}{(Hummus_Object) - Hummus object}
 
 \item{gene_assay}{(character) - Name of the assay containing the gene
 expression data.}
