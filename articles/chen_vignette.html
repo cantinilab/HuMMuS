@@ -458,12 +458,12 @@ will be returned.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ATF2_genes</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   layer                   path_layer        score   tf     gene</span></span>
-<span><span class="co">## 1   RNA multiplex/RNA/RNA_GENIE3.tsv 5.312726e-05 ATF2    CDC5L</span></span>
-<span><span class="co">## 2   RNA multiplex/RNA/RNA_GENIE3.tsv 4.575481e-05 ATF2     ATF3</span></span>
-<span><span class="co">## 3   RNA multiplex/RNA/RNA_GENIE3.tsv 4.486195e-05 ATF2    ATP5I</span></span>
-<span><span class="co">## 4   RNA multiplex/RNA/RNA_GENIE3.tsv 4.485264e-05 ATF2 CCNB1IP1</span></span>
+<span><span class="co">## 1   RNA multiplex/RNA/RNA_GENIE3.tsv 5.291440e-05 ATF2    CDC5L</span></span>
+<span><span class="co">## 2   RNA multiplex/RNA/RNA_GENIE3.tsv 4.570328e-05 ATF2     ATF3</span></span>
+<span><span class="co">## 3   RNA multiplex/RNA/RNA_GENIE3.tsv 4.486208e-05 ATF2    ATP5I</span></span>
+<span><span class="co">## 4   RNA multiplex/RNA/RNA_GENIE3.tsv 4.485191e-05 ATF2 CCNB1IP1</span></span>
 <span><span class="co">## 5   RNA multiplex/RNA/RNA_GENIE3.tsv 4.482241e-05 ATF2   DGCR14</span></span>
-<span><span class="co">## 6   RNA multiplex/RNA/RNA_GENIE3.tsv 4.176625e-05 ATF2    ATAT1</span></span></code></pre>
+<span><span class="co">## 6   RNA multiplex/RNA/RNA_GENIE3.tsv 4.176609e-05 ATF2    ATAT1</span></span></code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">target_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/define_target_genes.html">define_target_genes</a></span><span class="op">(</span></span>
 <span>  <span class="va">hummus</span>,</span>
@@ -492,12 +492,12 @@ will be returned.</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">target_genes</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   layer                   path_layer        score   tf     gene</span></span>
-<span><span class="co">## 1   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0002318538 CUX1   CHRNB1</span></span>
-<span><span class="co">## 2   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0002298631 CUX1    CDC5L</span></span>
-<span><span class="co">## 3   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0002217500 CUX1    ALG11</span></span>
-<span><span class="co">## 4   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0002211191 CUX1    CDCA5</span></span>
-<span><span class="co">## 5   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0002201935 CUX1    AGBL5</span></span>
-<span><span class="co">## 6   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0001498122 BPTF CDC42SE1</span></span></code></pre>
+<span><span class="co">## 1   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0002318541 CUX1   CHRNB1</span></span>
+<span><span class="co">## 2   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0002299783 CUX1    CDC5L</span></span>
+<span><span class="co">## 3   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0002217501 CUX1    ALG11</span></span>
+<span><span class="co">## 4   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0002211187 CUX1    CDCA5</span></span>
+<span><span class="co">## 5   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0002201921 CUX1    AGBL5</span></span>
+<span><span class="co">## 6   RNA multiplex/RNA/RNA_GENIE3.tsv 0.0001498125 BPTF CDC42SE1</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="define-grn">3.3. Define GRN<a class="anchor" aria-label="anchor" href="#define-grn"></a>
@@ -547,12 +547,12 @@ specify the list of genes and the list of TFs to use.</p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">enhancers</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   layer                              path_layer        score gene</span></span>
-<span><span class="co">## 1 peaks multiplex/peaks/peak_network_cicero.tsv 0.0008960582 ATF2</span></span>
-<span><span class="co">## 2 peaks multiplex/peaks/peak_network_cicero.tsv 0.0007440111 ATF2</span></span>
-<span><span class="co">## 3 peaks multiplex/peaks/peak_network_cicero.tsv 0.0006710919 ATF2</span></span>
-<span><span class="co">## 4 peaks multiplex/peaks/peak_network_cicero.tsv 0.0004391423 ATF2</span></span>
-<span><span class="co">## 5 peaks multiplex/peaks/peak_network_cicero.tsv 0.0004031270 ATF2</span></span>
-<span><span class="co">## 6 peaks multiplex/peaks/peak_network_cicero.tsv 0.0003824837 ATF2</span></span>
+<span><span class="co">## 1 peaks multiplex/peaks/peak_network_cicero.tsv 0.0008951819 ATF2</span></span>
+<span><span class="co">## 2 peaks multiplex/peaks/peak_network_cicero.tsv 0.0007383304 ATF2</span></span>
+<span><span class="co">## 3 peaks multiplex/peaks/peak_network_cicero.tsv 0.0006763254 ATF2</span></span>
+<span><span class="co">## 4 peaks multiplex/peaks/peak_network_cicero.tsv 0.0004115710 ATF2</span></span>
+<span><span class="co">## 5 peaks multiplex/peaks/peak_network_cicero.tsv 0.0003972408 ATF2</span></span>
+<span><span class="co">## 6 peaks multiplex/peaks/peak_network_cicero.tsv 0.0003850920 ATF2</span></span>
 <span><span class="co">##                       peak</span></span>
 <span><span class="co">## 1   chr6-44387360-44388305</span></span>
 <span><span class="co">## 2 chr3-107522766-107524070</span></span>
