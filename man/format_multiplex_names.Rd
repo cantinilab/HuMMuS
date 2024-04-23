@@ -7,7 +7,7 @@
 format_multiplex_names(hummus_object, multiplex_names = NULL)
 }
 \arguments{
-\item{hummus_object}{A hummus object}
+\item{hummus_object}{A HuMMuS_Object}
 
 \item{multiplex_names}{A vector of multiplex names considered. It must be
 a subset of the names of the multiplexes in the hummus object.}
