@@ -71,6 +71,7 @@ hummus <- add_network(
     hummus, rna_network,
     multiplex_name = "RNA",
     network_name = "GENIE3",
+    weighted = TRUE,
     verbose = 1)
 ```
 
@@ -79,7 +80,8 @@ hummus <- add_network(
 hummus <- add_network(
     hummus, rna_network,
     multiplex_name = "RNA",
-    network_name = "GENIE3_other")
+    network_name = "GENIE3_other",
+    weighted = TRUE)
 ```
 
 ### 3 Add external bipartites
