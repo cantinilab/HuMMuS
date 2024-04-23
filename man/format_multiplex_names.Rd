@@ -7,14 +7,14 @@
 format_multiplex_names(hummus_object, multiplex_names = NULL)
 }
 \arguments{
-\item{hummus_object}{A hummus object}
+\item{hummus_object}{A HuMMuS_Object}
 
 \item{multiplex_names}{A vector of multiplex names considered. It must be
 a subset of the names of the multiplexes in the hummus object.}
 }
 \value{
 A list of multiplexes names formatted for hummuspy config funtions
-each element of the list is a list of the network types (weighted/directed)
+each element of the list is a list of the network types (directed/weighted)
 and the name of the networks as named in the hummus object
 }
 \description{

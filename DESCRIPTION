@@ -1,6 +1,6 @@
 Package: HuMMuS
 Title: Heterogeneous Multilayer Network for Multi-Omics Single-Cell Data
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: person(given = "Rémi",
     family = "Trimbour",
     email = "remi.trimbour@pasteur.fr",

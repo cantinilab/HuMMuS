@@ -20,7 +20,7 @@ message displayed, >= 1 for more details.}
 Nothing, but create a folder containing the multilayer object files
 }
 \description{
-Save multilayer files from a hummus_object
+Save multilayer files from a Hummus_Object
 in a hierarchical structure on disk, inside a folder specified through
 folder_name
 }

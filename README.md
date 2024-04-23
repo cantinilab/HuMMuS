@@ -82,7 +82,7 @@ devtools::install_github("cole-trapnell-lab/cicero-release", ref = "monocle3")
 ## Data accessibility
 
 To reproduce HuMMuS results presented in the manuscript, preprocessed data [are accessible here](https://figshare.com/projects/Molecular_mechanisms_reconstruction_from_single-cell_multi-omics_data_with_HuMMuS/168899)
-<br> For quick tests, the Chen dataset preprocessed is accessible directly through the package as a Seurat object: `load(chen_data)`.
+<br> For quick tests, the Chen dataset preprocessed is accessible directly through the package as a Seurat object: `load(chen_dataset)`, along with a subset version `load(chen_dataset_subset)`.
 
 ## Cite us
 Trimbour R., Deutschmann I. M., Cantini L. Molecular mechanisms reconstruction from single-cell multi-omics data with HuMMuS. Bioinformatics (2024), btae143. doi: https://doi.org/10.1093/bioinformatics/btae143

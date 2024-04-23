@@ -40,7 +40,8 @@ Additionally, it contains a motifs_db object, providing tf motifs informations, 
 # Load the Chen dataset, which is a Seurat object containing scRNA-seq and scATAC-seq data
 data("chen_dataset_subset")
 chen_dataset_subset
-hummus <- as(chen_dataset_subset, 'hummus_object')
+hummus <- Initiate_Hummus_Object(chen_dataset_subset)
+
 
 # wrapper of Signac::GetGRangesFromEnsDb, adapting output to UCSC format
 genome_annotations <- get_genome_annotations(
@@ -70,6 +71,7 @@ hummus <- add_network(
     hummus, rna_network,
     multiplex_name = "RNA",
     network_name = "GENIE3",
+    weighted = TRUE,
     verbose = 1)
 ```
 
@@ -78,7 +80,8 @@ hummus <- add_network(
 hummus <- add_network(
     hummus, rna_network,
     multiplex_name = "RNA",
-    network_name = "GENIE3_other")
+    network_name = "GENIE3_other",
+    weighted = TRUE)
 ```
 
 ### 3 Add external bipartites

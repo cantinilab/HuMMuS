@@ -23,7 +23,7 @@ compute_atac_peak_network(
 )
 }
 \arguments{
-\item{hummus}{(hummus_object) - Hummus object}
+\item{hummus}{(Hummus_Object) - Hummus object}
 
 \item{atac_assay}{(character) - Name of the assay containing the atac
 peaks data.}

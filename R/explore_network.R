@@ -1,6 +1,6 @@
 #' Format multiplex names for python hummuspy package config functions
 #'
-#' @param hummus_object A hummus object
+#' @param hummus_object A HuMMuS_Object
 #' @param multiplex_names A vector of multiplex names considered. It must be
 #' a subset of the names of the multiplexes in the hummus object.
 #'
@@ -25,7 +25,7 @@ format_multiplex_names <- function(
   # bipartites_list <- hummus_object@bipartites
 
   #} else
-  if (inherits(hummus_object, "hummus_object")) {
+  if (inherits(hummus_object, "Hummus_Object")) {
     multiplex_list <- hummus_object@multilayer@multiplex
   } else {
     stop("Object is not a multilayer nor an hummus object.")
@@ -93,7 +93,7 @@ format_bipartites_names <- function(
     #bipartites_list <- hummus_object@bipartites
 
   #} else
-  if (inherits(hummus_object, "hummus_object")) {
+  if (inherits(hummus_object, "Hummus_Object")) {
     bipartites_list <- hummus_object@multilayer@bipartites
   } else {
     stop("Object is not a multilayer nor an hummus object.")
