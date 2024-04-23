@@ -153,7 +153,10 @@
 </h3>
 <p>Core R package can be installed directly from R:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"cantinilab/HuMMuS"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"cantinilab/HuMMuS"</span>, ref<span class="op">=</span><span class="st">"dev_SeuratV5"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># If you only work SeuratV4, you can also use main branch that will soon be deprecated</span></span>
+<span><span class="co">#devtools::install_github("cantinilab/HuMMuS")</span></span></code></pre></div>
 <p>Before running HuMMuS, if you’re using multiple conda environment you need to make sure to that reticulate points toward the one where hummuspy is installed. You can precise it at the beginning of your code :</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/reticulate/" class="external-link">reticulate</a></span><span class="op">)</span></span>
