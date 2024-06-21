@@ -173,12 +173,12 @@ compute_gene_network <- function(
     # Get tfs list
     if (verbose > 0 && is.null(tfs)) {
       cat("\tNo TFs list provided, fetching from hummus object...\n")
-    }
-    tfs <- get_tfs(hummus = hummus,
+      tfs <- get_tfs(hummus = hummus,
             assay = gene_assay,
             store_tfs = FALSE,
             output_file = NULL,
             verbose = verbose)
+    }
 
     # infer network
     weightMat <- GENIE3::GENIE3(as.matrix(hummus@assays[[gene_assay]]@counts),
