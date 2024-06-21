@@ -181,7 +181,7 @@ compute_gene_network <- function(
             verbose = verbose)
 
     # infer network
-    weightMat <- GENIE3::GENIE3(as.matrix(hummus[[gene_assay]]@counts),
+    weightMat <- GENIE3::GENIE3(as.matrix(hummus@assays[[gene_assay]]@counts),
                                regulators = tfs,
                                nCores = number_cores)
     # get edge list
