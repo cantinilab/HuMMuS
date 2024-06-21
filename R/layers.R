@@ -181,9 +181,11 @@ compute_gene_network <- function(
     }
 
     # infer network
-    weightMat <- GENIE3::GENIE3(as.matrix(hummus@assays[[gene_assay]]@counts),
-                               regulators = tfs,
-                               nCores = number_cores)
+    weightMat <- GENIE3::GENIE3(
+      as.matrix(hummus@assays[[gene_assay]]$counts),
+      regulators = tfs,
+      nCores = number_cores)
+
     # get edge list
     linkList <- GENIE3::getLinkList(weightMat)
     gene_network <- linkList[which(linkList$weight > threshold), ]
