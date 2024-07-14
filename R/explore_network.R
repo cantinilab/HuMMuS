@@ -511,7 +511,7 @@ define_output <- function(
     suffix_bipartites = suffix_bipartites)
 
   # define target_genes with hummuspy function
-  output <- hummuspy$explore_network$get_output_from_dicts(
+  output <- hummuspy$core_grn$get_output_from_dicts(
     output_request = output_type,
     multilayer_f = multilayer_f,
     multiplexes_list = multiplexes_dictionary,
