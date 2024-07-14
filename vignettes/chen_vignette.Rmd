@@ -50,6 +50,8 @@ knitr::opts_chunk$set(eval = TRUE)
 library(reticulate)
 # install python dependency
 py_install("hummuspy", envname = "r-reticulate", method="auto")
+reticulate::use_virtualenv("r-reticulate")
+reticulate::import("hummuspy")
 library(HuMMuS)
 ```
 ## Download the single-cell data
