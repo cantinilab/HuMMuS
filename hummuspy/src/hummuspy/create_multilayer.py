@@ -566,7 +566,9 @@ class Multixrank:
             with joblib.parallel_config(backend="dask"):
                 all_seeds_rwr_ranking_lst = Parallel()(
                     delayed(__par_seed_random_walk_restart)(prox_vectors[i], r)
-                    for i in range(len(seed_scores)))
+                    for i in track(range(len(seed_scores)),
+                                   description="Processing seeds...",
+                                   total=len(seed_scores)))
 
         # divide per multiplex:
         start_end_nodes = []

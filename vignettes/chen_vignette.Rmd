@@ -24,7 +24,7 @@ resource_files:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(eval = TRUE)
-#devtools::install_github("cantinilab/HuMMuS")
+devtools::install_github("cantinilab/HuMMuS", ref="dev_SeuratV5")
 ```
 # General description of the pipeline
 ![Overall pipeline](figures/schema_HuMMuS.png)
@@ -49,9 +49,9 @@ knitr::opts_chunk$set(eval = TRUE)
 ```{r import_packages}
 library(reticulate)
 # install python dependency
-py_install("hummuspy", envname = "r-reticulate", method="auto")
+reticulate::py_install("hummuspy", envname = "r-reticulate", method="auto")
 reticulate::use_virtualenv("r-reticulate")
-reticulate::import("hummuspy")
+hummuspy <- reticulate::import("hummuspy")
 library(HuMMuS)
 ```
 ## Download the single-cell data
@@ -319,11 +319,11 @@ The GRN is defined using the multixrank algorithm. It requires to have
 grn <- define_grn(
   hummus,
   multilayer_f = "chen_multilayer",
-  njobs = 1
+  njobs = 5
   )
 ```
 ```{r head_grn, eval=FALSE}
-head(grn)
+grn
 ```
 
 ### 3.4. Retrieve enhancers

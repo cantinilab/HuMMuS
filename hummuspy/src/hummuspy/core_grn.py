@@ -3,6 +3,7 @@ from typing import Union
 import pandas
 import hummuspy.config
 import hummuspy.explore_network
+import hummuspy
 
 
 def format_multilayer(
@@ -298,11 +299,15 @@ def define_grn_from_config(
         config['lamb'] = lamb
         # config = hummuspy.config.setup_proba_config(config, eta, lamb)
 
+    # process the config to the right format to
+    # compute the random walks without local saving
+    config = hummuspy.config.process_config(config, multilayer_f)
+
     if gene_list is None:
         gene_list = []
         for layer in config['multiplex'][rna_multiplex]['layers']:
             df_layer = pandas.read_csv(
-                multilayer_f+'/'+layer,
+                layer,
                 sep='\t',
                 header=None,
                 index_col=None)
@@ -313,18 +318,15 @@ def define_grn_from_config(
             gene_list = numpy.unique(numpy.concatenate([gene_list, layer_nodes]
                                                        ))
 
-    # process the config to the right format to
-    # compute the random walks without local saving
-    config = hummuspy.config.process_config(config, multilayer_f)
+    config['seeds'] = gene_list
 
     df = hummuspy.explore_network.compute_multiple_RandomWalk(
         **config,
         output_f=output_f,
-        seeds=gene_list,
         save=False,
         return_df=return_df,
         spec_layer_result_saved=tf_multiplex,
-        njobs=njobs)
+        n_jobs=njobs)
 
     df['gene'] = df['seed']
     df['tf'] = df['target']
@@ -335,7 +337,7 @@ def define_grn_from_config(
         tf_list = []
         for layer in config['multiplex'][tf_multiplex]['layers']:
             df_layer = pandas.read_csv(
-                multilayer_f+'/'+layer,
+                layer,
                 sep='\t',
                 header=None,
                 index_col=None)
@@ -350,6 +352,7 @@ def define_grn_from_config(
     df = df[df['tf'].isin(tf_list)]
 
     if save is True:
+        print('Saving the result in ', output_f)
         assert output_f is not None, 'You need to provide an output_f name ' +\
             'to save the GRN result'
         df.sort_values(by='score', ascending=False).to_csv(output_f,
@@ -462,14 +465,15 @@ def define_enhancers_from_config(
         config['lamb'] = lamb
         # config = hummuspy.config.setup_proba_config(config, eta, lamb)
 
-    config_path = multilayer_f+'/'+config_folder+'/'+config_name
-    hummuspy.config.save_config(config, config_path)
+    # process the config to the right format to
+    # compute the random walks without local saving
+    config = hummuspy.config.process_config(config, multilayer_f)
 
     if gene_list is None:
         gene_list = []
         for layer in config['multiplex'][rna_multiplex]['layers']:
             df_layer = pandas.read_csv(
-                multilayer_f+'/'+layer,
+                layer,
                 sep='\t',
                 header=None,
                 index_col=None)
@@ -479,18 +483,15 @@ def define_enhancers_from_config(
                 numpy.unique(df_layer[1].values)])
             gene_list = numpy.unique(numpy.concatenate([gene_list, layer_nodes]
                                                        ))
+    config['seeds'] = gene_list
 
     df = hummuspy.explore_network.compute_multiple_RandomWalk(
-        multilayer_f,
-        config_name=config_name,
+        **config,
         output_f=output_f,
-        list_seeds=gene_list,
-        config_folder=config_folder,
         save=False,
         return_df=return_df,
         spec_layer_result_saved=peak_multiplex,
-        # save only peaks proba
-        njobs=njobs)
+        n_jobs=njobs)
 
     df['gene'] = df['seed']
     df['peak'] = df['target']
@@ -501,7 +502,7 @@ def define_enhancers_from_config(
         peak_list = []
         for layer in config['multiplex'][peak_multiplex]['layers']:
             df_layer = pandas.read_csv(
-                multilayer_f+'/'+layer,
+                layer,
                 sep='\t',
                 header=None,
                 index_col=None)
@@ -516,6 +517,7 @@ def define_enhancers_from_config(
     df = df[df['peak'].isin(peak_list)]
 
     if save is True:
+        print('Saving the result in ', output_f)
         assert output_f is not None, 'You need to provide an output_f name ' +\
             'to save the enhancers prediction result.'
         df.sort_values(by='score', ascending=False).to_csv(output_f,
@@ -617,7 +619,6 @@ def define_binding_regions_from_config(
         # Indicate layer where to start the random walks : rna_multiplex
         eta = hummuspy.config.get_single_layer_eta(config,
                                                    tf_multiplex)
-
         # Define proba matrix to jump between layer : rna <--> peaks
         lamb = hummuspy.config.get_binding_regions_lamb(config,
                                                         tf_multiplex,
@@ -628,14 +629,15 @@ def define_binding_regions_from_config(
         config['lamb'] = lamb
         # config = hummuspy.config.setup_proba_config(config, eta, lamb)
 
-    config_path = multilayer_f+'/'+config_folder+'/'+config_name
-    hummuspy.config.save_config(config, config_path)
+    # process the config to the right format to
+    # compute the random walks without local saving
+    config = hummuspy.config.process_config(config, multilayer_f)
 
     if tf_list is None:
         tf_list = []
         for layer in config['multiplex'][tf_multiplex]['layers']:
             df_layer = pandas.read_csv(
-                multilayer_f+'/'+layer,
+                layer,
                 sep='\t',
                 header=None,
                 index_col=None)
@@ -647,17 +649,15 @@ def define_binding_regions_from_config(
                                                      ))
         tf_list = tf_list[tf_list != 'fake_node']
 
+    config['seeds'] = tf_list
+
     df = hummuspy.explore_network.compute_multiple_RandomWalk(
-        multilayer_f,
-        config_name=config_name,
+        **config,
         output_f=output_f,
-        list_seeds=tf_list,
-        config_folder=config_folder,
         save=False,
         return_df=return_df,
         spec_layer_result_saved=peak_multiplex,
-        # save only peaks proba
-        njobs=njobs)
+        n_jobs=njobs)
 
     df['tf'] = df['seed']
     df['peak'] = df['target']
@@ -668,7 +668,7 @@ def define_binding_regions_from_config(
         peak_list = []
         for layer in config['multiplex'][peak_multiplex]['layers']:
             df_layer = pandas.read_csv(
-                multilayer_f+'/'+layer,
+                layer,
                 sep='\t',
                 header=None,
                 index_col=None)
@@ -683,8 +683,9 @@ def define_binding_regions_from_config(
     df = df[df['peak'].isin(peak_list)]
 
     if save is True:
+        print('Saving the result in ', output_f)
         assert output_f is not None, 'You need to provide an output_f name ' +\
-            'to save the enhancers prediction result.'
+            'to save the binding regions prediction result.'
         df.sort_values(by='score', ascending=False).to_csv(output_f,
                                                            sep='\t',
                                                            index=False,
@@ -782,7 +783,6 @@ def define_target_genes_from_config(
     if update_config:
         eta = hummuspy.config.get_single_layer_eta(config,
                                                    tf_multiplex)
-
         lamb = hummuspy.config.get_target_genes_lamb(config,
                                                      tf_multiplex,
                                                      peak_multiplex,
@@ -793,14 +793,15 @@ def define_target_genes_from_config(
         config['lamb'] = lamb
         # config = hummuspy.config.setup_proba_config(config, eta, lamb)
 
-    config_path = multilayer_f+'/'+config_folder+'/'+config_name
-    hummuspy.config.save_config(config, config_path)
+    # process the config to the right format to
+    # compute the random walks without local saving
+    config = hummuspy.config.process_config(config, multilayer_f)
 
     if gene_list is None:
         gene_list = []
         for layer in config['multiplex'][rna_multiplex]['layers']:
             df_layer = pandas.read_csv(
-                multilayer_f+'/'+layer,
+                layer,
                 sep='\t',
                 header=None,
                 index_col=None)
@@ -815,7 +816,7 @@ def define_target_genes_from_config(
         tf_list = []
         for layer in config['multiplex'][tf_multiplex]['layers']:
             df_layer = pandas.read_csv(
-                multilayer_f+'/'+layer,
+                layer,
                 sep='\t',
                 header=None,
                 index_col=None)
@@ -827,16 +828,15 @@ def define_target_genes_from_config(
                                                      ))
         tf_list = tf_list[tf_list != 'fake_node']
 
+    config['seeds'] = tf_list
+
     df = hummuspy.explore_network.compute_multiple_RandomWalk(
-        multilayer_f,
-        config_name=config_name,
+        **config,
         output_f=output_f,
-        list_seeds=tf_list,
-        config_folder=config_folder,
         save=False,
         return_df=return_df,
         spec_layer_result_saved=rna_multiplex,
-        njobs=njobs)
+        n_jobs=njobs)
 
     df['tf'] = df['seed']
     df['gene'] = df['target']
@@ -847,8 +847,9 @@ def define_target_genes_from_config(
     df = df[df['gene'].isin(gene_list)]
 
     if save is True:
+        print('Saving the result in ', output_f)
         assert output_f is not None, 'You need to provide an output_f name ' +\
-            'to save the GRN result'
+            'to save the terget gene predictions result'
         df.sort_values(by='score', ascending=False).to_csv(output_f,
                                                            sep='\t',
                                                            index=False,
