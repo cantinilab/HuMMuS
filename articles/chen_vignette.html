@@ -247,12 +247,22 @@ default, it will be named “tf_peak”.</p>
 <span>              tf_multiplex_name <span class="op">=</span> <span class="st">"TF"</span>,</span>
 <span>              genome <span class="op">=</span> <span class="fu">BSgenome.Hsapiens.UCSC.hg38</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/BSgenome.Hsapiens.UCSC.hg38/man/package.html" class="external-link">BSgenome.Hsapiens.UCSC.hg38</a></span>,</span>
 <span>              <span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Computing TF-peak bipartite</span></span>
+<span><span class="co">##   31 TFs expressed</span></span></code></pre>
+<pre><code><span><span class="co">## Building motif matrix</span></span></code></pre>
+<pre><code><span><span class="co">## Finding motif positions</span></span></code></pre>
+<pre><code><span><span class="co">## Creating Motif object</span></span></code></pre>
+<pre><code><span><span class="co">## Warning in CreateMotifObject(data = motif.matrix, positions = motif.positions,</span></span>
+<span><span class="co">## : Non-unique motif names supplied, making unique</span></span></code></pre>
+<pre><code><span><span class="co">##  Adding TF info</span></span>
+<span><span class="co">##  Returning TF-peak links as bipartite object</span></span>
+<span><span class="co">## no peak layer name provided, using peak_assay name</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="genes---peaks-bipartite-reconstruction">2.2. Genes - peaks bipartite reconstruction<a class="anchor" aria-label="anchor" href="#genes---peaks-bipartite-reconstruction"></a>
 </h4>
 <p>Peaks - genes bipartite is computed</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hummus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bipartite_peaks2genes.html">bipartite_peaks2genes</a></span><span class="op">(</span></span>
 <span>                      hummus_object <span class="op">=</span> <span class="va">hummus</span>,</span>
 <span>                      gene_assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
@@ -280,7 +290,7 @@ will be kept. <br>Finally, you can specify the name of the multiplex and
 the name of the network that will be added to the hummus object. The
 added network will be undirected and unweighted since PPI and OmniPath
 database are not directional nor return any weight here.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hummus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_tf_network.html">compute_tf_network</a></span><span class="op">(</span><span class="va">hummus</span>,</span>
 <span>                            gene_assay <span class="op">=</span> <span class="st">"RNA"</span>, <span class="co"># default = None ;</span></span>
 <span>                                                <span class="co"># If a assay is provided,</span></span>
@@ -290,6 +300,9 @@ database are not directional nor return any weight here.</p>
 <span>                            <span class="co">#source_target = "OR",</span></span>
 <span>                            multiplex_name <span class="op">=</span> <span class="st">"TF"</span>,</span>
 <span>                            tf_network_name <span class="op">=</span> <span class="st">"TF_network"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Creating a fake TF network with all TFs connected to a fake node.</span></span>
+<span><span class="co">##   31 TFs expressed</span></span>
+<span><span class="co">## TF network construction time: 0.006991863    Creating new multiplex :  TF</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="compute-gene-network-from-scrna-seq-w-genie3">2.4. Compute gene network from scRNA-seq w/ GENIE3<a class="anchor" aria-label="anchor" href="#compute-gene-network-from-scrna-seq-w-genie3"></a>
@@ -315,7 +328,7 @@ you will need to specify the output file name
 undirected and weighted. While GENIE3 returns a directed network, we
 symmetrize it for the random walk with restart exploration of the genes
 proximity.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hummus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_gene_network.html">compute_gene_network</a></span><span class="op">(</span></span>
 <span>              <span class="va">hummus</span>,</span>
 <span>              gene_assay <span class="op">=</span> <span class="st">"RNA"</span>,</span>
@@ -327,6 +340,11 @@ proximity.</p>
 <span>                                     <span class="co"># each network can be saved </span></span>
 <span>                                     <span class="co"># when computed with hummus</span></span>
 <span>              output_file <span class="op">=</span> <span class="st">"gene_network.tsv"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Computing gene network with  GENIE3  ...</span></span>
+<span><span class="co">##  No TFs list provided, fetching from hummus object...</span></span>
+<span><span class="co">##   31 TFs expressed</span></span>
+<span><span class="co">##  Gene network construction time: 7.58693 </span></span>
+<span><span class="co">##  Creating new multiplex :  RNA</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="compute-the-peak-network-from-scatac-seq-w-cicero">2.5. Compute the peak network from scATAC-seq w/ Cicero<a class="anchor" aria-label="anchor" href="#compute-the-peak-network-from-scatac-seq-w-cicero"></a>
@@ -342,18 +360,43 @@ you will need to specify the output file name
 (<code>output_file</code>). The returned network will be considered
 undirected and weighted, since cis-regulatory interaction and Cicero
 outputs are not directional.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hummus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_atac_peak_network.html">compute_atac_peak_network</a></span><span class="op">(</span><span class="va">hummus</span>,</span>
 <span>              atac_assay <span class="op">=</span> <span class="st">"peaks"</span>,</span>
 <span>              verbose <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>              genome <span class="op">=</span> <span class="fu">BSgenome.Hsapiens.UCSC.hg38</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/BSgenome.Hsapiens.UCSC.hg38/man/package.html" class="external-link">BSgenome.Hsapiens.UCSC.hg38</a></span>,</span>
 <span>              store_network <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>  </span></code></pre></div>
+<pre><code><span><span class="co">## Overlap QC metrics:</span></span>
+<span><span class="co">## Cells per bin: 50</span></span>
+<span><span class="co">## Maximum shared cells bin-bin: 44</span></span>
+<span><span class="co">## Mean shared cells bin-bin: 6.39503105590062</span></span>
+<span><span class="co">## Median shared cells bin-bin: 0</span></span></code></pre>
+<pre><code><span><span class="co">## Warning in cicero::make_cicero_cds(input_cds, reduced_coordinates =</span></span>
+<span><span class="co">## umap_coords, : On average, more than 10% of cells are shared between paired</span></span>
+<span><span class="co">## bins.</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "Starting Cicero"</span></span>
+<span><span class="co">## [1] "Calculating distance_parameter value"</span></span></code></pre>
+<pre><code><span><span class="co">## Warning in estimate_distance_parameter(cds, window = window, maxit = 100, :</span></span>
+<span><span class="co">## Could not calculate sample_num distance_parameters (74 were calculated) - see</span></span>
+<span><span class="co">## documentation details</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "Running models"</span></span>
+<span><span class="co">## [1] "Assembling connections"</span></span>
+<span><span class="co">## [1] "Successful cicero models:  4782"</span></span>
+<span><span class="co">## [1] "Other models: "</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Zero or one element in range </span></span>
+<span><span class="co">##                         8803 </span></span>
+<span><span class="co">## [1] "Models with errors:  0"</span></span>
+<span><span class="co">## [1] "Done"</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  4793 peak edges with a coaccess score &gt; 0 were found.</span></span>
+<span><span class="co">## Peak network construction time: 28.01253 Creating new multiplex :  peaks</span></span></code></pre>
 </div>
 </div>
 <div class="section level3">
 <h3 id="analyse-of-the-multilayer-and-definition-of-grn">3. Analyse of the multilayer and definition of GRN<a class="anchor" aria-label="anchor" href="#analyse-of-the-multilayer-and-definition-of-grn"></a>
 </h3>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">chen_subset_hummus</span><span class="op">)</span> </span>
 <span><span class="va">hummus</span> <span class="op">&lt;-</span> <span class="va">chen_subset_hummus</span></span></code></pre></div>
 <div class="section level4">
@@ -376,7 +419,7 @@ to compute HuMMuS outputs later)</p>
 <div class="float">
 <img src="figures/explore_multilayer.png" alt="hummus object schema"><div class="figcaption">hummus object schema</div>
 </div>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_multilayer.html">save_multilayer</a></span><span class="op">(</span>hummus <span class="op">=</span> <span class="va">hummus</span>,</span>
 <span>                folder_name <span class="op">=</span> <span class="st">"chen_multilayer"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Warning in dir.create(folder_name): 'chen_multilayer' already exists</span></span></code></pre>
@@ -407,7 +450,7 @@ be used as seed). Only the links between the seed TFs and the genes will
 be computed. You can also specify the list of genes to use. Only the
 score of the genes present in the network and the <code>gene_list</code>
 will be returned.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ATF2_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/define_target_genes.html">define_target_genes</a></span><span class="op">(</span></span>
 <span>  <span class="va">hummus</span>,</span>
 <span>  tf_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"ATF2"</span><span class="op">)</span>,</span>
@@ -450,7 +493,7 @@ will be returned.</p>
 <span><span class="co">## 1</span></span>
 <span><span class="co">## http://127.0.0.1:8787/status</span></span>
 <span><span class="co">## Processing seeds... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00</span></span></code></pre>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ATF2_genes</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   index layer path_layer        score   tf     gene</span></span>
 <span><span class="co">## 1  1175   RNA      RNA_1 5.291440e-05 ATF2    CDC5L</span></span>
@@ -459,7 +502,7 @@ will be returned.</p>
 <span><span class="co">## 4  1096   RNA      RNA_1 4.485191e-05 ATF2 CCNB1IP1</span></span>
 <span><span class="co">## 5  1872   RNA      RNA_1 4.482241e-05 ATF2   DGCR14</span></span>
 <span><span class="co">## 6   536   RNA      RNA_1 4.176609e-05 ATF2    ATAT1</span></span></code></pre>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">target_genes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/define_target_genes.html">define_target_genes</a></span><span class="op">(</span></span>
 <span>  <span class="va">hummus</span>,</span>
 <span>  multilayer_f <span class="op">=</span> <span class="st">"chen_multilayer"</span>,</span>
@@ -501,7 +544,7 @@ will be returned.</p>
 <span><span class="co">## 31</span></span>
 <span><span class="co">## http://127.0.0.1:8787/status</span></span>
 <span><span class="co">## Processing seeds... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00</span></span></code></pre>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">target_genes</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   index layer path_layer        score   tf     gene</span></span>
 <span><span class="co">## 1  1340   RNA      RNA_1 0.0002318541 CUX1   CHRNB1</span></span>
@@ -517,20 +560,20 @@ will be returned.</p>
 <p>The GRN is defined using the multixrank algorithm. It requires to
 have the hummuspy python package installed (pip install hummuspy).<br><br> This can be parallelised using the njobs argument. You can also
 specify the list of genes and the list of TFs to use.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grn</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/define_grn.html">define_grn</a></span><span class="op">(</span></span>
 <span>  <span class="va">hummus</span>,</span>
 <span>  multilayer_f <span class="op">=</span> <span class="st">"chen_multilayer"</span>,</span>
 <span>  njobs <span class="op">=</span> <span class="fl">5</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grn</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="retrieve-enhancers">3.4. Retrieve enhancers<a class="anchor" aria-label="anchor" href="#retrieve-enhancers"></a>
 </h4>
 <p><br> You can also specify the list of peaks to use.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">enhancers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/define_enhancers.html">define_enhancers</a></span><span class="op">(</span></span>
 <span>  <span class="va">hummus</span>,</span>
 <span>  gene_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"ATF2"</span><span class="op">)</span>,</span>
@@ -573,7 +616,7 @@ specify the list of genes and the list of TFs to use.</p>
 <span><span class="co">## 1</span></span>
 <span><span class="co">## http://127.0.0.1:8787/status</span></span>
 <span><span class="co">## Processing seeds... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00</span></span></code></pre>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">enhancers</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   index layer path_layer        score gene                     peak</span></span>
 <span><span class="co">## 1  3950 peaks    peaks_1 0.0008951819 ATF2   chr6-44387360-44388305</span></span>
@@ -592,7 +635,7 @@ be used as seed). Only the links between the seed TFs and the peaks will
 be computed. You can also specify the list of peaks to use. Only the
 score of the peaks present in the network and the <code>peak_list</code>
 will be returned.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">binding_regions</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/define_binding_regions.html">define_binding_regions</a></span><span class="op">(</span></span>
 <span>  <span class="va">hummus</span>,</span>
 <span>  multilayer_f <span class="op">=</span> <span class="st">"chen_multilayer"</span>,</span>
@@ -634,7 +677,7 @@ will be returned.</p>
 <span><span class="co">## 31</span></span>
 <span><span class="co">## http://127.0.0.1:8787/status</span></span>
 <span><span class="co">## Processing seeds... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00</span></span></code></pre>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">binding_regions</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   index layer path_layer       score   tf                     peak</span></span>
 <span><span class="co">## 1   464 peaks    peaks_1 0.001680402 CUX1   chr1-65002512-65003322</span></span>
