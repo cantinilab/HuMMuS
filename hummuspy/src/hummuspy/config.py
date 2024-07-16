@@ -2,9 +2,10 @@ from typing import Union
 import yaml
 import os
 
+import numpy
+import pandas
+
 import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
 import networkx as nx
 
 
@@ -284,13 +285,13 @@ def open_config(filename):
         config_dic = yaml.load(file, Loader=yaml.BaseLoader)
 
     if "lamb" in config_dic.keys():
-        config_dic["lamb"] = pd.DataFrame(
+        config_dic["lamb"] = pandas.DataFrame(
             config_dic["lamb"],
             index=list(config_dic["multiplex"].keys()),
             columns=list(config_dic["multiplex"].keys())
             ).astype(float)
     if "eta" in config_dic.keys():
-        config_dic["eta"] = pd.Series(
+        config_dic["eta"] = pandas.Series(
             config_dic["eta"],
             index=list(config_dic["multiplex"].keys())
             ).astype(float)
@@ -298,10 +299,85 @@ def open_config(filename):
     return config_dic
 
 
+def process_config(
+    config,
+    multilayer_folder='multilayer'
+):
+    """
+    Process config file to be used to create CreateMultilayer object.
+
+    Parameters
+    ----------
+    config : dict
+        Configuration dictionary.
+        Contains the following keys:
+            - multiplex : dict
+                - graph_type : list
+                - layers : list
+            - bipartite : dict
+                - edge_list_df : str
+                - graph_type : str
+                - source : str
+                - target : str
+            - eta : pandas.Series
+            - lamb : pandas.DataFrame
+            - seed : str
+    multilayer_folder : str, optional
+
+    Returns
+    -------
+    dict
+        Processed configuration dictionary.
+        Contains the following keys:
+            - multiplex : dict
+                - names : list
+                - graph_type : list
+                - layers : list
+            - bipartite : dict
+                - edge_list_df : str
+                - graph_type : str
+                - source : str
+                - target : str
+            - eta : list
+            - lamb : list[list]
+            - seeds : str
+    """
+
+    config = dict(config)
+    for multiplex in config["multiplex"]:
+        new_multiplex = {
+            "names": [multiplex+"_"+str(i+1) for i in range(
+                len(config["multiplex"][multiplex]['layers']))],
+            "graph_type": config["multiplex"][multiplex]['graph_type'],
+            "layers": [os.path.join(multilayer_folder, path) for path
+                       in config["multiplex"][multiplex]["layers"]]
+        }
+        config['multiplex'][multiplex] = new_multiplex
+
+    for bipartite in config['bipartite']:
+        config['bipartite'][bipartite]['edge_list_df'] = os.path.join(
+            multilayer_folder, bipartite)
+
+    config['eta'] = config['eta'].to_list()
+    config['lamb'] = numpy.array(config['lamb']).tolist()
+    seeds_path = os.path.join(multilayer_folder, config['seed'])
+    if os.path.exists(seeds_path):
+        config['seeds'] = pandas.read_csv(
+            seeds_path, header=None).iloc[:, 0].values.tolist()
+    else:
+        config['seeds'] = []
+    del config['seed']
+    if 'r' in config.keys():
+        config['restart_proba'] = config['r']
+        del config['r']
+
+    return config
+
+
 def old_setup_proba_config(
         config: dict,
-        eta: Union[list[float], pd.Series, np.ndarray],
-        lamb: pd.DataFrame):
+        eta: Union[list[float], pandas.Series, numpy.ndarray],
+        lamb: pandas.DataFrame):
     """ Setup the RWR probability for the exploration of hummus networks
     with the given eta and lambda values.
     The lambda values are normalised (per rows) to sum to 1.
@@ -316,7 +392,7 @@ def old_setup_proba_config(
 
     lamb: list[list[float]]
         The lambda values for the RWR probability.
-        e.g.: lamb = pd.DataFrame(np.ones((3,3)),
+        e.g.: lamb = pandas.DataFrame(numpy.ones((3,3)),
                            index = ['TF', 'Gene', 'Peak''],
                            columns = ['TF', 'Gene', 'Peak'])
         lamb.loc[i, j] corresponds to the probability
@@ -359,9 +435,9 @@ def old_setup_proba_config(
     assert check_lamb(lamb, config),\
         "lamb is not a valid probability matrix according to bipartites"
     # Transform eta to list if it's a pandas Series or a numpy array
-    if type(eta) == pd.Series:
+    if type(eta) == pandas.Series:
         eta = eta.values.tolist()
-    elif type(eta) == np.ndarray:
+    elif type(eta) == numpy.ndarray:
         eta = eta.tolist()
 
     # Add eta and lamb to config
@@ -373,8 +449,8 @@ def old_setup_proba_config(
 
 def setup_proba_config(
         config: dict,
-        eta: Union[pd.Series, np.ndarray, list[float]],
-        lamb: Union[pd.DataFrame, np.ndarray]
+        eta: Union[pandas.Series, numpy.ndarray, list[float]],
+        lamb: Union[pandas.DataFrame, numpy.ndarray]
         ):
     """ Setup the RWR probability for the exploration of hummus networks
     with the given eta and lambda values.
@@ -384,16 +460,16 @@ def setup_proba_config(
     ----------
     config: dict
         The config dictionary.
-    eta: Union[pd.Series, np.array]
+    eta: Union[pandas.Series, numpy.array]
         The eta values for the RWR probability, must sum up to 1.
-        e.g.: pd.Series([0.5, 0.5, 0], index = ['TF', 'peaks', 'RNA'])
+        e.g.: pandas.Series([0.5, 0.5, 0], index = ['TF', 'peaks', 'RNA'])
         If a pandas Series is provided, the index must be the layer names.
         If a numpy array is provided, the order of the values must be
         the same as the order of the layers in the config.
 
-    lamb: pd.DataFrame
+    lamb: pandas.DataFrame
         The lambda values for the RWR probability.
-        e.g.: lamb = pd.DataFrame(np.ones((3,3)),
+        e.g.: lamb = pandas.DataFrame(numpy.ones((3,3)),
                            index = ['TF', 'Gene', 'Peak''],
                            columns = ['TF', 'Gene', 'Peak'])
         lamb.loc[i, j] corresponds to the probability
@@ -424,14 +500,14 @@ def setup_proba_config(
                          [0.5, 0, 0.5],
                          [0, 0.5, 0.5]]}
     """
-    if type(eta) == np.array or type(eta) == list:
+    if type(eta) == numpy.array or type(eta) == list:
         # Check that the length of eta is equal to the number of layers
         assert len(config['multiplex']) == len(eta),\
             "eta (length : {}) should be as long as the number of layers ({})"\
             .format(len(eta), len(config['multiplex']))
         # Transform eta to pandas Series
-        eta = pd.Series(eta, index=config['multiplex'].keys())
-    elif type(eta) == pd.Series:
+        eta = pandas.Series(eta, index=config['multiplex'].keys())
+    elif type(eta) == pandas.Series:
         # Check that the index of eta are the layer names
         assert eta.index.tolist().sort() == list(
             config['multiplex'].keys()).sort(),\
@@ -440,7 +516,7 @@ def setup_proba_config(
     else:
         raise TypeError("eta should be a numpy array or a pandas Series")
 
-    if type(lamb) == np.array:
+    if type(lamb) == numpy.array:
         # Check that lamb is a square matrix of size len(config['multiplex'])
         assert lamb.shape[0] == lamb.shape[1],\
             "lamb should be a square matrix"
@@ -448,9 +524,9 @@ def setup_proba_config(
             "lamb should be a square matrix of size {}".format(
             len(config['multiplex']))
         # Transform lamb to pandas DataFrame
-        lamb = pd.DataFrame(lamb, index=config['multiplex'].keys(),
+        lamb = pandas.DataFrame(lamb, index=config['multiplex'].keys(),
                             columns=config['multiplex'].keys())
-    elif type(lamb) == pd.DataFrame:
+    elif type(lamb) == pandas.DataFrame:
         # Check that lamb index and columns are the layer names
         assert lamb.index.tolist().sort() == list(
             config['multiplex'].keys()).sort(),\
@@ -477,9 +553,9 @@ def setup_proba_config(
     lamb = lamb.loc[config['multiplex'].keys(), config['multiplex'].keys()]
 
     # Transform eta to list if it's a pandas Series or a numpy array
-    if type(eta) == pd.Series:
+    if type(eta) == pandas.Series:
         eta = eta.values.tolist()
-    elif type(eta) == np.ndarray:
+    elif type(eta) == numpy.ndarray:
         eta = eta.tolist()
 
     # Add eta and lamb to config
@@ -503,13 +579,13 @@ def initialise_lamb(config,
     ordered_multiplexes = config['multiplex'].keys()
 
     if value == 1:
-        array = np.ones((len(ordered_multiplexes), len(ordered_multiplexes)))
+        array = numpy.ones((len(ordered_multiplexes), len(ordered_multiplexes)))
     elif value == 0:
-        array = np.zeros((len(ordered_multiplexes), len(ordered_multiplexes)))
+        array = numpy.zeros((len(ordered_multiplexes), len(ordered_multiplexes)))
     else:
         raise ValueError('value param of initialise_lamb should be 1 or 0')
 
-    lamb = pd.DataFrame(array,
+    lamb = pandas.DataFrame(array,
                         index=ordered_multiplexes,
                         columns=ordered_multiplexes)
     return lamb
@@ -521,7 +597,7 @@ def get_single_layer_eta(config, starting_multiplex='RNA'):
     assert starting_multiplex in ordered_multiplex,\
         "It seems starting_multiplex not in config['multiplex']"
 
-    eta = pd.Series([0 for k in ordered_multiplex],
+    eta = pandas.Series([0 for k in ordered_multiplex],
                     index=ordered_multiplex)
     eta[starting_multiplex] = 1
     return eta
@@ -701,7 +777,7 @@ def get_max_lamb(config, directed=True, draw=False, figsize=(7, 7)):
     max_lamb: pandas.DataFrame
         The maximum lamb matrix according to bipartites.
         Structure:
-          pd.DataFrame([[0.5, 0.5, 0],
+          pandas.DataFrame([[0.5, 0.5, 0],
                         [1/3, 1/3, 1/3],
                         [0, 0.5, 0.5]],
                         index = ['TF', 'Peak', 'RNA'],
@@ -731,7 +807,7 @@ def get_max_lamb(config, directed=True, draw=False, figsize=(7, 7)):
 
     # Create an empty dataframe with layer names as index and columns
     # that we'll fill where it's possible according to the bipartites
-    max_lamb = pd.DataFrame(np.zeros((len(config['multiplex']),
+    max_lamb = pandas.DataFrame(numpy.zeros((len(config['multiplex']),
                                       len(config['multiplex']))),
                             index=config['multiplex'].keys(),
                             columns=config['multiplex'].keys())
@@ -746,7 +822,7 @@ def get_max_lamb(config, directed=True, draw=False, figsize=(7, 7)):
     else:
         max_lamb += max_lamb.transpose()
     # filling the diagonal to allow intra-layer exploration
-    max_lamb += np.eye(len(config['multiplex'])).astype(int)
+    max_lamb += numpy.eye(len(config['multiplex'])).astype(int)
     # normalise per rows
     max_lamb = max_lamb.div(max_lamb.sum(axis=0), axis=1)
 
@@ -780,7 +856,7 @@ def check_lamb(lamb, config, directed=True, draw=False):
 
     # Count number of locations where lamb has no non-zero value
     # and max_lamb is zero
-    X = np.sum(np.sum((max_lamb - lamb) < 0, axis=0), axis=0)
+    X = numpy.sum(numpy.sum((max_lamb - lamb) < 0, axis=0), axis=0)
 
     # If X > 0, lamb is not a valid probability matrix according to bipartites.
     if X > 0:
@@ -824,7 +900,7 @@ def draw_lamb(df, figsize=(7, 7), node_color='blue'):
     df: pandas.DataFrame
         The lamb matrix.
         Structure:
-            pd.DataFrame([[0.5, 0.5, 0],
+            pandas.DataFrame([[0.5, 0.5, 0],
                             [1/3, 1/3, 1/3],
                             [0, 0.5, 0.5]],
                             index = ['TF', 'Peak', 'RNA'],
@@ -844,7 +920,7 @@ def draw_lamb(df, figsize=(7, 7), node_color='blue'):
 
     Examples
     --------
-    >>> lamb = pd.DataFrame([[0.5, 0.5, 0],
+    >>> lamb = pandas.DataFrame([[0.5, 0.5, 0],
                                 [1/3, 1/3, 1/3],
                                 [0, 0.5, 0.5]],
                                 index = ['TF', 'Peak', 'RNA'],
@@ -861,7 +937,7 @@ def draw_lamb(df, figsize=(7, 7), node_color='blue'):
 
     # Create a directed graph from the lamb matrix
     G = nx.from_pandas_adjacency(df.transpose(), create_using=nx.DiGraph())
-    pos = {list(G.nodes)[-i-1]: np.array((0, i))
+    pos = {list(G.nodes)[-i-1]: numpy.array((0, i))
            for i in range(-len(G.nodes), 0)}
 
     # Draw the graph without edge labels
@@ -894,7 +970,7 @@ def draw_lamb(df, figsize=(7, 7), node_color='blue'):
 
     # Draw self edges labels
     # We add 0.3 to the y coordinate to avoid overlapping with the node
-    pos_self_labels = {k: np.array([0, pos[k][1]+0.30]) for k in pos}
+    pos_self_labels = {k: numpy.array([0, pos[k][1]+0.30]) for k in pos}
     my_draw_networkx_edge_labels(G,
                                  pos_self_labels,
                                  edge_labels=self_edges,
@@ -1027,11 +1103,11 @@ def my_draw_networkx_edge_labels(
             x1 * label_pos + x2 * (1.0 - label_pos),
             y1 * label_pos + y2 * (1.0 - label_pos),
         )
-        pos_1 = ax.transData.transform(np.array(pos[n1]))
-        pos_2 = ax.transData.transform(np.array(pos[n2]))
+        pos_1 = ax.transData.transform(numpy.array(pos[n1]))
+        pos_2 = ax.transData.transform(numpy.array(pos[n2]))
         linear_mid = 0.5*pos_1 + 0.5*pos_2
         d_pos = pos_2 - pos_1
-        rotation_matrix = np.array([(0, 1),
+        rotation_matrix = numpy.array([(0, 1),
                                     (-1, 0)])
         ctrl_1 = linear_mid + rad*rotation_matrix@d_pos
         ctrl_mid_1 = 0.5*pos_1 + 0.5*ctrl_1
@@ -1041,16 +1117,16 @@ def my_draw_networkx_edge_labels(
 
         if rotate:
             # in degrees
-            angle = np.arctan2(y2 - y1, x2 - x1) / (2.0 * np.pi) * 360
+            angle = numpy.arctan2(y2 - y1, x2 - x1) / (2.0 * numpy.pi) * 360
             # make label orientation "right-side-up"
             if angle > 90:
                 angle -= 180
             if angle < -90:
                 angle += 180
             # transform data coordinate angle to screen coordinate angle
-            xy = np.array((x, y))
+            xy = numpy.array((x, y))
             trans_angle = ax.transData.transform_angles(
-                np.array((angle,)), xy.reshape((1, 2))
+                numpy.array((angle,)), xy.reshape((1, 2))
             )[0]
         else:
             trans_angle = 0.0

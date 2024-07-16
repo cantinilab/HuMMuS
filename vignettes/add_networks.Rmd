@@ -20,9 +20,10 @@ knitr::opts_chunk$set(eval = TRUE)
 ##### 3. Add a new bipartite
 
 ```{r import_packages}
-library(reticulate)
 # install python dependency
-py_install("hummuspy", envname = "r-reticulate", method="auto")
+# reticulate::py_install("hummuspy", envname = "r-reticulate", pip=TRUE)
+reticulate::use_condaenv("r-reticulate")
+hummuspy <- reticulate::import("hummuspy")
 library(HuMMuS)
 ```
 

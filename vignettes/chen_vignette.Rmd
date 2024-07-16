@@ -24,7 +24,7 @@ resource_files:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(eval = TRUE)
-#devtools::install_github("cantinilab/HuMMuS")
+devtools::install_github("cantinilab/HuMMuS", ref="dev_SeuratV5")
 ```
 # General description of the pipeline
 ![Overall pipeline](figures/schema_HuMMuS.png)
@@ -32,7 +32,7 @@ knitr::opts_chunk$set(eval = TRUE)
 ## Useful ressources
 *Preprint detailing the method:* [https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1](https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1)
 
-*Github repo detailing the installation:* [https://github.com/cantinilab/HuMMuS](https://github.com/cantinilab/HuMMuS/tree/main)
+*Github repo detailing the installation:* [https://github.com/cantinilab/HuMMuS](https://github.com/cantinilab/HuMMuS/tree/)
 
 *Documentation and vignette:* [https://cantinilab.github.io/HuMMuS](https://cantinilab.github.io/HuMMuS)
 
@@ -48,9 +48,10 @@ knitr::opts_chunk$set(eval = TRUE)
 ## 0. Setting up the environment
 ```{r import_packages}
 # install python dependency
-env_name <- "r-reticulate"
-reticulate::use_condaenv(envname, required = TRUE)
-reticulate::py_install("hummuspy", envname = env_name, method="auto")
+envname = "r-reticulate"
+# reticulate::py_install("hummuspy", envname = envname, pip=TRUE)
+reticulate::use_condaenv(envname)
+
 hummuspy <- reticulate::import("hummuspy")
 library(HuMMuS)
 ```
@@ -319,11 +320,11 @@ The GRN is defined using the multixrank algorithm. It requires to have
 grn <- define_grn(
   hummus,
   multilayer_f = "chen_multilayer",
-  njobs = 1
+  njobs = 5
   )
 ```
 ```{r head_grn, eval=FALSE}
-head(grn)
+grn
 ```
 
 ### 3.4. Retrieve enhancers
