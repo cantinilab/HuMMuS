@@ -35,7 +35,7 @@ jobs:
           python-version: '3.10'
           
       - name: Setup hummuspy env
-        run: reticulate::conda_create("r-reticulate", packages="hummuspy")
+        run: reticulate::conda_create("r-reticulate", packages="python")
         shell: Rscript {0}
 
       - name: Build site
