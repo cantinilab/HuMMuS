@@ -27,7 +27,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, any::reticulate, any::devtools
+          extra-packages: any::pkgdown, any::reticulate, local::., any::devtools
           needs: website
 
       - uses: actions/setup-python@v2
