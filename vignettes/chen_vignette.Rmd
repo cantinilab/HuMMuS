@@ -47,9 +47,11 @@ knitr::opts_chunk$set(eval = TRUE)
 
 ## 0. Setting up the environment
 ```{r import_packages}
-library(reticulate)
 # install python dependency
-py_install("hummuspy", envname = "r-reticulate", method="auto")
+env_name <- "r-reticulate"
+# reticulate::py_install("hummuspy", envname = env_name, method="auto")
+reticulate::use_condaenv(envname, required = TRUE)
+hummuspy <- reticulate::import("hummuspy")
 library(HuMMuS)
 ```
 ## Download the single-cell data
