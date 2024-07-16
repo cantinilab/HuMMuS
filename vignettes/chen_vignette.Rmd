@@ -49,8 +49,8 @@ knitr::opts_chunk$set(eval = TRUE)
 ```{r import_packages}
 # install python dependency
 env_name <- "r-reticulate"
-# reticulate::py_install("hummuspy", envname = env_name, method="auto")
 reticulate::use_condaenv(envname, required = TRUE)
+reticulate::py_install("hummuspy", envname = env_name, method="auto")
 hummuspy <- reticulate::import("hummuspy")
 library(HuMMuS)
 ```
