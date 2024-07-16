@@ -35,18 +35,7 @@ jobs:
           python-version: '3.10'
           
       - name: Setup hummuspy env
-        run: reticulate::virtualenv_create("r-reticulate", Sys.which("python"), packages="hummuspy")
-        shell: Rscript {0}
-        
-      - name: ubuntu setup for Monocle3
-        run: sudo apt-get install libgdal-dev libgeos-dev libproj-dev
-      
-      - name: Install Monocle3
-        run: devtools::install_github('cole-trapnell-lab/monocle3')
-        shell: Rscript {0}
-        
-      - name: Install Cicero
-        run: devtools::install_github("cole-trapnell-lab/cicero-release", ref = "monocle3")
+        run: reticulate::conda_create("r-reticulate", packages="hummuspy")
         shell: Rscript {0}
 
       - name: Build site
