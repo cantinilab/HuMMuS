@@ -316,14 +316,14 @@ The GRN is defined using the multixrank algorithm. It requires to have
  <br> This can be parallelised using the njobs argument.
  You can also specify the list of genes and the list of TFs to use.
 
-```{r grn, eval=TRUE}
+```{r grn, eval=FALSE}
 grn <- define_grn(
   hummus,
   multilayer_f = "chen_multilayer",
   njobs = 5
   )
 ```
-```{r head_grn, eval=TRUE}
+```{r head_grn, eval=FALSE}
 grn
 ```
 
