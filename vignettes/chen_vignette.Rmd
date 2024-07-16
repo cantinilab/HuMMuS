@@ -22,7 +22,7 @@ resource_files:
 
 *Documentation*: https://cantinilab.github.io/HuMMuS/
 
-```{r setup, include=FALSE, eval=False}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(eval = TRUE)
 devtools::install_github("cantinilab/HuMMuS", ref="dev_SeuratV5")
 ```
