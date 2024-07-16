@@ -1,132 +1,46 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/404.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/articles/add_networks.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/articles/chen_vignette.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/index.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/DefaultAssay.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/Hummus_Object-class.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/Initiate_Hummus_Object.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/VariableFeatures.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/add_network.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/aggregate_matrix.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/bipartite-class.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/bipartite_peaks2genes.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/bipartite_tfs2peaks.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/compute_atac_peak_network.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/compute_gene_network.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/compute_tf_network.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/dMcast.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/define_binding_regions.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/define_enhancers.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/define_general_config.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/define_grn.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/define_output.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/define_target_genes.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/fast_aggregate.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/find_peaks_near_genes.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/format_bipartites_names.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/format_multiplex_names.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/get_genome_annotations.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/get_tf2motifs.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/get_tfs.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/motifs_db-class.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/multilayer-class.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/multiplex-class.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/peaks_in_regulatory_elements.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/run_cicero_wrapper.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/run_tf_null_wrapper.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/save_multilayer.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/store_network.html</loc>
-  </url>
-  <url>
-    <loc>https://cantinilab.github.io/HuMMuS/reference/sub-subset-Hummus_Object.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://cantinilab.github.io/HuMMuS/404.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/LICENSE.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/articles/add_networks.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/articles/chen_vignette.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/articles/index.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/authors.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/index.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/DefaultAssay.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/Hummus_Object-class.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/Initiate_Hummus_Object.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/VariableFeatures.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/add_network.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/aggregate_matrix.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/bipartite-class.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/bipartite_peaks2genes.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/bipartite_tfs2peaks.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/compute_atac_peak_network.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/compute_gene_network.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/compute_tf_network.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/dMcast.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/define_binding_regions.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/define_enhancers.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/define_general_config.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/define_grn.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/define_output.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/define_target_genes.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/fast_aggregate.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/find_peaks_near_genes.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/format_bipartites_names.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/format_multiplex_names.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/get_genome_annotations.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/get_tf2motifs.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/get_tfs.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/index.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/motifs_db-class.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/multilayer-class.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/multiplex-class.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/peaks_in_regulatory_elements.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/run_cicero_wrapper.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/run_tf_null_wrapper.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/save_multilayer.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/store_network.html</loc></url>
+<url><loc>https://cantinilab.github.io/HuMMuS/reference/sub-subset-Hummus_Object.html</loc></url>
 </urlset>
+
