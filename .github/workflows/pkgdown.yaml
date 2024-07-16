@@ -40,6 +40,17 @@ jobs:
           reticulate::py_install("hummuspy", envname = "r-reticulate", pip=TRUE)
         shell: Rscript {0}
 
+      - name: ubuntu setup for Monocle3
+        run: sudo apt-get install libgdal-dev libgeos-dev libproj-dev
+      
+      - name: Install Monocle3
+        run: devtools::install_github('cole-trapnell-lab/monocle3')
+        shell: Rscript {0}
+        
+      - name: Install Cicero
+        run: devtools::install_github("cole-trapnell-lab/cicero-release", ref = "monocle3")
+        shell: Rscript {0}
+
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
         shell: Rscript {0}
