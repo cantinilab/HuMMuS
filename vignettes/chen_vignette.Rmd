@@ -32,7 +32,7 @@ devtools::install_github("cantinilab/HuMMuS", ref="dev_SeuratV5")
 ## Useful ressources
 *Preprint detailing the method:* [https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1](https://www.biorxiv.org/content/10.1101/2023.06.09.543828v1)
 
-*Github repo detailing the installation:* [https://github.com/cantinilab/HuMMuS](https://github.com/cantinilab/HuMMuS/tree/main)
+*Github repo detailing the installation:* [https://github.com/cantinilab/HuMMuS](https://github.com/cantinilab/HuMMuS/tree/)
 
 *Documentation and vignette:* [https://cantinilab.github.io/HuMMuS](https://cantinilab.github.io/HuMMuS)
 
@@ -48,8 +48,10 @@ devtools::install_github("cantinilab/HuMMuS", ref="dev_SeuratV5")
 ## 0. Setting up the environment
 ```{r import_packages}
 # install python dependency
-# reticulate::py_install("hummuspy", envname = "r-reticulate", pip=TRUE)
-reticulate::use_condaenv("r-reticulate")
+envname = "r-reticulate"
+# reticulate::py_install("hummuspy", envname = envname, pip=TRUE)
+reticulate::use_condaenv(envname)
+
 hummuspy <- reticulate::import("hummuspy")
 library(HuMMuS)
 ```
