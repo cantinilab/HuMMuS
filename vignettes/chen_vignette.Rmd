@@ -85,7 +85,7 @@ You can also request any "EnsDB" object adapted to your data
 (e.g. EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86 for human genome annotations)
  or use your own genome annotations in the same format.
 
-```{r genome_annotations, eval=FALSE, warning=FALSE}
+```{r genome_annotations, eval=TRUE, warning=FALSE}
 # get human genome annotation from EndDb data
 # wrapper of Signac::GetGRangesFromEnsDb, adapting output to UCSC format
 genome_annotations <- get_genome_annotations(
@@ -95,7 +95,7 @@ genome_annotations <- get_genome_annotations(
 ```
 
 Add genome annotations to hummus/seurat object
-```{r add_genome_annotations, eval=FALSE}
+```{r add_genome_annotations, eval=TRUE}
 Signac::Annotation(hummus@assays$peaks) <- genome_annotations
 rm(genome_annotations)
 ```
@@ -112,7 +112,7 @@ correspondance table between TFs and motifs. tfs is a named vector of the TFs.
 You can also use your own motifs_db object, as long as it contains the same
 slots.
 
-```{r get_tf2motifs, eval=FALSE}
+```{r get_tf2motifs, eval=TRUE}
 # Load TF motifs from JASPAR2020 and chromVARmotifs in hummus object
 hummus@motifs_db <- get_tf2motifs() # by default human motifs
 ```
@@ -146,7 +146,7 @@ BSGenome object is used to identify location of motifs and intersect them with
 peak 
 <br>You can also specify the name of the bipartite that will be added to the
  hummus object. By default, it will be named "tf_peak".
-```{r bipartite_tf_peak, eval=FALSE}
+```{r bipartite_tf_peak, eval=TRUE}
 hummus <- bipartite_tfs2peaks(
               hummus_object = hummus,
               tf_expr_assay = "RNA", # use to filter TF on only expressed TFs,
@@ -159,7 +159,7 @@ hummus <- bipartite_tfs2peaks(
 
 ### 2.2. Genes - peaks bipartite reconstruction
 Peaks - genes bipartite is computed 
-```{r bipartite_peaks2genes, eval=FALSE}
+```{r bipartite_peaks2genes, eval=TRUE}
 hummus <- bipartite_peaks2genes(
                       hummus_object = hummus,
                       gene_assay = "RNA",
@@ -184,7 +184,7 @@ interactions involving at least one TF present in the dataset will be kept.
 network that will be added to the hummus object.
 The added network will be undirected and unweighted since PPI and OmniPath
 database are not directional nor return any weight here.
-```{r tf_network, eval=FALSE}
+```{r tf_network, eval=TRUE}
 hummus <- compute_tf_network(hummus,
                             gene_assay = "RNA", # default = None ;
                                                 # If a assay is provided,
@@ -212,7 +212,7 @@ The returned network will be considered undirected and weighted. While GENIE3
 returns a directed network, we symmetrize it for the random walk with restart
 exploration of the genes proximity.
 
-```{r gene_network, eval=FALSE}
+```{r gene_network, eval=TRUE}
 hummus <- compute_gene_network(
               hummus,
               gene_assay = "RNA",
@@ -236,7 +236,7 @@ the network, you will need to specify the output file name (`output_file`).
 The returned network will be considered undirected and weighted, since cis-regulatory
 interaction and Cicero outputs are not directional. 
 
-```{r peak_network, eval=FALSE}
+```{r peak_network, eval=TRUE}
 hummus <- compute_atac_peak_network(hummus,
               atac_assay = "peaks",
               verbose = 1,
@@ -316,14 +316,14 @@ The GRN is defined using the multixrank algorithm. It requires to have
  <br> This can be parallelised using the njobs argument.
  You can also specify the list of genes and the list of TFs to use.
 
-```{r grn, eval=FALSE}
+```{r grn, eval=TRUE}
 grn <- define_grn(
   hummus,
   multilayer_f = "chen_multilayer",
   njobs = 5
   )
 ```
-```{r head_grn, eval=FALSE}
+```{r head_grn, eval=TRUE}
 grn
 ```
 
