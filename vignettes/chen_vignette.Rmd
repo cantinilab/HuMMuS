@@ -49,7 +49,7 @@ devtools::install_github("cantinilab/HuMMuS", ref="dev_SeuratV5")
 ```{r import_packages}
 library(reticulate)
 # install python dependency
-reticulate::py_install("hummuspy", envname = "r-reticulate", method="auto")
+# reticulate::py_install("hummuspy", envname = "r-reticulate", pip=TRUE)
 reticulate::use_virtualenv("r-reticulate")
 hummuspy <- reticulate::import("hummuspy")
 library(HuMMuS)
