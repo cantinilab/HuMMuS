@@ -1,3 +1,4 @@
 hummuspy/dist/* linguist-detectable=false
 *.html linguist-detectable=false
 *.ipynb linguist-detectable=false
+hummuspy/src/hummuspy/config.py linguist-detectable=false
