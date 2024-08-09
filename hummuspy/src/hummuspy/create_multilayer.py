@@ -8,6 +8,7 @@ import numpy
 import os
 import pandas
 import sys
+import copy
 
 from joblib import delayed, Parallel, dump, load
 
