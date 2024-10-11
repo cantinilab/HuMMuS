@@ -359,7 +359,8 @@ class Multixrank:
         seeds,
         self_loops,
         restart_proba,
-        pr=None
+        pr=None,
+        verbose=True
     ):
         """
         Constructs an object for the random walk with restart.
@@ -382,7 +383,8 @@ class Multixrank:
             lamb=lamb,
             seeds=seeds,
             self_loops=self_loops,
-            restart_proba=restart_proba)
+            restart_proba=restart_proba,
+            verbose=verbose)
             
         config_parser_obj.parse()
         
@@ -553,7 +555,6 @@ class Multixrank:
                 prox_vector, seed_score = individual_seed.get_seed_scores(transition=transition_matrixcoo)
                 prox_vectors.append(prox_vector)
                 seed_scores.append(seed_score)
-        print(len(prox_vectors))
 
         # Run RWR algorithm parallelised
         with LocalCluster(
@@ -660,9 +661,8 @@ class CreateMultilayer:
         self.self_loops = self_loops
         self.seeds = seeds
         self.restart_proba = restart_proba
-        print(self.multiplex)
 
-    def parse(self):
+    def parse(self, verbose=True):
 
         """Parses the config yaml file and give fields to specialized functions"""
 
@@ -673,7 +673,7 @@ class CreateMultilayer:
         #
         #######################################################################
 
-        self.multiplexall_obj = self.__parse_multiplex()
+        self.multiplexall_obj = self.__parse_multiplex(verbose=verbose)
         self.multiplex = "Done"
         #######################################################################
         #
@@ -681,7 +681,7 @@ class CreateMultilayer:
         #
         #######################################################################
 
-        self.bipartitelist_obj = self.__parse_bipartite()
+        self.bipartitelist_obj = self.__parse_bipartite(verbose=verbose)
         self.bipartite = "Done"
 
         #######################################################################
@@ -741,7 +741,7 @@ class CreateMultilayer:
         seed_count_list2d = [len(i) for i in self.seed_obj.multiplex_seed_list2d]
         self.parameter_obj = self.__parse_parameters(seed_count_list2d=seed_count_list2d)
 
-    def __parse_bipartite(self):
+    def __parse_bipartite(self, verbose=True):
         """
         Reads multiplex field and create MultiplexAll object
         """
@@ -765,12 +765,11 @@ class CreateMultilayer:
             else:
                 raise KeyError("No 'target' field found for bipartite network")
 
-            print(self.bipartite[layer_key])
-
             if  type(self.bipartite[layer_key]['edge_list_df']) == str:
-                print("Opening network from {}.".format(
-                    self.bipartite[layer_key]['edge_list_df']
-                ))
+                if verbose:
+                    print("Opening network from {}.".format(
+                        self.bipartite[layer_key]['edge_list_df']
+                    ))
                 layer_obj = Bipartite(key=layer_key,
                                            abspath=self.bipartite[layer_key]['edge_list_df'],
                                            graph_type=graph_type,
@@ -788,7 +787,7 @@ class CreateMultilayer:
 
         return BipartiteAll(source_target_bipartite_dic, multiplexall=self.multiplexall_obj)
 
-    def __parse_multiplex(self):
+    def __parse_multiplex(self, verbose=True):
         """
         Reads multiplex field and create MultiplexAll object
         """
@@ -803,7 +802,6 @@ class CreateMultilayer:
             layer_obj_list = []
             multiplex_node_list = []
             layer_key_tuple = tuple(self.multiplex[multiplex_key]['names'])
-            print(layer_key_tuple)
             ###################################################################
             #
             # tau
@@ -835,11 +833,13 @@ class CreateMultilayer:
 
             # loop over layers
             for layer_idx, layer_key in enumerate(layer_key_tuple):
-                print(layer_key)
+                if verbose:
+                    print(layer_key)
                 if  type(self.multiplex[multiplex_key]['layers'][layer_idx]) == str:
-                    print("Opening network from {}.".format(
-                        self.multiplex[multiplex_key]['layers'][layer_idx]
-                    ))
+                    if verbose:
+                        print("Opening network from {}.".format(
+                            self.multiplex[multiplex_key]['layers'][layer_idx]
+                        ))
                     layer_obj = MultiplexLayer(key=layer_key,
                                                abspath=self.multiplex[multiplex_key]['layers'][layer_idx],
                                                graph_type=graph_type_lst[layer_idx],
