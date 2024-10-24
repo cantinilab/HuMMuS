@@ -383,8 +383,7 @@ class Multixrank:
             lamb=lamb,
             seeds=seeds,
             self_loops=self_loops,
-            restart_proba=restart_proba,
-            verbose=verbose)
+            restart_proba=restart_proba)
             
         config_parser_obj.parse()
         
