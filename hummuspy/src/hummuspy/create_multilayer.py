@@ -385,7 +385,7 @@ class Multixrank:
             self_loops=self_loops,
             restart_proba=restart_proba)
             
-        config_parser_obj.parse()
+        config_parser_obj.parse(verbose=verbose)
         
         self.pr = pr
 
