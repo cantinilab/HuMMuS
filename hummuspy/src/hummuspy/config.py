@@ -7,6 +7,22 @@ import pandas
 
 import matplotlib.pyplot as plt
 import networkx as nx
+from fractions import Fraction
+
+
+
+def convert_fractions(item):
+    if isinstance(item, str) and '/' in item:
+        try:
+            return float(Fraction(item))
+        except ValueError:
+            return item
+    elif isinstance(item, dict):
+        return {k: convert_fractions(v) for k, v in item.items()}
+    elif isinstance(item, list):
+        return [convert_fractions(i) for i in item]
+    else:
+        return item
 
 
 def make_values_list(
@@ -283,6 +299,8 @@ def save_config(config, filename):
 def open_config(filename):
     with open(filename) as file:
         config_dic = yaml.load(file, Loader=yaml.BaseLoader)
+
+    config_dic = convert_fractions(config_dic)
 
     if "lamb" in config_dic.keys():
         config_dic["lamb"] = pandas.DataFrame(
