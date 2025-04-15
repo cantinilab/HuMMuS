@@ -9,6 +9,7 @@ import os
 import pandas
 import sys
 import copy
+import pathlib
 
 from joblib import delayed, Parallel, dump, load
 
@@ -33,6 +34,7 @@ from multixrank.logger_setup import logger
 from multixrank.TransitionMatrix import TransitionMatrix
 from typing import Union
 from rich.progress import track
+from typing import List
 
 
 class MissingSeedError(Exception):
@@ -384,9 +386,9 @@ class Multixrank:
             seeds=seeds,
             self_loops=self_loops,
             restart_proba=restart_proba)
-            
+
         config_parser_obj.parse(verbose=verbose)
-        
+
         self.pr = pr
 
         #######################################################################
@@ -468,13 +470,10 @@ class Multixrank:
         return rwr_result_lst
 
     ###########################################################################
-    # 2 :Analysis func##############################tions
+    #    Analysis funtions
     ###########################################################################
 
-    # 2.1 :
-    ###########################################################################
-
-    # 2.1.1 :
+    # 2.1. Single random walk from a list of seeds
     def random_walk_rank(self) -> pandas.DataFrame:
         """
         Function that carries ous the full random walk with restart from a list of seeds.
@@ -488,7 +487,7 @@ class Multixrank:
         transition_matrixcoo = transition_matrix_obj.transition_matrixcoo
 
         # Get initial seed probability distribution
-        if type(self.pr) == type(None):
+        if type(self.pr) is type(None):
             prox_vector, seed_score = self.seed_obj.get_seed_scores(transition=transition_matrixcoo)
         else:
             prox_vector = self.pr
@@ -498,7 +497,7 @@ class Multixrank:
 
         return rwr_ranking_df
 
-        # 2.1.1 :
+    # 2.2. Parallel random walks from individual seeds of the list
     def per_seed_random_walk_rank(self, n_jobs=1) -> pandas.DataFrame:
         """
         Function that carries ous the full random walk with restart from a list of seeds.
@@ -509,15 +508,14 @@ class Multixrank:
 
         def __par_seed_random_walk_restart(prox_vector, r):
             """
-    
+
             Function that realize the RWR and give back the steady probability distribution for
             each multiplex in a dataframe.
-    
+
             self.results (list) : A list of ndarray. Each ndarray correspond to the probability distribution of the
                 nodes of the multiplex.
-    
+
             """
-            rwr_result_lst = list()
             threshold = 1e-10
             residue = 1
             itera = 1
@@ -535,21 +533,15 @@ class Multixrank:
         transition_matrix_obj = TransitionMatrix(multiplex_all=self.multiplexall_obj, bipartite_matrix=bipartite_matrix, lamb=self.lamb)
         transition_matrixcoo = transition_matrix_obj.transition_matrixcoo
 
-
         # stored in list for parallelisation
         all_seeds_rwr_ranking_df = []
         prox_vectors = []
         seed_scores = []
-
-        rwr_result_lst = list()
-        threshold = 1e-10
-        residue = 1
-        itera = 1
         r = self.r
 
         for seed in self.seed_obj._seed_list:
             # Get initial seed probability distribution
-            if type(self.pr) == type(None):
+            if type(self.pr) is type(None):
                 individual_seed = Seed(path='', multiplexall=self.multiplexall_obj, seeds=[seed])
                 prox_vector, seed_score = individual_seed.get_seed_scores(transition=transition_matrixcoo)
                 prox_vectors.append(prox_vector)
@@ -579,30 +571,116 @@ class Multixrank:
             start_end_nodes.append((start, end))
 
         for i in range(len(prox_vectors)):
-            rwr_ranking_df = self.__random_walk_rank_lst_to_df([numpy.array(all_seeds_rwr_ranking_lst[i][s:e]) for s,e in start_end_nodes])
+            rwr_ranking_df = self.__random_walk_rank_lst_to_df(
+                [numpy.array(all_seeds_rwr_ranking_lst[i][s:e]) for s, e in start_end_nodes])
             all_seeds_rwr_ranking_df.append(rwr_ranking_df)
             all_seeds_rwr_ranking_df[-1]['seed'] = self.seed_obj._seed_list[i]
 
         all_seeds_rwr_ranking_df = pandas.concat(all_seeds_rwr_ranking_df)
-            
+
         return all_seeds_rwr_ranking_df
 
-    def write_ranking(self, random_walk_rank: pandas.DataFrame, path: str, top: int = None, aggregation: str = "gmean", degree: bool = False):
-        """Writes the 'random walk results' to a subnetwork with the 'top' nodes as a SIF format (See Cytoscape documentation)
+    # 2.3. Parallel random walks from several list of seeds
+    def per_pr_random_walk_rank(self, prox_vectors, n_jobs=1) -> pandas.DataFrame:
+        """
+        Function that carries ous the full random walk with restart from a list of seeds.
 
-        Args:
-            rwr_ranking_df (pandas.DataFrame) : A pandas Dataframe with columns: multiplex, node, layer, score, which is the output of the random_walk_rank function
-            path (str): Path to the SIF file
-            top (int): Top nodes based on the random walk score to be included in the SIF file
-            aggregation (str): One of "nomean", "gmean", "hmean", "mean", or "sum"
+        Returns :
+                rwr_ranking_df (pandas.DataFrame) : A pandas Dataframe with columns: multiplex, node, layer, score
         """
 
-        if not (aggregation in ['nomean', 'gmean', 'hmean', 'mean', 'sum']):
-            raise ValueError('Aggregation parameter must take one of these values: "nomean", "gmean", "hmean", "mean", or "sum". '
-                         'Current value: {}'.format(aggregation))
-        
-        output_obj = Output(random_walk_rank, self.multiplexall_obj, top=top, top_type="layered", aggregation=aggregation)
-        output_obj.to_tsv(outdir=path, degree=degree)
+        def __par_pr_random_walk_restart(prox_vector, r):
+            """
+
+            Function that realize the RWR and give back the steady probability distribution for
+            each multiplex in a dataframe.
+
+            self.results (list) : A list of ndarray. Each ndarray correspond to the probability distribution of the
+                nodes of the multiplex.
+
+            """
+            threshold = 1e-10
+            residue = 1
+            itera = 1
+            prox_vector_norm = prox_vector / (sum(prox_vector))
+            restart_vector = prox_vector_norm
+            while residue >= threshold:
+                old_prox_vector = prox_vector_norm
+                prox_vector_norm = (1 - r) * (transition_matrixcoo.dot(prox_vector_norm)) + r * restart_vector
+                residue = numpy.sqrt(sum((prox_vector_norm - old_prox_vector) ** 2))
+                itera += 1
+
+            return prox_vector_norm
+
+        bipartite_matrix = self.bipartiteall_obj.bipartite_matrix
+        transition_matrix_obj = TransitionMatrix(multiplex_all=self.multiplexall_obj, bipartite_matrix=bipartite_matrix, lamb=self.lamb)
+        transition_matrixcoo = transition_matrix_obj.transition_matrixcoo
+
+        # stored in list for parallelisation
+        all_seeds_rwr_ranking_df = []
+        prox_vectors = []
+        seed_scores = []
+        r = self.r
+
+        for pr in self.seed_obj._seed_list:
+            # Get initial seed probability distribution
+            if type(self.pr) is type(None):
+                individual_seed = Seed(path='', multiplexall=self.multiplexall_obj, seeds=[seed])
+                prox_vector, seed_score = individual_seed.get_seed_scores(transition=transition_matrixcoo)
+                prox_vectors.append(prox_vector)
+                seed_scores.append(seed_score)
+
+        # Run RWR algorithm parallelised
+        with LocalCluster(
+            n_workers=n_jobs,
+            processes=True,
+            threads_per_worker=1,
+        ) as cluster, Client(cluster) as client:
+
+            # Monitor your computation with the Dask dashboard
+            print(client.dashboard_link)
+            with joblib.parallel_config(backend="dask"):
+                all_seeds_rwr_ranking_lst = Parallel()(
+                    delayed(__par_seed_random_walk_restart)(prox_vectors[i], r)
+                    for i in track(range(len(seed_scores)),
+                                   description="Processing seeds...",
+                                   total=len(seed_scores)))
+
+        # divide per multiplex:
+        start_end_nodes = []
+        for k in range(len(self.multiplex_layer_count_list)):
+            start = sum(numpy.array(self.multiplexall_node_count_list[:k]) * numpy.array(self.multiplex_layer_count_list[:k]))
+            end = start + self.multiplexall_node_count_list[k] * self.multiplex_layer_count_list[k]
+            start_end_nodes.append((start, end))
+
+        for i in range(len(prox_vectors)):
+            rwr_ranking_df = self.__random_walk_rank_lst_to_df(
+                [numpy.array(all_seeds_rwr_ranking_lst[i][s:e]) for s, e in start_end_nodes])
+            all_seeds_rwr_ranking_df.append(rwr_ranking_df)
+            all_seeds_rwr_ranking_df[-1]['seed'] = self.seed_obj._seed_list[i]
+
+        all_seeds_rwr_ranking_df = pandas.concat(all_seeds_rwr_ranking_df)
+
+        return all_seeds_rwr_ranking_df
+
+
+    def write_ranking(self, random_walk_rank: pandas.DataFrame, path: str, top: int = None, aggregation: str = "gmean", degree: bool = False):
+            """Writes the 'random walk results' to a subnetwork with the 'top' nodes as a SIF format (See Cytoscape documentation)
+
+            Args:
+                rwr_ranking_df (pandas.DataFrame) : A pandas Dataframe with columns: multiplex, node, layer, score, which is the output of the random_walk_rank function
+                path (str): Path to the SIF file
+                top (int): Top nodes based on the random walk score to be included in the SIF file
+                aggregation (str): One of "nomean", "gmean", "hmean", "mean", or "sum"
+            """
+
+            if not (aggregation in ['nomean', 'gmean', 'hmean', 'mean', 'sum']):
+                raise ValueError(
+                    'Aggregation parameter must take one of these values: "nomean", "gmean", "hmean", "mean", or "sum". '
+                    'Current value: {}'.format(aggregation))
+
+            output_obj = Output(random_walk_rank, self.multiplexall_obj, top=top, top_type="layered", aggregation=aggregation)
+            output_obj.to_tsv(outdir=path, degree=degree)
 
     def to_sif(self, random_walk_rank: pandas.DataFrame, path: str, top: int = None, top_type: str = 'layered', aggregation: str = 'gmean'):
         """Writes the 'random walk results' to a subnetwork with the 'top' nodes as a SIF format (See Cytoscape documentation)
@@ -617,12 +695,13 @@ class Multixrank:
 
         if not (aggregation in ['nomean', 'gmean', 'hmean', 'mean', 'sum']):
             raise ValueError('Aggregation parameter must take one of these values: "nomean", "gmean", "hmean", "mean", or "sum". '
-                         'Current value: {}'.format(aggregation))
+                            'Current value: {}'.format(aggregation))
 
         if not (top_type in ['layered', 'all']):
-            raise ValueError('top_type parameter must take one of these values: "layered" or "all". '
-                         'Current value: {}'.format(top_type))
-        
+            raise ValueError(
+                'top_type parameter must take one of these values: "layered" or "all". '
+                'Current value: {}'.format(top_type))
+
         output_obj = Output(random_walk_rank, self.multiplexall_obj, top=top, top_type=top_type, aggregation=aggregation)
         pathlib.Path(os.path.dirname(path)).mkdir(exist_ok=True, parents=True)
         output_obj.to_sif(path=path, bipartiteall=self.bipartiteall_obj)
@@ -633,11 +712,11 @@ class Multixrank:
             multiplex_label_lst = [multiplex.key] * len(multiplex.nodes) * len(
                 multiplex.layer_tuple)
             nodes = [item for subl in [multiplex.nodes] * len(multiplex.layer_tuple) for item in
-                     subl]
+                        subl]
             layer_lst = [item for subl in
-                         [[layer.key] * len(multiplex.nodes) for layer in multiplex.layer_tuple] for
-                         item in subl]
-            if type(self.pr) == type(None):
+                            [[layer.key] * len(multiplex.nodes) for layer in multiplex.layer_tuple] for
+                            item in subl]
+            if type(self.pr) is type(None):
                 score = list(rwr_result_lst[i].T[0])
             else:
                 score = list(rwr_result_lst[i].T)
@@ -645,13 +724,13 @@ class Multixrank:
                 {'multiplex': multiplex_label_lst, 'node': nodes, 'layer': layer_lst, 'score': score})], axis=0)
         return rwrrestart_df
 
+
 class CreateMultilayer:
 
     def __init__(self, multiplex, bipartite, eta, lamb, seeds, self_loops, restart_proba):
 
         """Takes a confMultiplexLayerig_path of the config yaml file"""
-        
-        
+
         # default is 00 for all interaction types
         self.multiplex = multiplex
         self.bipartite = bipartite
@@ -700,9 +779,9 @@ class CreateMultilayer:
 #        if 'delta' in self.config_dic:  # user defined (changed)
  #           delta_lst = [float(Fraction(delta)) for delta in self.config_dic['delta']] # changed
   #          Parameters.check_eta(delta_lst , len(self.multiplexall_obj.multiplex_tuple)) # changed
-            
-            
-            
+
+
+
         ###################################################################
         #
         # Parameter 'lamb' check
@@ -710,17 +789,16 @@ class CreateMultilayer:
         ###################################################################
 
         lamb = numpy.array(self.lamb)
-        Parameters.check_lamb(lamb , len(self.multiplexall_obj.multiplex_tuple)) # changed
-                
+        Parameters.check_lamb(lamb, len(self.multiplexall_obj.multiplex_tuple)) # changed
 
         #######################################################################
         #
         # Parameter 'eta': Parse and set
         #
         #######################################################################
-        if self.eta != None:
+        if self.eta is not None:
             eta_lst = [float(Fraction(eta)) for eta in self.eta]
-            Parameters.check_eta(eta_lst , len(self.multiplexall_obj.multiplex_tuple)) # changed
+            Parameters.check_eta(eta_lst, len(self.multiplexall_obj.multiplex_tuple)) # changed
         else:  # default eta
             n = len(self.multiplexall_obj.multiplex_tuple)
             alpha = [len(x) for x in self.seed_obj.multiplex_seed_list2d]
@@ -728,7 +806,7 @@ class CreateMultilayer:
             eta_lst = ParameterEta(n, alpha).vect_X().tolist()
         logger.debug("Parameter 'eta' is equal to: {}".format(eta_lst))
 
-        for i,multiplex_obj in enumerate(self.multiplexall_obj.multiplex_tuple):
+        for i, multiplex_obj in enumerate(self.multiplexall_obj.multiplex_tuple):
             multiplex_obj.eta = eta_lst[i]
 
         #######################################################################
@@ -737,8 +815,10 @@ class CreateMultilayer:
         #
         #######################################################################
 
-        seed_count_list2d = [len(i) for i in self.seed_obj.multiplex_seed_list2d]
-        self.parameter_obj = self.__parse_parameters(seed_count_list2d=seed_count_list2d)
+        seed_count_list2d = [
+            len(i) for i in self.seed_obj.multiplex_seed_list2d]
+        self.parameter_obj = self.__parse_parameters(
+            seed_count_list2d=seed_count_list2d)
 
     def __parse_bipartite(self, verbose=True):
         """
@@ -764,24 +844,27 @@ class CreateMultilayer:
             else:
                 raise KeyError("No 'target' field found for bipartite network")
 
-            if  type(self.bipartite[layer_key]['edge_list_df']) == str:
+            if type(self.bipartite[layer_key]['edge_list_df']) is str:
                 if verbose:
                     print("Opening network from {}.".format(
                         self.bipartite[layer_key]['edge_list_df']
                     ))
-                layer_obj = Bipartite(key=layer_key,
-                                           abspath=self.bipartite[layer_key]['edge_list_df'],
-                                           graph_type=graph_type,
-                                            self_loops=self.self_loops,
-                                           on_disk=True,
-                                           edge_list_df = None)
+                layer_obj = Bipartite(
+                    key=layer_key,
+                    abspath=self.bipartite[layer_key]['edge_list_df'],
+                    graph_type=graph_type,
+                    self_loops=self.self_loops,
+                    on_disk=True,
+                    edge_list_df=None)
             else:
-                layer_obj = Bipartite(key=layer_key,
-                                           abspath='',
-                                           graph_type=graph_type,
-                                           self_loops=self.self_loops,
-                                           on_disk=False,
-                                           edge_list_df = self.bipartite[layer_key]['edge_list_df'])
+                layer_obj = Bipartite(
+                    key=layer_key,
+                    abspath='',
+                    graph_type=graph_type,
+                    self_loops=self.self_loops,
+                    on_disk=False,
+                    edge_list_df=self.bipartite[layer_key]['edge_list_df'])
+
             source_target_bipartite_dic[(bipartite_source, bipartite_target)] = layer_obj
 
         return BipartiteAll(source_target_bipartite_dic, multiplexall=self.multiplexall_obj)
@@ -834,7 +917,7 @@ class CreateMultilayer:
             for layer_idx, layer_key in enumerate(layer_key_tuple):
                 if verbose:
                     print(layer_key)
-                if  type(self.multiplex[multiplex_key]['layers'][layer_idx]) == str:
+                if type(self.multiplex[multiplex_key]['layers'][layer_idx]) == str:
                     if verbose:
                         print("Opening network from {}.".format(
                             self.multiplex[multiplex_key]['layers'][layer_idx]
@@ -897,10 +980,10 @@ class CreateMultilayer:
     def __parse_parameters(self, seed_count_list2d):
 
         r = constants.r
-        if self.restart_proba != None:
+        if self.restart_proba is not None:
             r = float(self.restart_proba)
         logger.debug("r is equal to: {}".format(r))
-        
+
         lamb_arr = None
         lamb_2dlst = [[float(Fraction(j)) for j in i] for i in self.lamb]
         lamb_arr = numpy.array(lamb_2dlst)
@@ -914,3 +997,22 @@ class CreateMultilayer:
         seed_obj = Seed(path='', multiplexall=self.multiplexall_obj, seeds = self.seeds)
 
         return seed_obj
+
+
+def parse_multi_seeds(
+    seeds: List[List[str]],
+):
+    """
+    Parse the list of sublist of seeds into a list of Seed objects (each containing one sublist).
+    """
+
+    # Check if the input is a list of lists
+    if not all(isinstance(sublist, list) for sublist in seeds):
+        raise ValueError("Input must be a list of lists.")
+
+    seed_obj_list = []
+    for seed in seeds:
+        seed_obj = Seed(path='', multiplexall=None, seeds=seed)
+        seed_obj_list.append(seed_obj)
+
+    return seed_obj_list
