@@ -7,7 +7,7 @@
 ### Heterogeneous Multilayer network for Multi-omics Single-cell data
 
 HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory mechanisms.
-Inter-omics (e.g. peak-gene, TF-peak) and intra-omics interactions (e.g. peak-peak, gene-gene, TF-TF) are considered to capture both regulatory interactions and macromolecule cooperations.
+Inter-omics interactions (e.g., peak-gene, TF-peak) and intra-omics interactions (e.g., peak-peak, gene-gene, TF-TF) are considered to capture both regulatory interactions and macromolecule cooperations.
 
 ## Overview
 
@@ -27,14 +27,14 @@ Like most current state-of-the-art methods to infer GRN, we propose a minimal ve
 ### **Use of additional modalities**
 HuMMuS has been developed to be extendable to any additional biological modality of interest.
 It is then possible to add any additional network to an already **existing modality** (e.g. both prior-knowledge network and data-driven network of genes), or from a **new modality** (e.g. adding epigenetic or proteomic networks).
-<br>_For now, such personalisation requires directly using some hummuspy (python package) functions at the end of the pipeline and writing some configuration files manually. It will be simplified soon !_
+<br>_For now, such personalisation requires directly using some hummuspy (Python package) functions at the end of the pipeline and writing some configuration files manually. It will be simplified soon !_
 
 ## Tutorials/Vignettes
 
-* [**Infer a gene regulatory network and other outputs from unpaired/paired scRNA+scATAC data**](https://cantinilab.github.io/HuMMuS/articles/chen_vignette.html) shows the application of HuMMuS to the Chen dataset, used in the benchmark of [HuMMuS publication](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btae143/7625061).
+* [**Infer a gene regulatory network and other outputs from unpaired/paired scRNA + scATAC data**](https://cantinilab.github.io/HuMMuS/articles/chen_vignette.html) shows the application of HuMMuS to the Chen dataset, used in the benchmark of [HuMMuS publication](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btae143/7625061).
 
 ## Installation
-HuMMuS is (for now!) only available in R and requires the hummuspy Python library. Be sure to make a virtual environment with `hummuspy` installed and make use of the `reticulate` R library to connect the two parts.
+HuMMuS is (for now!) only available in R and requires the hummuspy Python library. Be sure to install a virtual environment with `hummuspy` and make use of the `reticulate` R library to connect the two parts.
 
 ### HuMMuS Python dependency
 Python package **hummuspy** should preferably be installed using pip (from the terminal in a conda environment for example)
@@ -59,11 +59,11 @@ devtools::install_github("cantinilab/HuMMuS", ref="dev_SeuratV5")
 #devtools::install_github("cantinilab/HuMMuS")
 ```
 
-Before running HuMMuS, if you're using multiple conda environment, you need to make sure that `reticulate` points to the one where hummuspy is installed. You can precise it at the beginning of your code :
+Before running HuMMuS, if you're using multiple conda environments, you need to make sure that `reticulate` points to the one where hummuspy is installed. You can precise it at the beginning of your code :
 ```r
 library(reticulate)
 # Using a specific conda environment
-envname = "hummuspy_env" # or "r-reticulate" for e.g.
+envname = "hummuspy_env" # or "r-reticulate" for, e.g.:
 use_condaenv(envname, required = TRUE)
 ```
 For more details on how to set up the reticulate connection,
@@ -91,8 +91,8 @@ To reproduce HuMMuS results presented in the manuscript, preprocessed data [are 
 - For the RNA modality, we recommend using the HUGO gene names or the common gene names (such as the ones outputted by CellRanger). This is especially useful when using other tools, such as `Omnipath`, to compute the TF network, for example.
 - Currently, HuMMus supports only the double `-` separator for recognising genomic coordinates, e.g. `chr1-13354210-27462910`. We recommend always using this format for genomic coordinates.
 - We recommend installing the `hummuspy` Python package in a clean conda or virtual environment.
-- We use the [`dask`]() library for parallelization of some tasks in the Python side of HuMMus. In case you encounter some issues whith parallelization try the following:
-    - if you are running HuMMus through an HPC schedule manager(like SLURM), try assigning a specific amount of RAM to each core (for example, 10GB per core) rather than global pool of memory, while reducing the total number of cores
+- We use the [`dask`](https://www.dask.org/) library for parallelisation of some tasks in the Python side of HuMMus. In case you encounter some issues with parallelisation try the following:
+    - If you are running HuMMus through an HPC schedule manager(like SLURM), try assigning a specific amount of RAM to each core (for example, 10GB per core) rather than a global pool of memory, while reducing the total number of cores
     - try reducing the size of the networks, i.e. by filtering all edges under a certain score or by retaining only the top edges.
 
 ## Cite us
