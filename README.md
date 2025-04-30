@@ -70,7 +70,7 @@ For more details on how to set up the reticulate connection,
 see: https://rstudio.github.io/reticulate
 
 ### scATAC processing
-To compute the scATAC data with HuMMuS, we currently propose to use [Cicero](https://cole-trapnell-lab.github.io/cicero-release/docs_m3/). It requires the version running with [Monocle3](https://cole-trapnell-lab.github.io/monocle3/).
+To compute the scATAC data with HuMMuS, we propose to use [Cicero](https://cole-trapnell-lab.github.io/cicero-release/docs_m3/). It requires the version running with [Monocle3](https://cole-trapnell-lab.github.io/monocle3/).
 You then need to install both [Monocle3](https://cole-trapnell-lab.github.io/monocle3/docs/installation/), and Cicero:
 
 ```r
@@ -79,10 +79,21 @@ devtools::install_github("cole-trapnell-lab/cicero-release", ref = "monocle3")
 ```
 *If you encounter some troubles with Monocle3 installation, on Ubuntu you can try to run: `sudo apt-get install libgdal-dev libgeos-dev libproj-dev`. You can also go on [their github page](https://github.com/cole-trapnell-lab/monocle3/issues) for more help. Having a previous version of Monocle (1 or 2) still in your R session can cause some issues. If you encounter some even after restarting your R session, try to `remove.packages("monocle")` before reinstalling both Monocle**3** and Cicero*
 
+Alternatively, we recently developed [`Circe`](https://github.com/cantinilab/Circe/tree/main), a Python package that emulates Cicero (and calculates the peak-peak network much faster) and adds some functionality. 
+`Circe` is still under development, so use it at your own risk!
+
 ## Data accessibility
 
 To reproduce HuMMuS results presented in the manuscript, preprocessed data [are accessible here](https://figshare.com/projects/Molecular_mechanisms_reconstruction_from_single-cell_multi-omics_data_with_HuMMuS/168899)
 <br> For quick tests, the Chen dataset preprocessed is accessible directly through the package as a Seurat object: `load(chen_dataset)`, along with a subset version `load(chen_dataset_subset)`.
+
+## Known Issues and recommendations to all Users
+- For the RNA modality, we recommend using the HUGO gene names or the common gene names (such as the ones outputted by CellRanger). This is especially useful when using other tools, such as `Omnipath`, to compute the TF network, for example.
+- Currently, HuMMus supports only the double `-` separator for recognising genomic coordinates, e.g. `chr1-13354210-27462910`. We recommend always using this format for genomic coordinates.
+- We recommend installing the `hummuspy` Python package in a clean conda or virtual environment.
+- We use the [`dask`]() library for parallelization of some tasks in the Python side of HuMMus. In case you encounter some issues whith parallelization try the following:
+    - if you are running HuMMus through an HPC schedule manager(like SLURM), try assigning a specific amount of RAM to each core (for example, 10GB per core) rather than global pool of memory, while reducing the total number of cores
+    - try reducing the size of the networks, i.e. by filtering all edges under a certain score or by retaining only the top edges.
 
 ## Cite us
 Trimbour R., Deutschmann I. M., Cantini L. Molecular mechanisms reconstruction from single-cell multi-omics data with HuMMuS. Bioinformatics (2024), btae143. doi: https://doi.org/10.1093/bioinformatics/btae143
