@@ -115,7 +115,8 @@ def compute_multiple_RandomWalk(
         output_f=None,
         return_df=True,
         spec_layer_result_saved='all',
-        n_jobs=1):
+        n_jobs=1,
+        silent_logs=True):
     """Compute random walks for a list of seeds.
 
     Parameters
@@ -180,7 +181,9 @@ def compute_multiple_RandomWalk(
         pr=pr)
 
     ranking_df = multixrank_obj.per_seed_random_walk_rank(
-        n_jobs=n_jobs).sort_values(by='score', ascending=False)
+        n_jobs=n_jobs, silent_logs=silent_logs).sort_values(
+            by='score',
+            ascending=False)
 
     # and filter df results and add seeds name
     ranking_df = ranking_df[ranking_df.score > 0]  # ??

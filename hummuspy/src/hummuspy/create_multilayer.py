@@ -1,4 +1,8 @@
 from distributed import LocalCluster, Client
+from dask import delayed
+import tqdm
+from dask.distributed import as_completed
+import logging
 import joblib
 import networkx
 import pandas
@@ -11,7 +15,7 @@ import sys
 import copy
 import pathlib
 
-from joblib import delayed, Parallel, dump, load
+#from joblib import delayed, Parallel, dump, load
 
 from multixrank.logger_setup import logger
 import itertools
@@ -35,6 +39,14 @@ from multixrank.TransitionMatrix import TransitionMatrix
 from typing import Union
 from rich.progress import track
 from typing import List
+
+
+def configure_dask_logging(silent_logs: bool = False):
+    if silent_logs:
+        logging.getLogger("bokeh").setLevel(logging.ERROR)
+        logging.getLogger("distributed").setLevel(logging.ERROR)
+        logging.getLogger("distributed.comm.core").setLevel(logging.ERROR)
+        logging.getLogger("distributed.worker").setLevel(logging.ERROR)
 
 
 class MissingSeedError(Exception):
@@ -498,7 +510,7 @@ class Multixrank:
         return rwr_ranking_df
 
     # 2.2. Parallel random walks from individual seeds of the list
-    def per_seed_random_walk_rank(self, n_jobs=1) -> pandas.DataFrame:
+    def per_seed_random_walk_rank(self, n_jobs=1, silent_logs=True) -> pandas.DataFrame:
         """
         Function that carries ous the full random walk with restart from a list of seeds.
 
@@ -506,7 +518,7 @@ class Multixrank:
                 rwr_ranking_df (pandas.DataFrame) : A pandas Dataframe with columns: multiplex, node, layer, score
         """
 
-        def __par_seed_random_walk_restart(prox_vector, r):
+        def __par_seed_random_walk_restart(transition_matrixcoo, prox_vector, r):
             """
 
             Function that realize the RWR and give back the steady probability distribution for
@@ -523,14 +535,20 @@ class Multixrank:
             restart_vector = prox_vector_norm
             while residue >= threshold:
                 old_prox_vector = prox_vector_norm
-                prox_vector_norm = (1 - r) * (transition_matrixcoo.dot(prox_vector_norm)) + r * restart_vector
-                residue = numpy.sqrt(sum((prox_vector_norm - old_prox_vector) ** 2))
+                prox_vector_norm = (1 - r) * (
+                    transition_matrixcoo.dot(
+                        prox_vector_norm)) + r * restart_vector
+                residue = numpy.sqrt(
+                    sum((prox_vector_norm - old_prox_vector) ** 2))
                 itera += 1
 
             return prox_vector_norm
 
         bipartite_matrix = self.bipartiteall_obj.bipartite_matrix
-        transition_matrix_obj = TransitionMatrix(multiplex_all=self.multiplexall_obj, bipartite_matrix=bipartite_matrix, lamb=self.lamb)
+        transition_matrix_obj = TransitionMatrix(
+            multiplex_all=self.multiplexall_obj,
+            bipartite_matrix=bipartite_matrix,
+            lamb=self.lamb)
         transition_matrixcoo = transition_matrix_obj.transition_matrixcoo
 
         # stored in list for parallelisation
@@ -547,6 +565,9 @@ class Multixrank:
                 prox_vectors.append(prox_vector)
                 seed_scores.append(seed_score)
 
+        if silent_logs:
+            configure_dask_logging(silent_logs=True)
+
         # Run RWR algorithm parallelised
         with LocalCluster(
             n_workers=n_jobs,
@@ -556,12 +577,41 @@ class Multixrank:
 
             # Monitor your computation with the Dask dashboard
             print(client.dashboard_link)
-            with joblib.parallel_config(backend="dask"):
-                all_seeds_rwr_ranking_lst = Parallel()(
-                    delayed(__par_seed_random_walk_restart)(prox_vectors[i], r)
-                    for i in track(range(len(seed_scores)),
-                                   description="Processing seeds...",
-                                   total=len(seed_scores)))
+
+            # Run the parallel computation with Dask
+            # Note: You can also use joblib.Parallel with the Dask backend
+
+            # Scatter big data once
+            broadcasted_transition_matrixcoo = client.scatter(
+                transition_matrixcoo,
+                broadcast=True)
+
+            # Submit tasks directly using Futures
+            futures = [client.submit(
+                __par_seed_random_walk_restart,
+                broadcasted_transition_matrixcoo,
+                prox_vectors[i],
+                r
+            ) for i in range(len(seed_scores))]
+
+            # Submit tasks to Dask
+            futures = client.compute(futures)
+
+            # Track progress with tqdm as tasks complete
+            all_seeds_rwr_ranking_lst = []
+            for future in tqdm.tqdm(as_completed(futures), total=len(futures), desc="Running RWR per seed"):
+                result = future.result()
+                all_seeds_rwr_ranking_lst.append(result)
+
+            # Alternatively, you can use joblib.Parallel with Dask backend
+            #with joblib.parallel_config(backend="dask"):
+            #    all_seeds_rwr_ranking_lst = Parallel()(
+            #        delayed(__par_seed_random_walk_restart)(
+            #            broadcasted_transition_matrixcoo,  # broadcasted transition matrix
+            #            prox_vectors[i], r)
+            #        for i in track(range(len(seed_scores)),
+            #                       description="Processing seeds...",
+            #                       total=len(seed_scores)))
 
         # divide per multiplex:
         start_end_nodes = []
@@ -663,24 +713,23 @@ class Multixrank:
 
         return all_seeds_rwr_ranking_df
 
-
     def write_ranking(self, random_walk_rank: pandas.DataFrame, path: str, top: int = None, aggregation: str = "gmean", degree: bool = False):
-            """Writes the 'random walk results' to a subnetwork with the 'top' nodes as a SIF format (See Cytoscape documentation)
+        """ Writes the 'random walk results' to a subnetwork with the 'top' nodes as a SIF format (See Cytoscape documentation)
 
             Args:
                 rwr_ranking_df (pandas.DataFrame) : A pandas Dataframe with columns: multiplex, node, layer, score, which is the output of the random_walk_rank function
                 path (str): Path to the SIF file
                 top (int): Top nodes based on the random walk score to be included in the SIF file
                 aggregation (str): One of "nomean", "gmean", "hmean", "mean", or "sum"
-            """
+        """
 
-            if not (aggregation in ['nomean', 'gmean', 'hmean', 'mean', 'sum']):
-                raise ValueError(
-                    'Aggregation parameter must take one of these values: "nomean", "gmean", "hmean", "mean", or "sum". '
-                    'Current value: {}'.format(aggregation))
+        if not (aggregation in ['nomean', 'gmean', 'hmean', 'mean', 'sum']):
+            raise ValueError(
+                'Aggregation parameter must take one of these values: "nomean", "gmean", "hmean", "mean", or "sum". '
+                'Current value: {}'.format(aggregation))
 
-            output_obj = Output(random_walk_rank, self.multiplexall_obj, top=top, top_type="layered", aggregation=aggregation)
-            output_obj.to_tsv(outdir=path, degree=degree)
+        output_obj = Output(random_walk_rank, self.multiplexall_obj, top=top, top_type="layered", aggregation=aggregation)
+        output_obj.to_tsv(outdir=path, degree=degree)
 
     def to_sif(self, random_walk_rank: pandas.DataFrame, path: str, top: int = None, top_type: str = 'layered', aggregation: str = 'gmean'):
         """Writes the 'random walk results' to a subnetwork with the 'top' nodes as a SIF format (See Cytoscape documentation)
