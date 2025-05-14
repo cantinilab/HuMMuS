@@ -6,12 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Predict GRN from scRNA+scATAC data (Chen 2018 dataset) • HuMMuS</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -90,7 +89,7 @@ Rémi</h4>
 <h2 id="general-description-of-the-pipeline">General description of the pipeline<a class="anchor" aria-label="anchor" href="#general-description-of-the-pipeline"></a>
 </h2>
 <div class="float">
-<img src="figures%2Fschema_HuMMuS.png" alt="Overall pipeline"><div class="figcaption">Overall pipeline</div>
+<img src="figures/schema_HuMMuS.png" alt="Overall pipeline"><div class="figcaption">Overall pipeline</div>
 </div>
 <div class="section level3">
 <h3 id="useful-ressources">Useful ressources<a class="anchor" aria-label="anchor" href="#useful-ressources"></a>
@@ -148,7 +147,7 @@ informations, and a multilayer objects, that will be completed while
 going through this tutorial. It will mostly include :</p>
 <ul>
 <li>list of multiplex networks (one per modality)</li>
-<li>list of bipartites (one per connection between layers) <img src="figures%2Fhummus_object_description.png" alt="hummus object schema">
+<li>list of bipartites (one per connection between layers) <img src="figures/hummus_object_description.png" alt="hummus object schema">
 </li>
 </ul>
 <div class="section level4">
@@ -204,7 +203,7 @@ contains the same slots.</p>
 <h3 id="construction-of-the-multilayer-1">2. Construction of the multilayer<a class="anchor" aria-label="anchor" href="#construction-of-the-multilayer-1"></a>
 </h3>
 <div class="float">
-<img src="figures%2Fbuild_multilayer.png" alt="hummus object schema"><div class="figcaption">hummus object schema</div>
+<img src="figures/build_multilayer.png" alt="hummus object schema"><div class="figcaption">hummus object schema</div>
 </div>
 <p>You can compute the different layers and bipartites as indicated
 below.</p>
@@ -222,7 +221,7 @@ network, etc.).</p>
 <h4 id="compute-3-layers-and-2-bipartites">Compute 3 layers and 2 bipartites<a class="anchor" aria-label="anchor" href="#compute-3-layers-and-2-bipartites"></a>
 </h4>
 <div class="float">
-<img src="figures%2F5_steps.png" alt="hummus object schema"><div class="figcaption">hummus object schema</div>
+<img src="figures/5_steps.png" alt="hummus object schema"><div class="figcaption">hummus object schema</div>
 </div>
 <p><strong>!! Long step !!</strong> You can also go directly to the part
 3 for your “discovery tour”. :)</p>
@@ -301,7 +300,7 @@ database are not directional nor return any weight here.</p>
 <span>                            tf_network_name <span class="op">=</span> <span class="st">"TF_network"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Creating a fake TF network with all TFs connected to a fake node.</span></span>
 <span><span class="co">##   31 TFs expressed</span></span>
-<span><span class="co">## TF network construction time: 0.007312059    Creating new multiplex :  TF</span></span></code></pre>
+<span><span class="co">## TF network construction time: 0.007484198    Creating new multiplex :  TF</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="compute-gene-network-from-scrna-seq-w-genie3">2.4. Compute gene network from scRNA-seq w/ GENIE3<a class="anchor" aria-label="anchor" href="#compute-gene-network-from-scrna-seq-w-genie3"></a>
@@ -342,7 +341,7 @@ proximity.</p>
 <pre><code><span><span class="co">## Computing gene network with  GENIE3  ...</span></span>
 <span><span class="co">##  No TFs list provided, fetching from hummus object...</span></span>
 <span><span class="co">##   31 TFs expressed</span></span>
-<span><span class="co">##  Gene network construction time: 7.620563 </span></span>
+<span><span class="co">##  Gene network construction time: 7.345519 </span></span>
 <span><span class="co">##  Creating new multiplex :  RNA</span></span></code></pre>
 </div>
 <div class="section level4">
@@ -389,7 +388,7 @@ outputs are not directional.</p>
 <span><span class="co">## [1] "Done"</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">##  4699 peak edges with a coaccess score &gt; 0 were found.</span></span>
-<span><span class="co">## Peak network construction time: 22.99671 Creating new multiplex :  peaks</span></span></code></pre>
+<span><span class="co">## Peak network construction time: 23.15453 Creating new multiplex :  peaks</span></span></code></pre>
 </div>
 </div>
 <div class="section level3">
@@ -416,7 +415,7 @@ contain the seed files (necessary to compute HuMMuS outputs later) *
 <strong>config</strong> : that will contain the config files (necessary
 to compute HuMMuS outputs later)</p>
 <div class="float">
-<img src="figures%2Fexplore_multilayer.png" alt="hummus object schema"><div class="figcaption">hummus object schema</div>
+<img src="figures/explore_multilayer.png" alt="hummus object schema"><div class="figcaption">hummus object schema</div>
 </div>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_multilayer.html">save_multilayer</a></span><span class="op">(</span>hummus <span class="op">=</span> <span class="va">hummus</span>,</span>
@@ -671,7 +670,7 @@ will be returned.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer>
