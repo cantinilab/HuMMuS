@@ -59,13 +59,15 @@ devtools::install_github("cantinilab/HuMMuS", ref="dev_SeuratV5")
 #devtools::install_github("cantinilab/HuMMuS")
 ```
 
-Before running HuMMuS, if you're using multiple conda environments, you need to make sure that `reticulate` points to the one where hummuspy is installed. You can precise it at the beginning of your code :
+Before running HuMMuS, if you're using multiple conda environments, you must ensure that the `reticulate` package points to the virtual environment where hummuspy is installed. You can specify it at the beginning of your R script, e.g.:
+
 ```r
 library(reticulate)
 # Using a specific conda environment
 envname = "hummuspy_env" # or "r-reticulate" for, e.g.:
 use_condaenv(envname, required = TRUE)
 ```
+
 For more details on how to set up the reticulate connection,
 see: https://rstudio.github.io/reticulate
 
@@ -77,7 +79,7 @@ You then need to install both [Monocle3](https://cole-trapnell-lab.github.io/mon
 devtools::install_github("cole-trapnell-lab/monocle3")
 devtools::install_github("cole-trapnell-lab/cicero-release", ref = "monocle3")
 ```
-*If you encounter some troubles with Monocle3 installation, on Ubuntu you can try to run: `sudo apt-get install libgdal-dev libgeos-dev libproj-dev`. You can also go on [their github page](https://github.com/cole-trapnell-lab/monocle3/issues) for more help. Having a previous version of Monocle (1 or 2) still in your R session can cause some issues. If you encounter some even after restarting your R session, try to `remove.packages("monocle")` before reinstalling both Monocle**3** and Cicero*
+*If you encounter some troubles with Monocle3 installation, on Ubuntu you can try to run: `sudo apt-get install libgdal-dev libgeos-dev libproj-dev`. You can also go on [their GitHub page](https://github.com/cole-trapnell-lab/monocle3/issues) for more help. Having a previous version of Monocle (1 or 2) still in your R session can cause some issues. If you encounter some even after restarting your R session, try to `remove.packages("monocle")` before reinstalling both Monocle**3** and Cicero*
 
 Alternatively, we recently developed [`Circe`](https://github.com/cantinilab/Circe/tree/main), a Python package that emulates Cicero (and calculates the peak-peak network much faster) and adds some functionality. 
 `Circe` is still under development, so use it at your own risk!
@@ -87,13 +89,14 @@ Alternatively, we recently developed [`Circe`](https://github.com/cantinilab/Cir
 To reproduce HuMMuS results presented in the manuscript, preprocessed data [are accessible here](https://figshare.com/projects/Molecular_mechanisms_reconstruction_from_single-cell_multi-omics_data_with_HuMMuS/168899)
 <br> For quick tests, the Chen dataset preprocessed is accessible directly through the package as a Seurat object: `load(chen_dataset)`, along with a subset version `load(chen_dataset_subset)`.
 
-## Known Issues and recommendations to all Users
-- For the RNA modality, we recommend using the HUGO gene names or the common gene names (such as the ones outputted by CellRanger). This is especially useful when using other tools, such as `Omnipath`, to compute the TF network, for example.
-- Currently, HuMMus supports only the double `-` separator for recognising genomic coordinates, e.g. `chr1-13354210-27462910`. We recommend always using this format for genomic coordinates.
-- We recommend installing the `hummuspy` Python package in a clean conda or virtual environment.
-- We use the [`dask`](https://www.dask.org/) library for parallelisation of some tasks in the Python side of HuMMus. In case you encounter some issues with parallelisation try the following:
+## recommendations for users, issues and bugfixes
+- We recommend using common gene symbols for defining gene names (e.g. human: MYC, NFKB2, mouse: Myc, Nfkb2). This is especially useful when using some Hummus functions that query external tools, like `compute_tf_network`[https://cantinilab.github.io/HuMMuS/reference/compute_tf_network.html], that can query [`Omnipath`](https://omnipathdb.org/).
+- Currently, HuMMus supports only the double `-` separator for genomic coordinates, e.g. `chr1-13354210-27462910`. We strongly recommend always using this format for genomic coordinates to optimise the creation of the Hummus object and the tool run.
+- We recommend installing the `hummuspy` Python library in a clean conda or virtual environment.
+- We use the [`dask`](https://www.dask.org/) library for parallelisation of some tasks in the Python side of HuMMus. In case you encounter some issues with parallelization, try the following:
     - If you are running HuMMus through an HPC schedule manager(like SLURM), try assigning a specific amount of RAM to each core (for example, 10GB per core) rather than a global pool of memory, while reducing the total number of cores
-    - try reducing the size of the networks, i.e. by filtering all edges under a certain score or by retaining only the top edges.
-
+    - Try reducing the size of the networks, i.e. by  retaining only the top % of edges in the GRN or the peak-peak network.
+    - We are currently testing [this branch](https://github.com/cantinilab/HuMMuS/tree/dask_update#) for solving memory issues with Hummus. You can try installing this branch on a clean environment and run HuMMus using that version.
+      
 ## Cite us
 Trimbour R., Deutschmann I. M., Cantini L. Molecular mechanisms reconstruction from single-cell multi-omics data with HuMMuS. Bioinformatics (2024), btae143. doi: https://doi.org/10.1093/bioinformatics/btae143
