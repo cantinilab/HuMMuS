@@ -97,7 +97,7 @@ To reproduce HuMMuS results presented in the manuscript, preprocessed data [are 
     - If you are running HuMMus through an HPC schedule manager(like SLURM), try assigning a specific amount of RAM to each core (for example, 10GB per core) rather than a global pool of memory, while reducing the total number of cores
     - Try reducing the size of the networks, i.e. by  retaining only the top % of edges in the GRN or the peak-peak network.
     - We are currently testing [this branch](https://github.com/cantinilab/HuMMuS/tree/dask_update#) for solving memory issues with Hummus. You can install this branch in a clean environment and run HuMMus using that version. To do so, you can execute the following:
-        - `pip install git+https://github.com/cantinilab/HuMMuS.git@17136df93101d84910dfa9297232132990ff965b#subdirectory=hummuspy` (**NOTE** here it is not necessary to specify the memory per core but let the HPC scheduler allocate it)
+        - `pip install git+https://github.com/cantinilab/HuMMuS.git@17136df93101d84910dfa9297232132990ff965b#subdirectory=hummuspy` (**NOTE** here it is not necessary to specify the memory per core, just let the HPC scheduler allocate it)
       
 ## Cite us
 Trimbour R., Deutschmann I. M., Cantini L. Molecular mechanisms reconstruction from single-cell multi-omics data with HuMMuS. Bioinformatics (2024), btae143. doi: https://doi.org/10.1093/bioinformatics/btae143
