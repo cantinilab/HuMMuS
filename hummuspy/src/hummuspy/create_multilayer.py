@@ -14,6 +14,7 @@ import pandas
 import sys
 import copy
 import pathlib
+import dask.dataframe as dd
 
 #from joblib import delayed, Parallel, dump, load
 
@@ -647,10 +648,7 @@ class Multixrank:
 
         # Concatenate all yielded DataFrames in a memory-efficient way
         print("Starting concatenation")
-        all_seeds_rwr_ranking_df = pandas.concat(
-            generate_rank_dfs(layer_saved),
-            ignore_index=True
-        )
+        all_seeds_rwr_ranking_df = dd.concat(generate_rank_dfs(layer_saved))
         return all_seeds_rwr_ranking_df
 
     # 2.3. Parallel random walks from several list of seeds
