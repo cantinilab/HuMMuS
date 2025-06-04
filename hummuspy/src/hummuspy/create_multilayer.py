@@ -563,8 +563,7 @@ class Multixrank:
         # Run RWR algorithm parallelised
         with LocalCluster(
             n_workers=n_jobs,
-            processes=True,
-            threads_per_worker=1,
+            processes=False,
             death_timeout=None,
         ) as cluster, Client(cluster) as client:
 
