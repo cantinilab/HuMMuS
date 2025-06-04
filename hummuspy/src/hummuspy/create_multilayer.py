@@ -7,10 +7,8 @@ import joblib
 import networkx
 import pandas
 from fractions import Fraction
-import networkx
 import numpy
 import os
-import pandas
 import sys
 import copy
 import pathlib
@@ -20,13 +18,6 @@ import dask.dataframe as dd
 
 from multixrank.logger_setup import logger
 import itertools
-import sys
-
-import numpy
-import pandas
-
-from multixrank import logger_setup
-from multixrank import logger_setup
 from multixrank.MultiplexAll import MultiplexAll
 from multixrank import logger_setup, constants
 from multixrank.BipartiteAll import BipartiteAll
@@ -35,11 +26,10 @@ from multixrank.Multiplex import Multiplex
 from multixrank.ParameterEta import ParameterEta
 from multixrank.ParameterLambda import ParameterLambda
 from multixrank.Parameters import Parameters
-from multixrank.logger_setup import logger
 from multixrank.TransitionMatrix import TransitionMatrix
-from typing import Union
+from typing import Union, List
 from rich.progress import track
-from typing import List
+
 
 
 def configure_dask_logging(silent_logs: bool = False):
@@ -575,6 +565,7 @@ class Multixrank:
             n_workers=n_jobs,
             processes=True,
             threads_per_worker=1,
+            death_timeout=None,
         ) as cluster, Client(cluster) as client:
 
             # Monitor your computation with the Dask dashboard
