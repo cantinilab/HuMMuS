@@ -621,22 +621,36 @@ class Multixrank:
             end = start + self.multiplexall_node_count_list[k] * self.multiplex_layer_count_list[k]
             start_end_nodes.append((start, end))
 
-        for i in range(len(prox_vectors)):
-            rwr_ranking_df = self.__random_walk_rank_lst_to_df(
-                [numpy.array(all_seeds_rwr_ranking_lst[i][s:e]) for s, e in start_end_nodes])
-            # only keep the nodes that are contianed in layers of interest
-            if layer_saved != 'all':
-                if isinstance(layer_saved, str):
-                    layer_saved = [layer_saved]
-                rwr_ranking_df = rwr_ranking_df[rwr_ranking_df['layer'].isin(
-                    layer_saved)]
+        def generate_rank_dfs(layer_saved):
+            for i, prox_vec in enumerate(prox_vectors):
+                # Slice sublists for each seed using start and end indices
+                sub_rankings = [numpy.array(all_seeds_rwr_ranking_lst[i][s:e])
+                    for s, e in start_end_nodes]
 
-            all_seeds_rwr_ranking_df.append(rwr_ranking_df)
-            all_seeds_rwr_ranking_df[-1]['seed'] = self.seed_obj._seed_list[i]
+                # Convert ranked list to DataFrame
+                rwr_ranking_df = self.__random_walk_rank_lst_to_df(sub_rankings)
 
+                # Optional filtering by layer
+                if layer_saved != 'all':
+                    if isinstance(layer_saved, str):
+                        layer_saved = [layer_saved]
+                    if 'layer' in rwr_ranking_df.columns:
+                        rwr_ranking_df = rwr_ranking_df[rwr_ranking_df['layer'].isin(layer_saved)]
+                    else:
+                        print(f"Warning: 'layer' column missing for seed index {i}, skipping layer filter.")
+
+                # Annotate with seed
+                rwr_ranking_df['seed'] = self.seed_obj._seed_list[i]
+
+                # Yield the DataFrame to avoid memory buildup
+                yield rwr_ranking_df
+
+        # Concatenate all yielded DataFrames in a memory-efficient way
         print("Starting concatenation")
-        all_seeds_rwr_ranking_df = pandas.concat(all_seeds_rwr_ranking_df)
-
+        all_seeds_rwr_ranking_df = pandas.concat(
+            generate_rank_dfs(layer_saved),
+            ignore_index=True
+        )
         return all_seeds_rwr_ranking_df
 
     # 2.3. Parallel random walks from several list of seeds
