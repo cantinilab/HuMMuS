@@ -629,7 +629,7 @@ class Multixrank:
             if layer_saved != 'all':
                 if isinstance(layer_saved, str):
                     layer_saved = [layer_saved]
-                if 'layer' in df.columns:
+                if 'multiplex' in df.columns:
                     df = df[df['multiplex'].isin(layer_saved)]
             # Step 3: Tag seed
             df['seed'] = seed_list[i]
