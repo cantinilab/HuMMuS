@@ -69,11 +69,11 @@
 <img src="logo.png" class="logo" alt=""><h1 id="hummus-">HuMMuS <a class="anchor" aria-label="anchor" href="#hummus-"></a>
 </h1>
 </div>
-<p><img src="https://github.com/cantinilab/HuMMuS/actions/workflows/pkgdown.yaml/badge.svg" alt="pkgdown"><a href="https://github.com/cantinilab/HuMMuS/actions/workflows/pages/pages-build-deployment?theme=flickr" class="external-link"><img src="https://github.com/cantinilab/HuMMuS/actions/workflows/pages/pages-build-deployment/badge.svg" alt="doc-deployment"></a> <a href="https://pypi.org/project/hummuspy/" class="external-link"><img src="https://img.shields.io/pypi/v/hummuspy?color=blue" alt="PyPI version"></a></p>
+<p><img src="https://github.com/cantinilab/HuMMuS/actions/workflows/pkgdown.yaml/badge.svg" alt="pkgdown"><a href="https://github.com/cantinilab/HuMMuS/actions/workflows/pages/pages-build-deployment?theme=flickr" class="external-link"><img src="https://github.com/cantinilab/HuMMuS/actions/workflows/pages/pages-build-deployment/badge.svg" alt="doc-deployment"></a> <a href="https://img.shields.io/pypi/v/hummuspy?color=pink" class="external-link"><img src="https://img.shields.io/pypi/v/hummuspy?color=blue" alt="PyPI version"></a></p>
 <div class="section level3">
 <h3 id="heterogeneous-multilayer-network-for-multi-omics-single-cell-data">Heterogeneous Multilayer network for Multi-omics Single-cell data<a class="anchor" aria-label="anchor" href="#heterogeneous-multilayer-network-for-multi-omics-single-cell-data"></a>
 </h3>
-<p>HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory mechanisms. Inter-omics interactions (e.g. peak-gene, TF-peak) and intra-omics interactions (e.g. peak-peak, gene-gene, TF-TF) are considered to capture both regulatory interactions and macromolecule cooperations.</p>
+<p>HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory mechanisms. Inter-omics (e.g. peak-gene, TF-peak) and intra-omics interactions (e.g. peak-peak, gene-gene, TF-TF) are considered to capture both regulatory interactions and macromolecule cooperations.</p>
 </div>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
@@ -95,13 +95,13 @@
 <h3 id="scrna--scatac">
 <strong>scRNA + scATAC</strong><a class="anchor" aria-label="anchor" href="#scrna--scatac"></a>
 </h3>
-<p>Like most current state-of-the-art methods to infer GRN, we provide a standard version of HuMMuS based on scRNA-seq + scATAC-seq data (paired or <strong>unpaired</strong>).</p>
+<p>Like most of the current state-of-the-art methods to infer GRN, we propose a minimal version of HuMMuS based on scRNA-seq + scATAC-seq data (paired or <strong>unpaired</strong>).</p>
 </div>
 <div class="section level3">
-<h3 id="additional-modalities">
-<strong>Additional modalities</strong><a class="anchor" aria-label="anchor" href="#additional-modalities"></a>
+<h3 id="use-of-additional-modalities">
+<strong>Use of additional modalities</strong><a class="anchor" aria-label="anchor" href="#use-of-additional-modalities"></a>
 </h3>
-<p>HuMMuS has been developed to be extendable to any additional biological modality of interest. It is then possible to add any additional network to an already <strong>existing modality</strong> (e.g. both prior-knowledge network and data-driven network of genes), or from a <strong>new modality</strong> (e.g. adding epigenetic or proteomic networks). <br><em>For now, such personalisation requires directly using some hummuspy (Python package) functions at the end of the pipeline and writing some configuration files manually. It will be simplified soon !</em></p>
+<p>HuMMuS has been developed to be extendable to any additional biological modality of interest. It is then possible to add any additional network to an already <strong>existing modality</strong> (e.g. both prior-knowledge network and data-driven network of genes), or from a <strong>new modality</strong> (e.g. adding epigenetic or proteomic networks). <br><em>For now, such personalisation requires to use directly some hummuspy (python package) functions at the end of the pipeline and write some configuration files manually. It will be simplified soon !</em></p>
 </div>
 </div>
 <div class="section level2">
@@ -109,17 +109,17 @@
 </h2>
 <ul>
 <li>
-<a href="https://cantinilab.github.io/HuMMuS/articles/chen_vignette.html"><strong>Infer a gene regulatory network and other outputs from unpaired/paired scRNA + scATAC data</strong></a> shows the application of HuMMuS to the Chen dataset, used in the benchmark of <a href="https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btae143/7625061" class="external-link">HuMMuS publication</a>.</li>
+<a href="https://cantinilab.github.io/HuMMuS/articles/chen_vignette.html"><strong>Infer a gene regulatory network and other outputs from unpaired/paired scRNA+scATAC data</strong></a> shows the application of HuMMuS to the Chen dataset, used in the benchmark of <a href="https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btae143/7625061" class="external-link">HuMMuS publication</a>.</li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>HuMMuS is (for now!) only available in R and requires the hummuspy Python library. Be sure to install a virtual environment with <code>hummuspy</code> and make use of the <code>reticulate</code> R library to connect the two parts.</p>
+<p>HuMMuS is for now ready only in R but requires some python dependencies (hummuspy).</p>
 <div class="section level3">
-<h3 id="hummus-python-dependency">HuMMuS Python dependency<a class="anchor" aria-label="anchor" href="#hummus-python-dependency"></a>
+<h3 id="hummus-python-dependency">HuMMuS python dependency<a class="anchor" aria-label="anchor" href="#hummus-python-dependency"></a>
 </h3>
-<p>Python package <strong>hummuspy</strong> should preferably be installed using pip (from the terminal in a conda environment for example)</p>
+<p>Python package <strong>hummuspy</strong> should preferably be installed using pip (from the terminal in a conda environment for e.g)</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>conda create <span class="sc">-</span>n hummuspy_env python</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>conda activate hummuspy_env</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>pip install hummuspy</span></code></pre></div>
@@ -131,56 +131,34 @@
 <div class="section level3">
 <h3 id="hummus-r-package">HuMMuS R package<a class="anchor" aria-label="anchor" href="#hummus-r-package"></a>
 </h3>
-<p>The core R package can be installed directly from R:</p>
+<p>Core R package can be installed directly from R:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"cantinilab/HuMMuS"</span>, ref<span class="op">=</span><span class="st">"dev_SeuratV5"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># If you only work SeuratV4, you can also use the main branch that will soon be deprecated</span></span>
+<span><span class="co"># If you only work SeuratV4, you can also use main branch that will soon be deprecated</span></span>
 <span><span class="co">#devtools::install_github("cantinilab/HuMMuS")</span></span></code></pre></div>
-<p>Before running HuMMuS, if you’re using multiple conda environments, you must ensure that the <code>reticulate</code> package points to the virtual environment where hummuspy is installed. You can specify it at the beginning of your R script, e.g.:</p>
+<p>Before running HuMMuS, if you’re using multiple conda environment you need to make sure to that reticulate points toward the one where hummuspy is installed. You can precise it at the beginning of your code :</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/reticulate/" class="external-link">reticulate</a></span><span class="op">)</span></span>
 <span><span class="co"># Using a specific conda environment</span></span>
-<span><span class="va">envname</span> <span class="op">=</span> <span class="st">"hummuspy_env"</span> <span class="co"># or "r-reticulate" for, e.g.:</span></span>
+<span><span class="va">envname</span> <span class="op">=</span> <span class="st">"hummuspy_env"</span> <span class="co"># or "r-reticulate" for e.g.</span></span>
 <span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_condaenv</a></span><span class="op">(</span><span class="va">envname</span>, required <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>For more details on how to set up the reticulate connection, see: <a href="https://rstudio.github.io/reticulate" class="external-link uri">https://rstudio.github.io/reticulate</a></p>
+<p>For more details on how to setup the reticulate connection, see: <a href="https://rstudio.github.io/reticulate" class="external-link uri">https://rstudio.github.io/reticulate</a></p>
 </div>
 <div class="section level3">
 <h3 id="scatac-processing">scATAC processing<a class="anchor" aria-label="anchor" href="#scatac-processing"></a>
 </h3>
-<p>To compute the scATAC data with HuMMuS, we propose to use <a href="https://cole-trapnell-lab.github.io/cicero-release/docs_m3/" class="external-link">Cicero</a>. It requires the version running with <a href="https://cole-trapnell-lab.github.io/monocle3/" class="external-link">Monocle3</a>. You then need to install both <a href="https://cole-trapnell-lab.github.io/monocle3/docs/installation/" class="external-link">Monocle3</a>, and Cicero:</p>
+<p>To compute directly the scATAC data with HuMMuS, we currently only propose to use <a href="https://cole-trapnell-lab.github.io/cicero-release/docs_m3/" class="external-link">Cicero</a>. It requires the version running with <a href="https://cole-trapnell-lab.github.io/monocle3/" class="external-link">Monocle3</a>. You then need to install both <a href="https://cole-trapnell-lab.github.io/monocle3/docs/installation/" class="external-link">Monocle3</a>, and Cicero:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"cole-trapnell-lab/monocle3"</span><span class="op">)</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"cole-trapnell-lab/cicero-release"</span>, ref <span class="op">=</span> <span class="st">"monocle3"</span><span class="op">)</span></span></code></pre></div>
-<p><em>If you encounter some troubles with Monocle3 installation, on Ubuntu you can try to run: <code>sudo apt-get install libgdal-dev libgeos-dev libproj-dev</code>. You can also go on <a href="https://github.com/cole-trapnell-lab/monocle3/issues" class="external-link">their GitHub page</a> for more help. Having Monocle version 1 or 2 still loaded in your R session may cause conflicts. If you encounter some even after restarting your R session, try to <code>remove.packages("monocle")</code> before reinstalling both Monocle<strong>3</strong> and Cicero</em></p>
-<p>Alternatively, we recently developed <a href="https://github.com/cantinilab/Circe/tree/main" class="external-link"><code>Circe</code></a>, a Python package that replaces Cicero and adds some functionality. <code>Circe</code> should be much faster but will require to generate first the network in python, before loading it in your R session. Since the preprocessing is different from Cicero, results will also differ.</p>
+<p><em>If you encounter some troubles with Monocle3 installation, on ubuntu you can try to run: <code>sudo apt-get install libgdal-dev libgeos-dev libproj-dev</code>. You can also go on <a href="https://github.com/cole-trapnell-lab/monocle3/issues" class="external-link">their github page</a> for more help. Having a previous version of Monocle (1 or 2) still in your R session can cause some troubles. If you encounter some even after restarting your R session,, try to <code>remove.packages("monocle")</code> before to reinstall both Monocle<strong>3</strong> and Cicero</em></p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="data-accessibility">Data accessibility<a class="anchor" aria-label="anchor" href="#data-accessibility"></a>
 </h2>
 <p>To reproduce HuMMuS results presented in the manuscript, preprocessed data <a href="https://figshare.com/projects/Molecular_mechanisms_reconstruction_from_single-cell_multi-omics_data_with_HuMMuS/168899" class="external-link">are accessible here</a> <br> For quick tests, the Chen dataset preprocessed is accessible directly through the package as a Seurat object: <code>load(chen_dataset)</code>, along with a subset version <code>load(chen_dataset_subset)</code>.</p>
-</div>
-<div class="section level2">
-<h2 id="recommendations-for-users-issues-and-bugfixes">Recommendations for users, issues and bugfixes<a class="anchor" aria-label="anchor" href="#recommendations-for-users-issues-and-bugfixes"></a>
-</h2>
-<ul>
-<li>We recommend using common gene symbols for defining gene names (e.g. human: MYC, NFKB2, mouse: Myc, Nfkb2). This is especially useful when using some Hummus functions that query external tools, like <a href="https://cantinilab.github.io/HuMMuS/reference/compute_tf_network.html"><code>compute_tf_network</code></a>, that can query <a href="https://omnipathdb.org/" class="external-link"><code>Omnipath</code></a>.</li>
-<li>Currently, HuMMus supports only the double <code>-</code> separator for genomic coordinates, e.g. <code>chr1-13354210-27462910</code>. We strongly recommend always using this format for genomic coordinates to optimise the creation of the Hummus object and the tool run.</li>
-<li>We recommend installing the <code>hummuspy</code> Python library in a clean conda or virtual environment.</li>
-<li>We use the <a href="https://www.dask.org/" class="external-link"><code>dask</code></a> library for parallelisation of some tasks in the Python side of HuMMus. In case you encounter some issues with parallelisation, try the following:
-<ul>
-<li>If you are running HuMMus through an HPC schedule manager(like SLURM), try assigning a specific amount of RAM to each core (for example, 10GB per core) rather than a global pool of memory, while reducing the total number of cores</li>
-<li>Try reducing the size of the networks, i.e. by retaining only the top % of edges in the GRN or the peak-peak network.</li>
-<li>We are currently testing <a href="https://github.com/cantinilab/HuMMuS/tree/dask_update" class="external-link">this branch</a> to improve memory management with Hummus. You can install this branch in a clean environment and run HuMMus using that version through reticulate. To do so, you can execute the following:
-<ul>
-<li>
-<code>pip install git+https://github.com/cantinilab/HuMMuS.git@17136df93101d84910dfa9297232132990ff965b#subdirectory=hummuspy</code> (<strong>NOTE</strong> here it is not necessary to specify the memory per core, just let the HPC scheduler allocate it)</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
 </div>
 <div class="section level2">
 <h2 id="cite-us">Cite us<a class="anchor" aria-label="anchor" href="#cite-us"></a>
