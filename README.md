@@ -82,7 +82,7 @@ devtools::install_github("cole-trapnell-lab/cicero-release", ref = "monocle3")
 *If you encounter some troubles with Monocle3 installation, on Ubuntu you can try to run: `sudo apt-get install libgdal-dev libgeos-dev libproj-dev`. You can also go on [their GitHub page](https://github.com/cole-trapnell-lab/monocle3/issues) for more help. Having a previous version of Monocle (1 or 2) still in your R session can cause some issues. If you encounter some even after restarting your R session, try to `remove.packages("monocle")` before reinstalling both Monocle**3** and Cicero*
 
 Alternatively, we recently developed [`Circe`](https://github.com/cantinilab/Circe/tree/main), a Python package that emulates Cicero (and calculates the peak-peak network much faster) and adds some functionality. 
-`Circe` is still under development, so use it at your own risk!
+`Circe` should be much faster, but will require to generate first the network in python, before loading in your  R session. Since the preprocessing is different from Cicero, results will also differ.
 
 ## Data accessibility
 
@@ -95,8 +95,8 @@ To reproduce HuMMuS results presented in the manuscript, preprocessed data [are 
 - We recommend installing the `hummuspy` Python library in a clean conda or virtual environment.
 - We use the [`dask`](https://www.dask.org/) library for parallelisation of some tasks in the Python side of HuMMus. In case you encounter some issues with parallelisation, try the following:
     - If you are running HuMMus through an HPC schedule manager(like SLURM), try assigning a specific amount of RAM to each core (for example, 10GB per core) rather than a global pool of memory, while reducing the total number of cores
-    - Try reducing the size of the networks, i.e. by  retaining only the top % of edges in the GRN or the peak-peak network.
-    - We are currently testing [this branch](https://github.com/cantinilab/HuMMuS/tree/dask_update#) for solving memory issues with Hummus. You can install this branch in a clean environment and run HuMMus using that version. To do so, you can execute the following:
+    - Try reducing the size of the networks, i.e. by retaining only the top % of edges in the GRN or the peak-peak network.
+    - We are currently testing [this branch](https://github.com/cantinilab/HuMMuS/tree/dask_update#) to improve memory management with Hummus. You can install this branch in a clean environment and run HuMMus using that version through reticulate. To do so, you can execute the following:
         - `pip install git+https://github.com/cantinilab/HuMMuS.git@17136df93101d84910dfa9297232132990ff965b#subdirectory=hummuspy` (**NOTE** here it is not necessary to specify the memory per core, just let the HPC scheduler allocate it)
       
 ## Cite us
