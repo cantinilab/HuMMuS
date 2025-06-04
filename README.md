@@ -7,7 +7,7 @@
 ### Heterogeneous Multilayer network for Multi-omics Single-cell data
 
 HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory mechanisms.
-Inter-omics interactions (e.g., peak-gene, TF-peak) and intra-omics interactions (e.g., peak-peak, gene-gene, TF-TF) are considered to capture both regulatory interactions and macromolecule cooperations.
+Inter-omics interactions (e.g. peak-gene, TF-peak) and intra-omics interactions (e.g. peak-peak, gene-gene, TF-TF) are considered to capture both regulatory interactions and macromolecule cooperations.
 
 ## Overview
 
