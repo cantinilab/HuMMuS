@@ -622,33 +622,46 @@ class Multixrank:
             end = start + self.multiplexall_node_count_list[k] * self.multiplex_layer_count_list[k]
             start_end_nodes.append((start, end))
 
-        def generate_rank_dfs(layer_saved):
-            for i, prox_vec in enumerate(prox_vectors):
-                # Slice sublists for each seed using start and end indices
-                sub_rankings = [numpy.array(all_seeds_rwr_ranking_lst[i][s:e])
-                    for s, e in start_end_nodes]
+        @delayed
+        def process_seed(
+            i,
+            all_seeds_rwr_ranking_lst,
+            start_end_nodes,
+            layer_saved,
+            seed_list,
+            convert_fn
+        ):
+            # Step 1: Extract and convert rankings for this seed
+            sub_rankings = [numpy.array(all_seeds_rwr_ranking_lst[i][s:e]) for s, e in start_end_nodes]
+            df = convert_fn(sub_rankings)
+            # Step 2: Filter by layer if needed
+            if layer_saved != 'all':
+                if isinstance(layer_saved, str):
+                    layer_saved = [layer_saved]
+                if 'layer' in df.columns:
+                    df = df[df['layer'].isin(layer_saved)]
+            # Step 3: Tag seed
+            df['seed'] = seed_list[i]
+            return df
 
-                # Convert ranked list to DataFrame
-                rwr_ranking_df = self.__random_walk_rank_lst_to_df(sub_rankings)
+        # Build delayed DataFrames
+        delayed_dfs = [
+            dd.from_delayed(
+                process_seed(
+                    i,
+                    all_seeds_rwr_ranking_lst,
+                    start_end_nodes,
+                    layer_saved,
+                    self.seed_obj._seed_list,
+                    self.__random_walk_rank_lst_to_df
+                )
+            )
+            for i in range(len(prox_vectors))
+        ]
 
-                # Optional filtering by layer
-                if layer_saved != 'all':
-                    if isinstance(layer_saved, str):
-                        layer_saved = [layer_saved]
-                    if 'layer' in rwr_ranking_df.columns:
-                        rwr_ranking_df = rwr_ranking_df[rwr_ranking_df['layer'].isin(layer_saved)]
-                    else:
-                        print(f"Warning: 'layer' column missing for seed index {i}, skipping layer filter.")
-
-                # Annotate with seed
-                rwr_ranking_df['seed'] = self.seed_obj._seed_list[i]
-
-                # Yield the DataFrame to avoid memory buildup
-                yield rwr_ranking_df
-
-        # Concatenate all yielded DataFrames in a memory-efficient way
-        print("Starting concatenation")
-        all_seeds_rwr_ranking_df = dd.concat(generate_rank_dfs(layer_saved))
+        # Concatenate into one Dask DataFrame
+        print("Building Dask DataFrame graph with delayed parallel tasks...")
+        all_seeds_rwr_ranking_df = dd.concat(delayed_dfs)
         return all_seeds_rwr_ranking_df
 
     # 2.3. Parallel random walks from several list of seeds
