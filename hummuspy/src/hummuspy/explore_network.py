@@ -80,7 +80,9 @@ def compute_RandomWalk(
         self_loops=self_loops,
         restart_proba=restart_proba,
         pr=pr)
-    ranking_df = multixrank_obj.random_walk_rank().sort_values(
+    ranking_df = multixrank_obj.random_walk_rank(
+        layer_saved=spec_layer_result_saved 
+    ).sort_values(
         by='score',
         ascending=False)
 
@@ -181,7 +183,10 @@ def compute_multiple_RandomWalk(
         pr=pr)
 
     ranking_df = multixrank_obj.per_seed_random_walk_rank(
-        n_jobs=n_jobs, silent_logs=silent_logs).sort_values(
+        n_jobs=n_jobs,
+        silent_logs=silent_logs,
+        layer_saved=spec_layer_result_saved,
+        ).sort_values(
             by='score',
             ascending=False)
 

@@ -510,7 +510,7 @@ class Multixrank:
         return rwr_ranking_df
 
     # 2.2. Parallel random walks from individual seeds of the list
-    def per_seed_random_walk_rank(self, n_jobs=1, silent_logs=True) -> pandas.DataFrame:
+    def per_seed_random_walk_rank(self, n_jobs=1, silent_logs=True, layer_saved='all') -> pandas.DataFrame:
         """
         Function that carries ous the full random walk with restart from a list of seeds.
 
@@ -568,6 +568,7 @@ class Multixrank:
         if silent_logs:
             configure_dask_logging(silent_logs=True)
 
+        print("Initializing Dask cluster with {} workers...".format(n_jobs))
         # Run RWR algorithm parallelised
         with LocalCluster(
             n_workers=n_jobs,
@@ -623,9 +624,17 @@ class Multixrank:
         for i in range(len(prox_vectors)):
             rwr_ranking_df = self.__random_walk_rank_lst_to_df(
                 [numpy.array(all_seeds_rwr_ranking_lst[i][s:e]) for s, e in start_end_nodes])
+            # only keep the nodes that are contianed in layers of interest
+            if layer_saved != 'all':
+                if type(layer_saved) is str:
+                    layer_saved = [layer_saved]
+                rwr_ranking_df = rwr_ranking_df[rwr_ranking_df['layer'].isin(
+                    layer_saved)]
+
             all_seeds_rwr_ranking_df.append(rwr_ranking_df)
             all_seeds_rwr_ranking_df[-1]['seed'] = self.seed_obj._seed_list[i]
 
+        print("Starting concatenation")
         all_seeds_rwr_ranking_df = pandas.concat(all_seeds_rwr_ranking_df)
 
         return all_seeds_rwr_ranking_df
