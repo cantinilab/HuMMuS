@@ -626,7 +626,7 @@ class Multixrank:
                 [numpy.array(all_seeds_rwr_ranking_lst[i][s:e]) for s, e in start_end_nodes])
             # only keep the nodes that are contianed in layers of interest
             if layer_saved != 'all':
-                if type(layer_saved) is str:
+                if isinstance(layer_saved, str):
                     layer_saved = [layer_saved]
                 rwr_ranking_df = rwr_ranking_df[rwr_ranking_df['layer'].isin(
                     layer_saved)]
@@ -780,6 +780,8 @@ class Multixrank:
                 score = list(rwr_result_lst[i].T)
             rwrrestart_df = pandas.concat([rwrrestart_df, pandas.DataFrame(
                 {'multiplex': multiplex_label_lst, 'node': nodes, 'layer': layer_lst, 'score': score})], axis=0)
+            rwrrestart_df['layer'] = rwrrestart_df['layer'].astype('category')
+            rwrrestart_df['multiplex'] = rwrrestart_df['multiplex'].astype('category')
         return rwrrestart_df
 
 
