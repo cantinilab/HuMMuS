@@ -735,7 +735,7 @@ class Multixrank:
 
         all_seeds_rwr_ranking_df = pandas.concat(all_seeds_rwr_ranking_df)
 
-        return all_seeds_rwr_ranking_df
+        return all_seeds_rwr_ranking_df.compute()
 
     def write_ranking(self, random_walk_rank: pandas.DataFrame, path: str, top: int = None, aggregation: str = "gmean", degree: bool = False):
         """ Writes the 'random walk results' to a subnetwork with the 'top' nodes as a SIF format (See Cytoscape documentation)
