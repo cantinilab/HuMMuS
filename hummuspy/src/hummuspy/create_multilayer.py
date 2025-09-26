@@ -652,7 +652,7 @@ class Multixrank:
         # Concatenate into one Dask DataFrame
         print("Building Dask DataFrame graph with delayed parallel tasks...")
         all_seeds_rwr_ranking_df = dd.concat(delayed_dfs)
-        return all_seeds_rwr_ranking_df
+        return all_seeds_rwr_ranking_df.compute()
 
     # 2.3. Parallel random walks from several list of seeds
     def per_pr_random_walk_rank(self, prox_vectors, n_jobs=1) -> pandas.DataFrame:
@@ -735,7 +735,7 @@ class Multixrank:
 
         all_seeds_rwr_ranking_df = pandas.concat(all_seeds_rwr_ranking_df)
 
-        return all_seeds_rwr_ranking_df.compute()
+        return all_seeds_rwr_ranking_df
 
     def write_ranking(self, random_walk_rank: pandas.DataFrame, path: str, top: int = None, aggregation: str = "gmean", degree: bool = False):
         """ Writes the 'random walk results' to a subnetwork with the 'top' nodes as a SIF format (See Cytoscape documentation)
