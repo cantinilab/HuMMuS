@@ -22,7 +22,7 @@ jobs:
         run: pip install poetry
 
       - name: Build package
-        working-directory: HuMMuS/hummuspy
+        working-directory: ./hummuspy
         run: poetry build
 
       - name: Publish to PyPI
