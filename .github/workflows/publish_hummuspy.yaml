@@ -1,32 +1,65 @@
-name: Publish hummuspy to PyPI
+name: Build and Publish hummuspy to PyPI
 
 on:
   push:
-    tags:
-      - 'hummuspy-v*'  # Adjust this pattern as needed
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  release:
+    types: [published]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-and-publish:
+  build_package:
+    name: Build hummuspy package
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: ./hummuspy
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'  # or your minimum supported version
+          python-version: "3.10"
 
-      - name: Install Poetry
-        run: pip install poetry
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade build twine
 
       - name: Build package
-        working-directory: ./hummuspy
-        run: poetry build
+        run: python -m build
+
+      - name: Check package metadata
+        run: python -m twine check dist/*
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: hummuspy-dists
+          path: hummuspy/dist/*
+
+  publish_to_pypi:
+    name: Publish hummuspy to PyPI
+    needs: [build_package]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: hummuspy-dists
+          path: dist
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          packages_dir: HuMMuS/hummuspy/dist
+          user: __token__
+          password: ${{ secrets.PYPI_TOKEN }}
