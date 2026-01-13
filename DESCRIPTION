@@ -48,6 +48,8 @@ Imports:
     SingleCellExperiment,
     motifmatchr,
     reticulate
+Remotes:
+    url::https://cran.r-project.org/src/contrib/Archive/TFMPvalue/TFMPvalue_0.0.9.tar.gz
 Suggests:
     doParallel,
     doRNG,
