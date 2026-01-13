@@ -1,26 +1,31 @@
-[tool.poetry]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
 name = "hummuspy"
 version = "0.1.8"
 description = "HuMMuS is a novel method for the inference of regulatory mechanisms from multi-omics data with any type and number of omics, through a heterogeneous multilayer network framework."
-authors = ["Rémi Trimbour <remi.trimbour@pasteur.fr>"]
-license = "GPL-3.0-only"
+authors = [
+	{ name = "Rémi Trimbour", email = "remi.trimbour@pasteur.fr" }
+]
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = ">=3.8"
-multixrank = ">=0.1, <0.4"
-joblib = "^1.3.0"
-tqdm = ">=4.66.3"
-numpy = ">1.24.2, <2.0.0"
-pandas = "^2.0.0"
-pyyaml = "^6.0"
-matplotlib = "^3.4.3"
-scipy = "^1.8.0"
-distributed = ">=2023.0.0"
-dask = ">=2023.0.0"
-rich = ">=10.12.0"
-bokeh = ">=2.4.2,!=3.0.*"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+license = {text = "GPL-3.0-only"}
+requires-python = ">=3.8"
+keywords = ["hummus", "multilayer", "multi-omics", "regulatory network"]
+dependencies = [
+	"multixrank>=0.1,<0.4",
+	"joblib>=1.3.0",
+	"tqdm>=4.66.3",
+	"numpy>1.24.2,<2.0.0",
+	"pandas>=2.0.0",
+	"pyyaml>=6.0",
+	"matplotlib>=3.4.3",
+	"scipy>=1.8.0",
+	"distributed>=2023.0.0",
+	"dask>=2023.0.0",
+	"rich>=10.12.0",
+	"bokeh>=2.4.2,!=3.0.*",
+	"pyarrow"
+]
