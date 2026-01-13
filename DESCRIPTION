@@ -29,7 +29,7 @@ Depends:
     R (>= 4.0.0)
 biocViews:
 Imports:
-    grr,
+    magrittr,
     sparseMatrixStats,
     TFBSTools,
     stringr,
