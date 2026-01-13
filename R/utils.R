@@ -102,7 +102,7 @@ fast_aggregate <- function(
     if (fun == "mean") {
         result@x <- result@x / (fast_aggregate(x, groupings2, fun = "count"))@x
     }
-    attr(result, "crosswalk") <- grr::extract(groupings, match(rownames(result),
+    attr(result, "crosswalk") <- magrittr::extract(groupings, match(rownames(result),
                                              groupings2$A))
     return(result)
 }
