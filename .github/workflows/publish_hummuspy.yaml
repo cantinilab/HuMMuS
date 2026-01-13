@@ -1,0 +1,32 @@
+name: Publish hummuspy to PyPI
+
+on:
+  push:
+    tags:
+      - 'hummuspy-v*'  # Adjust this pattern as needed
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'  # or your minimum supported version
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Build package
+        working-directory: HuMMuS/hummuspy
+        run: poetry build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages_dir: HuMMuS/hummuspy/dist
