@@ -29,3 +29,13 @@ dependencies = [
 	"bokeh>=2.4.2,!=3.0.*",
 	"pyarrow"
 ]
+
+[tool.setuptools]
+# Root of packages is "src"
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.package-data]
+# Include any package data files if needed
+recon = ["data/*.txt",] # "data/**/*.csv", "data/**/*.h5ad"] 
+
