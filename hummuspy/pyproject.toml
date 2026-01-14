@@ -37,5 +37,5 @@ include-package-data = true
 
 [tool.setuptools.package-data]
 # Include any package data files if needed
-recon = ["data/*.txt",] # "data/**/*.csv", "data/**/*.h5ad"] 
+hummuspy = ["data/*.txt",] # "data/**/*.csv", "data/**/*.h5ad"] 
 
