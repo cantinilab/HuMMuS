@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hummuspy"
-version = "0.1.9"
+version = "0.1.9.post1"
 description = "HuMMuS is a novel method for the inference of regulatory mechanisms from multi-omics data with any type and number of omics, through a heterogeneous multilayer network framework."
 authors = [
 	{ name = "Rémi Trimbour", email = "remi.trimbour@pasteur.fr" }
