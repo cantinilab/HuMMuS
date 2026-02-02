@@ -31,7 +31,11 @@ get_genome_annotations <- function(
 #' @export
 #'
 #' @examples motifs_db = get_tf2motifs(species = "human")
-get_tf2motifs <- function(species = "human") {
+get_tf2motifs <- function(species = "human", download_folder = NULL ) {
+  if( ! is.null(download_folder == NULL) ){
+    download_folder = getwd()
+  }
+  
   #TF motifs using the union of databases: JASPAR and cis-BP
   # included in chromVAR
   getMatrixSet <- TFBSTools::getMatrixSet
@@ -45,8 +49,13 @@ get_tf2motifs <- function(species = "human") {
     JASPAR_PWM <- TFBSTools::toPWM(getMatrixSet(JASPAR2020::JASPAR2020, opts))
     # Load data from JASPAR2020
     # Load data from chromVARmotifs
+    
     # Original data accessible at https://github.com/GreenleafLab/chromVARmotifs
-    data("human_pwms_v2")
+    url = "https://github.com/GreenleafLab/chromVARmotifs/raw/refs/heads/master/data/human_pwms_v2.rda"
+    dpath = file.path( download_folder, 'human_pwms_v2.rda' )
+    download.file(url, dpath)
+    load( file=dpath )
+    
     # Load data from chromVARmotifs
     motifs <- human_pwms_v2
     # Motifs from chromVARmotifs
@@ -57,8 +66,12 @@ get_tf2motifs <- function(species = "human") {
               all_versions = FALSE)
     JASPAR_PWM <- TFBSTools::toPWM(getMatrixSet(JASPAR2020::JASPAR2020, opts))
     # Load data from JASPAR2020
-    data("mouse_pwms_v2")
-    # Load data from chromVARmotifs
+    url = "https://github.com/GreenleafLab/chromVARmotifs/raw/refs/heads/master/data/mouse_pwms_v2.rda"
+    dpath = file.path( download_folder, 'mouse_pwms_v2.rda' )
+    download.file(url, dpath)
+    load( file=dpath )
+    
+# Load data from chromVARmotifs
     # Original data accessible at https://github.com/GreenleafLab/chromVARmotifs
     motifs <- mouse_pwms_v2
     # Motifs from chromVARmotifs
