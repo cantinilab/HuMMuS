@@ -230,7 +230,7 @@ def general_config(
     # if type of bipartites not associated to their names already,
     # we create a dict with the same order as the bipartites
     if type(bipartites_type) == list or type(bipartites_type) == tuple:
-        print("bipartites_type has been provided throguh a list, make sure " +
+        print("bipartites_type has been provided through a list, make sure " +
               "the order matches the one of the 'bipartites' dictionary' keys."
               )
         temp = dict()

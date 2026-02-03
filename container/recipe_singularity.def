@@ -67,6 +67,4 @@ From: ubuntu:20.04
     cd /opt
     Rscript install_rdeps.R
     
-    cd /opt
-    git clone https://github.com/sbnb-irb/chemical_checker.git
     

@@ -489,7 +489,8 @@ define_output <- function(
   output_f = NULL,
   return_df = TRUE,
   suffix_bipartites = ".tsv",
-  njobs = 1
+  njobs = 1,
+  save_configfile = TRUE
   ) {
 
   # Check if hummuspy is installed and import it
@@ -509,7 +510,8 @@ define_output <- function(
     hummus_object,
     bipartites_names = bipartites_names,
     suffix_bipartites = suffix_bipartites)
-
+  
+  
   # define target_genes with hummuspy function
   output <- hummuspy$core_grn$get_output_from_dicts(
     output_request = output_type,
@@ -527,7 +529,8 @@ define_output <- function(
     update_config = TRUE,
     save = save,
     return_df = return_df,
-    njobs = njobs)
+    njobs = njobs,
+    save_configfile = save_configfile)
 
   # return target_genes
   return(output)

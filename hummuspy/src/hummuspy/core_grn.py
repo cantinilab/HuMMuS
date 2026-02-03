@@ -878,7 +878,8 @@ def get_output_from_dicts(
         save=False,
         return_df=True,
         output_f=None,
-        njobs=1):
+        njobs=1,
+        save_configfile=True):
     """
     Compute an output from a multilayer network and a config file, that can be
     chosen among ['grn', 'enhancers', 'binding_regions', 'target_genes'].
@@ -970,8 +971,9 @@ def get_output_from_dicts(
         self_loops=0,
         restart_prob=0.7,
         bipartites_type=bipartites_type,
-        save_configfile=False,
-        config_filename=config_filename)
+        config_filename=config_filename
+        save_configfile = save_configfile)
+    
 
     parameters = {
         'multilayer_folder':   multilayer_folder,
@@ -1008,5 +1010,6 @@ def get_output_from_dicts(
         df = define_target_genes_from_config(**parameters)
     else:
         raise ValueError("Please select an output_request value in ('grn', 'enhancers', 'binding_regions', 'target_genes').")
+    
 
     return df
