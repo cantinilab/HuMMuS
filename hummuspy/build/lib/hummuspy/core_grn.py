@@ -360,7 +360,7 @@ def define_grn_from_config(
                                                            index=False,
                                                            header=True)
     if return_df:
-        return df
+        return df, config
 
 
 ###############################################################################
@@ -525,7 +525,7 @@ def define_enhancers_from_config(
                                                            index=False,
                                                            header=True)
     if return_df:
-        return df
+        return df, config
 
 
 #########################################################
@@ -691,7 +691,7 @@ def define_binding_regions_from_config(
                                                            index=False,
                                                            header=True)
     if return_df:
-        return df
+        return df config
 
 
 ######################################################
@@ -855,7 +855,7 @@ def define_target_genes_from_config(
                                                            index=False,
                                                            header=True)
     if return_df:
-        return df
+        return df config
 
 
 def get_output_from_dicts(
@@ -878,7 +878,8 @@ def get_output_from_dicts(
         save=False,
         return_df=True,
         output_f=None,
-        njobs=1):
+        njobs=1,
+        save_configfile=False):
     """
     Compute an output from a multilayer network and a config file, that can be
     chosen among ['grn', 'enhancers', 'binding_regions', 'target_genes'].
@@ -920,6 +921,8 @@ def get_output_from_dicts(
         Name of the output file. The default is None.
     njobs : int, optional
         Number of jobs. The default is 1.
+    save_configfile: bool
+        If True, save the config file as a yaml file.
 
     Returns
     -------ith open(self.config_path) as fin:
@@ -970,9 +973,11 @@ def get_output_from_dicts(
         self_loops=0,
         restart_prob=0.7,
         bipartites_type=bipartites_type,
-        save_configfile=False,
         config_filename=config_filename)
+    
 
+    if( save_configfile ):
+        update_config = True
     parameters = {
         'multilayer_folder':   multilayer_folder,
         'config':         config,
@@ -990,10 +995,10 @@ def get_output_from_dicts(
         'output_f':       output_f,
         'njobs':          njobs
     }
-
+        
     if output_request == 'grn':
         del parameters['peak_list']
-        df = define_grn_from_config(**parameters)
+        df, config = define_grn_from_config(**parameters)
 
     elif output_request == 'enhancers':
         del parameters['tf_list']
@@ -1001,12 +1006,17 @@ def get_output_from_dicts(
 
     elif output_request == 'binding_regions':
         del parameters['gene_list']
-        df = define_binding_regions_from_config(**parameters)
+        df, config = define_binding_regions_from_config(**parameters)
 
     elif output_request == 'target_genes':
         del parameters['peak_list']
-        df = define_target_genes_from_config(**parameters)
+        df, config = define_target_genes_from_config(**parameters)
     else:
         raise ValueError("Please select an output_request value in ('grn', 'enhancers', 'binding_regions', 'target_genes').")
+    
+    if( save_configfile ):
+        if( 'eta' in config and 'lamb' in config ):
+            cpath = os.path.join( multilayer_folder, config_folder, config_filename )
+            hummuspy.config.save_config(config, cpath)
 
     return df

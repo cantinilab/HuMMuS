@@ -111,7 +111,7 @@ def general_config(
         self_loops=0,
         restart_prob=0.7,
         bipartites_type: Union[str, list[str], dict[str]] = ('00', '00'),
-        save_configfile: bool = True,
+        save_configfile: bool = False,
         config_filename: str = 'config.yaml',
         suffix='.tsv'):
 

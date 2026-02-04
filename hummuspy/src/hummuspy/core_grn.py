@@ -23,7 +23,8 @@ def format_multilayer(
 
     ! The DataFrame should have 2-3 columns :
      ['source', 'target', 'weight'], or ['source', 'target'] !
-    #TODO : explain graph_type !!
+    
+    *_graph_type parameters: Graph type refers to a string composed of two characters, whose values can only be 0 or 1. The first character is 1 if the graph is directed, otherwise, if all the relations among the nodes are bi-directional the value is 0. The second character indicates whether the relations among the nodes has a weight to be considered (value 1) or not (value 0).
     Args:
         TF_layer (Union[list, pandas.DataFrame]): TF layer(s) edge list
         ATAC_layer (Union[list, pandas.DataFrame]): ATAC layer(s) edge list
@@ -360,7 +361,7 @@ def define_grn_from_config(
                                                            index=False,
                                                            header=True)
     if return_df:
-        return df
+        return df, config
 
 
 ###############################################################################
@@ -525,7 +526,7 @@ def define_enhancers_from_config(
                                                            index=False,
                                                            header=True)
     if return_df:
-        return df
+        return df, config
 
 
 #########################################################
@@ -691,7 +692,7 @@ def define_binding_regions_from_config(
                                                            index=False,
                                                            header=True)
     if return_df:
-        return df
+        return df, config
 
 
 ######################################################
@@ -855,7 +856,7 @@ def define_target_genes_from_config(
                                                            index=False,
                                                            header=True)
     if return_df:
-        return df
+        return df, config
 
 
 def get_output_from_dicts(
@@ -879,7 +880,7 @@ def get_output_from_dicts(
         return_df=True,
         output_f=None,
         njobs=1,
-        save_configfile=True):
+        save_configfile=False):
     """
     Compute an output from a multilayer network and a config file, that can be
     chosen among ['grn', 'enhancers', 'binding_regions', 'target_genes'].
@@ -921,6 +922,8 @@ def get_output_from_dicts(
         Name of the output file. The default is None.
     njobs : int, optional
         Number of jobs. The default is 1.
+    save_configfile: bool
+        If True, save the config file as a yaml file.
 
     Returns
     -------ith open(self.config_path) as fin:
@@ -971,10 +974,11 @@ def get_output_from_dicts(
         self_loops=0,
         restart_prob=0.7,
         bipartites_type=bipartites_type,
-        config_filename=config_filename
-        save_configfile = save_configfile)
+        config_filename=config_filename)
     
 
+    if( save_configfile ):
+        update_config = True
     parameters = {
         'multilayer_folder':   multilayer_folder,
         'config':         config,
@@ -992,10 +996,10 @@ def get_output_from_dicts(
         'output_f':       output_f,
         'njobs':          njobs
     }
-
+        
     if output_request == 'grn':
         del parameters['peak_list']
-        df = define_grn_from_config(**parameters)
+        df, config = define_grn_from_config(**parameters)
 
     elif output_request == 'enhancers':
         del parameters['tf_list']
@@ -1003,13 +1007,17 @@ def get_output_from_dicts(
 
     elif output_request == 'binding_regions':
         del parameters['gene_list']
-        df = define_binding_regions_from_config(**parameters)
+        df, config = define_binding_regions_from_config(**parameters)
 
     elif output_request == 'target_genes':
         del parameters['peak_list']
-        df = define_target_genes_from_config(**parameters)
+        df, config = define_target_genes_from_config(**parameters)
     else:
         raise ValueError("Please select an output_request value in ('grn', 'enhancers', 'binding_regions', 'target_genes').")
     
+    if( save_configfile ):
+        if( 'eta' in config and 'lamb' in config ):
+            cpath = os.path.join( multilayer_folder, config_folder, config_filename )
+            hummuspy.config.save_config(config, cpath)
 
     return df
