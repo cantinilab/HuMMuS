@@ -51,7 +51,7 @@ rsconnect/
 omnipath-log/
 b/
 a/
-test*
+#test*
 RW_grn.tsv
 config*
 .ipynb_checkpoints
