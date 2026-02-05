@@ -32,7 +32,7 @@ get_genome_annotations <- function(
 #'
 #' @examples motifs_db = get_tf2motifs(species = "human")
 get_tf2motifs <- function(species = "human", download_folder = NULL ) {
-  if( ! is.null(download_folder == NULL) ){
+  if( is.null(download_folder) ){
     download_folder = getwd()
   }
   

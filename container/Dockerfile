@@ -26,4 +26,13 @@ RUN conda env create --name rhummus_env --file=/opt/environment.yml
 
 RUN conda activate rhummus_env
 RUN cd /opt
+RUN git clone https://github.com/YasCoMa/HuMMuS
+    
+RUN cd /opt/HuMMuS
+RUN git switch task_improve_parameter_doc
+
+RUN cd /opt
+RUN pip install /opt/HuMMuS/hummuspy
 RUN Rscript install_rdeps.R
+
+ENV PATH=/opt/miniconda3/bin:$PATH

@@ -1,3 +1,4 @@
+import os
 import numpy
 from typing import Union
 import pandas
@@ -320,7 +321,7 @@ def define_grn_from_config(
                                                        ))
 
     config['seeds'] = gene_list
-
+    
     df = hummuspy.explore_network.compute_multiple_RandomWalk(
         **config,
         output_f=output_f,
@@ -924,6 +925,10 @@ def get_output_from_dicts(
         Number of jobs. The default is 1.
     save_configfile: bool
         If True, save the config file as a yaml file.
+    seed_suffix_filename : str, optional
+        Name of the seed file suffix. According to the inference analysis the output_type will be concatenated such as grn_seed.txt. The default is 'seed.txt'.
+    seed_folder : str, optional
+        Name of the seed folder. The default is 'seed'.
 
     Returns
     -------ith open(self.config_path) as fin:
@@ -1019,5 +1024,12 @@ def get_output_from_dicts(
         if( 'eta' in config and 'lamb' in config ):
             cpath = os.path.join( multilayer_folder, config_folder, config_filename )
             hummuspy.config.save_config(config, cpath)
+            print("Configuration file saved")
+    
+    if( 'seeds' in config ):
+        seed_filename = "%s_%s" %(output_request, seed_suffix_filename)
+        spath = os.path.join( multilayer_folder, seed_folder, seed_filename )
+        hummuspy.config.save_seed( config['seeds'], spath)
+        print("Seed file saved")
 
     return df

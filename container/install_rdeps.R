@@ -14,3 +14,5 @@ BiocManager::install("BSgenome.Hsapiens.UCSC.hg38")
 remove.packages("cicero")
 #devtools::install_github("cole-trapnell-lab/monocle3", upgrade = "never")
 devtools::install_github("cole-trapnell-lab/cicero-release", ref = "monocle3", upgrade = "always")
+
+install.packages("/opt/HuMMuS", repos = NULL, type = "source")

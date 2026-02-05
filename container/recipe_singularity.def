@@ -64,7 +64,15 @@ From: ubuntu:20.04
     conda env create --name rhummus_env --file=/opt/environment.yml
     
     conda activate rhummus_env
+    
     cd /opt
+    git clone https://github.com/YasCoMa/HuMMuS
+    
+    cd /opt/HuMMuS
+    git switch task_improve_parameter_doc
+    
+    cd /opt
+    pip install /opt/HuMMuS/hummuspy
     Rscript install_rdeps.R
     
     

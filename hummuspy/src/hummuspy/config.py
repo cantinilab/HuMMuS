@@ -263,6 +263,24 @@ def general_config(
 
     return config
 
+def save_seed(seed, filename):
+    """ Save the seed list used in a specific analysis type (target genes, enhancers, binding regions or grn.
+
+    Parameters
+    ----------
+    seed: list
+        The seed list.
+    filename: str
+        The name of the file to save the seed text file to.
+
+    Returns
+    -------
+    None
+    """
+    
+    f = open(filename, 'w')
+    f.write( "\n".join(seed) )
+    f.close()
 
 def save_config(config, filename):
     """ Save the config dictionary as a yaml file.
@@ -286,9 +304,13 @@ def save_config(config, filename):
     multiplex_order.sort()
     config['multiplex'] = {k: config['multiplex'][k] for k in multiplex_order}
     if 'eta' in config.keys():
-        config['eta'] = config['eta'].loc[multiplex_order]
+        if type(config['eta']) == pandas.DataFrame :
+            config['eta'] = config['eta'].loc[multiplex_order]
     if 'lamb' in config.keys():
-        config['lamb'] = config['lamb'].loc[multiplex_order, multiplex_order]
+        if type(config['lamb']) == pandas.DataFrame :
+            config['lamb'] = config['lamb'].loc[multiplex_order, multiplex_order]
+        if type(config['lamb']) == list :
+            config['lamb'] = numpy.array( config['lamb'] )
 
     config = setup_proba_config(config, lamb=config["lamb"], eta=config["eta"])
 
@@ -533,8 +555,8 @@ def setup_proba_config(
             .format(eta.index.tolist(), list(config['multiplex'].keys()))
     else:
         raise TypeError("eta should be a numpy array or a pandas Series")
-
-    if type(lamb) == numpy.array:
+    
+    if type(lamb) == numpy.array or type(lamb) == numpy.ndarray:
         # Check that lamb is a square matrix of size len(config['multiplex'])
         assert lamb.shape[0] == lamb.shape[1],\
             "lamb should be a square matrix"
