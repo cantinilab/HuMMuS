@@ -169,7 +169,6 @@ define_grn <- function(
   tf_multiplex = "TF",
   atac_multiplex = "peaks",
   rna_multiplex = "RNA",
-  multilayer_folder = "multilayer",
   gene_list = NULL,
   tf_list = NULL,
   save = FALSE,
@@ -178,6 +177,7 @@ define_grn <- function(
   suffix_bipartites = ".tsv",
   njobs = 1
   ) {
+  multilayer_folder = hummus_object@multilayer_folder
 
   grn <- define_output(
     output_type = "grn",
@@ -247,7 +247,6 @@ define_enhancers <- function(
   tf_multiplex = "TF",
   atac_multiplex = "peaks",
   rna_multiplex = "RNA",
-  multilayer_folder = "multilayer",
   gene_list = NULL,
   tf_list = NULL,
   save = FALSE,
@@ -256,6 +255,7 @@ define_enhancers <- function(
   suffix_bipartites = ".tsv",
   njobs = 1
   ) {
+  multilayer_folder = hummus_object@multilayer_folder
 
   enhancers <- define_output(
     output_type = "enhancers",
@@ -326,7 +326,6 @@ define_binding_regions <- function(
   tf_multiplex = "TF",
   atac_multiplex = "peaks",
   rna_multiplex = "RNA",
-  multilayer_folder = "multilayer",
   gene_list = NULL,
   tf_list = NULL,
   save = FALSE,
@@ -335,6 +334,7 @@ define_binding_regions <- function(
   suffix_bipartites = ".tsv",
   njobs = 1
   ) {
+  multilayer_folder = hummus_object@multilayer_folder
 
   binding_regions <- define_output(
     output_type = "binding_regions",
@@ -405,7 +405,6 @@ define_target_genes <- function(
   tf_multiplex = "TF",
   atac_multiplex = "peaks",
   rna_multiplex = "RNA",
-  multilayer_folder = "multilayer",
   gene_list = NULL,
   tf_list = NULL,
   save = FALSE,
@@ -414,6 +413,7 @@ define_target_genes <- function(
   suffix_bipartites = ".tsv",
   njobs = 1
   ) {
+  multilayer_folder = hummus_object@multilayer_folder
 
   target_genes <- define_output(
     output_type = "target_genes",
@@ -482,7 +482,6 @@ define_output <- function(
   tf_multiplex = "TF",
   atac_multiplex = "peaks",
   rna_multiplex = "RNA",
-  multilayer_folder = "multilayer",
   gene_list = NULL,
   tf_list = NULL,
   save = FALSE,
@@ -492,6 +491,8 @@ define_output <- function(
   njobs = 1,
   save_configfile = TRUE
   ) {
+  
+  multilayer_folder = hummus_object@multilayer_folder
 
   # Check if hummuspy is installed and import it
   hummuspy <- tryCatch({
@@ -575,9 +576,9 @@ define_general_config <- function(
   save_configfile = FALSE,
   config_name = "config.yml",
   config_folder = "config",
-  multilayer_folder = "multilayer",
   suffix_bipartites = ".tsv"
   ) {
+  multilayer_folder = hummus_object@multilayer_folder
 
   # Check if hummuspy is installed and import it
   hummuspy <- tryCatch({

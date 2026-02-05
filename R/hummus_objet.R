@@ -164,7 +164,8 @@ Hummus_Object <- setClass(
         "assays" = "list",
         "active.assay" = "character",
         "multilayer" = "multilayer",
-        "motifs_db" = "motifs_db"
+        "motifs_db" = "motifs_db",
+        "multilayer_folder" = "character"
     )
 )
 
@@ -187,7 +188,10 @@ Initiate_Hummus_Object <- function(
   seurat_assays,
   active.assay = NULL,
   multilayer = NULL,
-  motifs_db = NULL) {
+  motifs_db = NULL,
+  multilayer_folder="multilayer") {
+  
+  create_init_directories_wrapper(multilayer_folder)
 
   # Check if seurat_assays is a Seurat object or a list of Seurat assays
   if (inherits(seurat_assays, "Seurat")) {
@@ -231,8 +235,11 @@ Initiate_Hummus_Object <- function(
     assays = assays,
     active.assay = active.assay,
     multilayer = multilayer,
-    motifs_db = motifs_db
+    motifs_db = motifs_db,
+    multilayer_folder = multilayer_folder
   )
+
+  store_update_hummus_object_wrapper(object)
 
   return(object)
 }
@@ -518,18 +525,12 @@ save_multilayer <- function(
     verbose = TRUE,
     suffix = ".tsv"
     ) {
-
-  multiplex_folder <- "multiplex"
-  bipartite_folder <- "bipartite"
-  seed_folder      <- "seed"
-  config_folder    <- "config"
-
-  dir.create(folder_name)
-  dir.create(paste0(folder_name, "/", multiplex_folder))
-  dir.create(paste0(folder_name, "/", bipartite_folder))
-  dir.create(paste0(folder_name, "/", seed_folder))
-  dir.create(paste0(folder_name, "/", config_folder))
-
+  
+  obj_folder = hummus@multilayer_folder
+  if( obj_folder != folder_name ){
+    create_init_directories_wrapper(folder_name)
+  }
+  
   # For each multiplex, create a subfolder of multiplex, 
   # and save its networks inside
   for (multiplex_name in names(hummus@multilayer@multiplex)){
@@ -658,6 +659,8 @@ add_network <- function(
     object@multilayer@multiplex[[multiplex_name]] <- multiplex
     return(object)
   }
+  
+  store_update_hummus_object_wrapper(object)
 }
 
 
