@@ -9,11 +9,11 @@ create_init_directories_wrapper <- function( folder_name ){
   seed_folder      <- "seed"
   config_folder    <- "config"
 
-  dir.create(folder_name)
-  dir.create(paste0(folder_name, "/", multiplex_folder))
-  dir.create(paste0(folder_name, "/", bipartite_folder))
-  dir.create(paste0(folder_name, "/", seed_folder))
-  dir.create(paste0(folder_name, "/", config_folder))
+  dir.create( folder_name, showWarnings = FALSE )
+  dir.create( file.path(folder_name, multiplex_folder), showWarnings = FALSE )
+  dir.create( file.path(folder_name, bipartite_folder), showWarnings = FALSE )
+  dir.create( file.path(folder_name, seed_folder), showWarnings = FALSE )
+  dir.create( file.path(folder_name, config_folder), showWarnings = FALSE )
 }
 
 #' @title Store hummus object wrapper function for the Initiate_Hummus_Object and add_network functions

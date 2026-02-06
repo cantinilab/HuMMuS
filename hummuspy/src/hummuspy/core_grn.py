@@ -218,6 +218,7 @@ def define_grn_from_config(
         update_config=True,
         save=False,
         return_df=True,
+        return_config=False,
         output_f=None,
         njobs=1):
     """Define a GRN from a multilayer network and a config file.
@@ -260,6 +261,8 @@ def define_grn_from_config(
         an output_f name to save the GRN result.
     return_df : bool, optional
         Return the result. The default is True.
+    return_config : bool, optional
+        Return the config updated. The default is False.
     output_f : str, optional
         Name of the output file. The default is None. Only used if save=True.
     njobs : int, optional
@@ -361,8 +364,12 @@ def define_grn_from_config(
                                                            sep='\t',
                                                            index=False,
                                                            header=True)
-    if return_df:
+    if( return_df and return_config ):
         return df, config
+    elif(return_df ):
+        return df
+    elif(return_config):
+        return config
 
 
 ###############################################################################
@@ -382,6 +389,7 @@ def define_enhancers_from_config(
         update_config=True,
         save=False,
         return_df=True,
+        return_config=False,
         output_f=None,
         njobs=1):
     """Return enhancers prediction from a multilayer network and a config file.
@@ -424,6 +432,8 @@ def define_enhancers_from_config(
         an output_f name to save the predictions.
     return_df : bool, optional
         Return the result. The default is True.
+    return_config : bool, optional
+        Return the config updated. The default is False.
     output_f : str, optional
         Name of the output file. The default is None. Only used if save=True.
     njobs : int, optional
@@ -526,8 +536,12 @@ def define_enhancers_from_config(
                                                            sep='\t',
                                                            index=False,
                                                            header=True)
-    if return_df:
+    if( return_df and return_config ):
         return df, config
+    elif(return_df ):
+        return df
+    elif(return_config):
+        return config
 
 
 #########################################################
@@ -546,6 +560,7 @@ def define_binding_regions_from_config(
         update_config=True,
         save=False,
         return_df=True,
+        return_config=False,
         output_f=None,
         njobs=1):
     """Return binding regions prediction from a multilayer network and a config
@@ -589,6 +604,8 @@ def define_binding_regions_from_config(
         an output_f name to save the predictions.
     return_df : bool, optional
         Return the result. The default is True.
+    return_config : bool, optional
+        Return the config updated. The default is False.
     output_f : str, optional
         Name of the output file. The default is None. Only used if save=True.
     njobs : int, optional
@@ -692,8 +709,12 @@ def define_binding_regions_from_config(
                                                            sep='\t',
                                                            index=False,
                                                            header=True)
-    if return_df:
+    if( return_df and return_config ):
         return df, config
+    elif(return_df ):
+        return df
+    elif(return_config):
+        return config
 
 
 ######################################################
@@ -712,6 +733,7 @@ def define_target_genes_from_config(
         update_config=True,
         save=False,
         return_df=True,
+        return_config=False,
         output_f=None,
         njobs=1):
     """Return target genes prediction from a multilayer network and a config
@@ -754,6 +776,8 @@ def define_target_genes_from_config(
         an output_f name to save the predictions.
     return_df : bool, optional
         Return the result. The default is True.
+    return_config : bool, optional
+        Return the config updated. The default is False.
     output_f : str, optional
         Name of the output file. The default is None. Only used if save=True.
     njobs : int, optional
@@ -856,9 +880,12 @@ def define_target_genes_from_config(
                                                            sep='\t',
                                                            index=False,
                                                            header=True)
-    if return_df:
+    if( return_df and return_config ):
         return df, config
-
+    elif(return_df ):
+        return df
+    elif(return_config):
+        return config
 
 def get_output_from_dicts(
         output_request: str,
@@ -879,6 +906,7 @@ def get_output_from_dicts(
         update_config=True,
         save=False,
         return_df=True,
+        return_config=False,
         output_f=None,
         njobs=1,
         save_configfile=False):
@@ -966,6 +994,7 @@ def get_output_from_dicts(
     print('update_config : ', update_config)
     print('save : ', save)
     print('return_df : ', return_df)
+    print('return_config : ', return_config)
     print('output_f : ', output_f)
     print('njobs : ', njobs)
 
@@ -981,9 +1010,12 @@ def get_output_from_dicts(
         bipartites_type=bipartites_type,
         config_filename=config_filename)
     
-
+    config['multilayer_folder'] = multilayer_folder
+    
+    old_return_config = return_config
     if( save_configfile ):
         update_config = True
+        return_config = True
     parameters = {
         'multilayer_folder':   multilayer_folder,
         'config':         config,
@@ -998,25 +1030,26 @@ def get_output_from_dicts(
         'update_config':  update_config,
         'save':           save,
         'return_df':      return_df,
+        'return_config':  return_config,
         'output_f':       output_f,
         'njobs':          njobs
     }
         
     if output_request == 'grn':
         del parameters['peak_list']
-        df, config = define_grn_from_config(**parameters)
+        resout = define_grn_from_config(**parameters)
 
     elif output_request == 'enhancers':
         del parameters['tf_list']
-        df = define_enhancers_from_config(**parameters)
+        resout = define_enhancers_from_config(**parameters)
 
     elif output_request == 'binding_regions':
         del parameters['gene_list']
-        df, config = define_binding_regions_from_config(**parameters)
+        resout = define_binding_regions_from_config(**parameters)
 
     elif output_request == 'target_genes':
         del parameters['peak_list']
-        df, config = define_target_genes_from_config(**parameters)
+        resout = define_target_genes_from_config(**parameters)
     else:
         raise ValueError("Please select an output_request value in ('grn', 'enhancers', 'binding_regions', 'target_genes').")
     
@@ -1032,4 +1065,16 @@ def get_output_from_dicts(
         hummuspy.config.save_seed( config['seeds'], spath)
         print("Seed file saved")
 
-    return df
+    
+    if( return_df and old_return_config ):
+        return df, config
+    elif( return_df ):
+        df = resout
+        if( type(resout) == tuple ):
+            df, config = resout
+        return df
+    elif( old_return_config ):
+        config = resout
+        if( type(resout) == tuple ):
+            df, config = resout
+        return config

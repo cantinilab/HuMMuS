@@ -3,8 +3,13 @@ chooseCRANmirror(ind = 1)
 library(reticulate)
 reticulate::use_condaenv('rhummus_env')
 
+install.packages('rlog')
+
 library(devtools)
 devtools::install_github("cantinilab/HuMMuS", ref="dev_SeuratV5", upgrade = "never")
+
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
 BiocManager::install("OmnipathR")
 
 options(timeout = 1000)
