@@ -63,7 +63,7 @@ grn <- define_grn( hummus, multilayer_folder = "../chen_multilayer", njobs = 5 )
 
 # Flow ---------------
 
-rule
+# rule 1 - prepare_object
 load(file='./HuMMuS/data/chen_dataset_subset.rda')
 hummus <- Initiate_Hummus_Object(chen_dataset_subset, multilayer_folder = "hmexec_dir")
 
@@ -71,6 +71,7 @@ genome_annotations <- get_genome_annotations(  ensdb_annotations = EnsDb.Hsapien
 Signac::Annotation(hummus@assays$peaks) <- genome_annotations
 rm(genome_annotations)
 
+# rule 2 - compute networks and layers
 hummus@motifs_db <- get_tf2motifs( download_folder="./" )
 hummus <- bipartite_tfs2peaks( hummus_object = hummus, tf_expr_assay = "RNA", peak_assay = "peaks", tf_multiplex_name = "TF", genome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38 )
 hummus <- bipartite_peaks2genes( hummus_object = hummus, gene_assay = "RNA", peak_assay = "peaks", store_network = FALSE )
@@ -81,6 +82,7 @@ hummus <- compute_atac_peak_network(hummus, atac_assay = "peaks", verbose = 1, g
 
 save_multilayer(hummus = hummus, folder_name = "chen_multilayer")
 
+# rule 3 - analysis
 ATF2_genes <- define_target_genes(  hummus, tf_list = list("ATF2"), multilayer_f = "chen_multilayer", njobs = 1)
   
 target_genes <- define_target_genes( hummus, multilayer_folder = "chen_multilayer", njobs = 1)
@@ -97,6 +99,20 @@ network_methods = { 'tf': 'Omnipath', 'gene': 'GENIE3', 'peak': 'cicero' }
 conda install rpy2 pyreadr - do not work
 hm = readRDS('./playground/test_wrapper_init_dir/hummus_object.rds')
 
+working_dir: "wrkdir_hummus"
+njobs: 4
+assays_rda_path = 'chen_dataset_subset.rda'
+network_methods
+  - tf
+    - Omnipath
+  - gene
+    - GENIE3
+  - peak
+    - cicero
+    
+samples:
+  - sampleA
+  - sampleB
 
 # ----------------------------- playground ---------------------------------
 # R version does not create config yml file
