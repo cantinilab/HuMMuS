@@ -880,7 +880,7 @@ def define_target_genes_from_config(
 
     # process the config to the right format to
     # compute the random walks without local saving
-    config = hummuspy.config.process_config(config, multilayer_f)
+    config = hummuspy.config.process_config(config, multilayer_folder)
 
     if( gene_list == "all" ):
         gene_list = None

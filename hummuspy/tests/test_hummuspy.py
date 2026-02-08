@@ -227,4 +227,157 @@ class TestHumusPy(unittest.TestCase):
         assert len(df.columns) == 6
         assert list(df.columns) == columns
         assert len(df) == 62000
+            
+    @dryrun
+    def test_defineEnhancer_dry(self):
+        out_path = os.path.join( self.dryrun_dir, "ranked_enhancer_out.tsv" )
+        df = pandas.read_csv( out_path, sep='\t' )
+        cnf = {}
+        result = (df, cnf)
+        columns = ['index', 'layer', 'path_layer', 'score', 'gene', 'peak']
+
+        assert os.path.isfile(out_path) == True
+        assert type(result) == tuple
+        assert len(df.columns) == 6
+        assert list(df.columns) == columns
+        assert len(df) == 730611
+        
+    def test_defineEnhancer(self):
+        cpath = os.path.join( self.out_dir, "config", "grn_config.yml")
+        config = hummus.config.open_config(cpath)
+        multilayer_folder = "./data/chen_multilayer"
+
+        save_flag = True
+        out_path = os.path.join( self.tmp, "ranked_enhancer_out.tsv" )
+        result = hummus.core_grn.define_enhancers_from_config(
+                multilayer_folder,
+                config,
+                "all",
+                save = save_flag, # Do we want to save the results on disk
+                output_f = out_path, # Name of the result file IF save on disk
+                return_df = True, # return in console the results
+                                               # (e.g.: If you're interested only in TF-genes interactions and not in peaks-related scores, put ['RNA']
+                return_config = True,
+                njobs = 1 # How many cores do you wanna use ?
+        )
+        
+        columns = ['index', 'layer', 'path_layer', 'score', 'gene', 'peak']
+        df, config = result
+        
+        assert os.path.isfile(out_path) == True
+        assert type(result) == tuple
+        assert len(df.columns) == 6
+        assert list(df.columns) == columns
+        assert len(df) == 2364542
+            
+    @dryrun
+    def test_defineBindingRegion_dry(self):
+        out_path = os.path.join( self.dryrun_dir, "ranked_bind_region_out.tsv" )
+        df = pandas.read_csv( out_path, sep='\t' )
+        columns = ['index', 'layer', 'path_layer', 'score', 'tf', 'peak']
+
+        assert os.path.isfile(out_path) == True
+        assert type(df) == pandas.DataFrame
+        assert len(df.columns) == 6
+        assert list(df.columns) == columns
+        assert len(df) == 128898
+        
+    def test_defineBindingRegion(self):
+        cpath = os.path.join( self.out_dir, "config", "grn_config.yml")
+        config = hummus.config.open_config(cpath)
+        multilayer_folder = "./data/chen_multilayer"
+
+        save_flag = True
+        out_path = os.path.join( self.tmp, "ranked_bind_region_out.tsv" )
+        df = hummus.core_grn.define_binding_regions_from_config(
+                multilayer_folder,
+                config,
+                "all",
+                save = save_flag, # Do we want to save the results on disk
+                output_f = out_path, # Name of the result file IF save on disk
+                return_df = True, # return in console the results
+                                               # (e.g.: If you're interested only in TF-genes interactions and not in peaks-related scores, put ['RNA']
+                njobs = 1 # How many cores do you wanna use ?
+        )
+        
+        columns = ['index', 'layer', 'path_layer', 'score', 'tf', 'peak']
+        
+        assert os.path.isfile(out_path) == True
+        assert type(df) == pandas.DataFrame
+        assert len(df.columns) == 6
+        assert list(df.columns) == columns
+        assert len(df) == 128898
+            
+    @dryrun
+    def test_defineTargetGenes_dry(self):
+        out_path = os.path.join( self.dryrun_dir, "ranked_genes_out.tsv" )
+        df = pandas.read_csv( out_path, sep='\t' )
+        columns = ['index', 'layer', 'path_layer', 'score', 'tf', 'gene']
+
+        assert os.path.isfile(out_path) == True
+        assert type(df) == pandas.DataFrame
+        assert len(df.columns) == 6
+        assert list(df.columns) == columns
+        assert len(df) == 62000
+        
+    def test_defineTargetGenes(self):
+        cpath = os.path.join( self.out_dir, "config", "grn_config.yml")
+        config = hummus.config.open_config(cpath)
+        multilayer_folder = "./data/chen_multilayer"
+
+        save_flag = True
+        out_path = os.path.join( self.tmp, "ranked_genes_out.tsv" )
+        result = hummus.core_grn.define_target_genes_from_config(
+                multilayer_folder,
+                config,
+                "all",
+                save = save_flag, # Do we want to save the results on disk
+                output_f = out_path, # Name of the result file IF save on disk
+                return_df = True, # return in console the results
+                njobs = 1 # How many cores do you wanna use ?
+        )
+        
+        columns = ['index', 'layer', 'path_layer', 'score', 'tf', 'gene']
+        df = result
+        
+        assert os.path.isfile(out_path) == True
+        assert type(result) == pandas.DataFrame
+        assert len(df.columns) == 6
+        assert list(df.columns) == columns
+        assert len(df) == 62000
+            
+    @dryrun
+    def test_computeRandomWalk_dry(self):
+        out_path = os.path.join( self.dryrun_dir, "filtered_rw_out.tsv" )
+        df = pandas.read_csv( out_path, sep='\t' )
+        columns = ['index', 'layer', 'target', 'path_layer', 'score', 'seed']
+
+        assert os.path.isfile(out_path) == True
+        assert type(df) == pandas.DataFrame
+        assert len(df.columns) == 6
+        assert list(df.columns) == columns
+        assert len(df) == 619400
+        
+    def test_computeRandomWalk(self):
+        cpath = os.path.join( self.out_dir, "config", "grn_config.yml")
+        config = hummus.config.open_config(cpath)
+        multilayer_folder = "./data/chen_multilayer"
+        columns = ['index', 'layer', 'target', 'path_layer', 'score', 'seed']
+
+        save_flag = True
+        out_path = os.path.join( self.tmp, "filtered_rw_out.tsv" )
+        
+        rna_path = os.path.join( self.out_dir, 'multiplex', 'RNA', 'RNA_GENIE3.tsv' )
+        genes = pandas.read_csv( rna_path, sep="\t", header=None)
+        genes = list(genes[1].unique())[:100]
+        config = hummus.config.process_config(config, multilayer_folder = multilayer_folder )
+        config['seeds'] = genes
+
+        df = hummus.explore_network.compute_multiple_RandomWalk( **config, save=save_flag, output_f=out_path, n_jobs=4 )
+        
+        assert os.path.isfile(out_path) == True
+        assert type(df) == pandas.DataFrame
+        assert len(df.columns) == 6
+        assert list(df.columns) == columns
+        assert len(df) == 619400
         

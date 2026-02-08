@@ -389,7 +389,7 @@ def process_config(
             "names": [multiplex+"_"+str(i+1) for i in range(
                 len(config["multiplex"][multiplex]['layers']))],
             "graph_type": config["multiplex"][multiplex]['graph_type'],
-            "layers": [os.path.join(multilayer_folder, path) for path
+            "layers": [ os.path.join(multilayer_folder, path) if (multilayer_folder not in path) else path for path
                        in config["multiplex"][multiplex]["layers"]]
         }
         config['multiplex'][multiplex] = new_multiplex

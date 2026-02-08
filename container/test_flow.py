@@ -84,7 +84,7 @@ assert os.path.isfile(plpathb) == True
 assert os.path.isfile(plpathc) == True
 assert os.path.isfile(plpathd) == True
 
-# ------------ test 4
+# ------------ test 4 [ok] 
 cpath = os.path.join(folder, "chen_multilayer", "config", "grn_config.yml")
 config = hummus.config.open_config(cpath)
 multilayer_folder = "./data/chen_multilayer"
@@ -120,8 +120,7 @@ df, config = hummus.core_grn.define_enhancers_from_config(
         save = save_flag, # Do we want to save the results on disk
         output_f = out_path, # Name of the result file IF save on disk
         return_df = True, # return in console the results
-                                       # (e.g.: If you're interested only in TF-genes interactions and not in peaks-related scores, put ['RNA']
-        return_config = True
+        return_config = True,
         njobs = 1 # How many cores do you wanna use ?
 )
 assert type(result) == tuple
@@ -170,10 +169,12 @@ cpath = os.path.join(folder, "chen_multilayer", "config", "grn_config.yml")
 config = hummus.config.open_config(cpath)
 
 # Exploring network
-rna_path = os.path.join( folder, 'chen_multilayer', 'RNA', 'RNA_GENIE3.tsv' )
+save_flag = True
+out_path = os.path.join( tmp, "filtered_rw_out.tsv" )
+rna_path = os.path.join( folder, 'chen_multilayer', 'multiplex', 'RNA', 'RNA_GENIE3.tsv' )
 genes = pd.read_csv( rna_path, sep="\t", header=None)
-genes = list(genes[1].unique())
+genes = list(genes[1].unique())[:200]
 config = hummus.config.process_config(config, multilayer_folder = multilayer_folder )
-config['seeds']+=genes # list(TFs) #["ARID3A", "ARID3B", "ARID2", "CLOCK", "ARNT2"]
+config['seeds'] = genes[:200]
 
-df = hummus.explore_network.compute_multiple_RandomWalk( **config, save=False, n_jobs=4 )
+df = hummus.explore_network.compute_multiple_RandomWalk( **config, save=save_flag, output_f=out_path, n_jobs=4 )
