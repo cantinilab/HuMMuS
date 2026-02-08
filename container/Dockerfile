@@ -1,4 +1,27 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
+
+RUN apt update -y
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata
+RUN apt install -y build-essential  \
+                   gcc \
+                   graphviz \
+                   cmake \
+                   git \
+                   wget \
+                   curl \
+                   vim \
+                   bzip2 \
+                   libbz2-dev \
+                   file \
+                   libxrender-dev \
+                   libxext-dev \
+                   postgresql \
+                   postgresql-contrib \
+                   swig \
+                   python3-dev
+RUN apt -y install libudunits2-dev libgdal-dev libgeos-dev libproj-dev 
+RUN apt -y install zlib1g-dev libabsl-dev
 
 RUN mkdir /opt
 WORKDIR /opt

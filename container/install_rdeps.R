@@ -16,7 +16,15 @@ options(timeout = 1000)
 BiocManager::install("EnsDb.Hsapiens.v86")
 BiocManager::install("BSgenome.Hsapiens.UCSC.hg38")
 
-remove.packages("cicero")
+tryCatch(
+      expr = {
+        remove.packages("cicero")
+      },
+      error = function(e){
+        print("No residual cicero package found")
+      }
+)
+
 #devtools::install_github("cole-trapnell-lab/monocle3", upgrade = "never")
 devtools::install_github("cole-trapnell-lab/cicero-release", ref = "monocle3", upgrade = "always")
 
