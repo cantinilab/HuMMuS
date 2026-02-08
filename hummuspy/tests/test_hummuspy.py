@@ -59,11 +59,11 @@ class TestHumusPy(unittest.TestCase):
                     'target': 'peaks'
                 }
             },
-           'seed': "seeds/seeds.txt",
+           'seeds': "seeds/seeds.txt",
            'self_loops': 0,
            'r': 0.7
         }
-        keys = ['multiplex', 'bipartite', 'seed', 'self_loops', 'r']
+        keys = ['multiplex', 'bipartite', 'seeds', 'self_loops', 'r']
                
         assert len(config.keys()) == 5
         assert list(config.keys()) == keys
@@ -88,7 +88,7 @@ class TestHumusPy(unittest.TestCase):
         bipartites_type = ['00']
 
         config = hummuspy.config.general_config( multiplex, bipartite, bipartites_type = bipartites_type )
-        keys = ['multiplex', 'bipartite', 'seed', 'self_loops', 'r']
+        keys = ['multiplex', 'bipartite', 'seeds', 'self_loops', 'r']
         
         assert len(config.keys()) == 5
         assert list(config.keys()) == keys
@@ -185,4 +185,46 @@ class TestHumusPy(unittest.TestCase):
         assert os.path.isfile(plpathb) == True
         assert os.path.isfile(plpathc) == True
         assert os.path.isfile(plpathd) == True
+            
+    @dryrun
+    def test_defineGrn_dry(self):
+        out_path = os.path.join( self.dryrun_dir, "ranked_grn_out.tsv" )
+        df = pandas.read_csv( out_path, sep='\t' )
+        cnf = {}
+        result = (df, cnf)
+        columns = ['index', 'layer', 'path_layer', 'score', 'gene', 'tf']
+
+        assert os.path.isfile(out_path) == True
+        assert type(result) == tuple
+        assert len(df.columns) == 6
+        assert list(df.columns) == columns
+        assert len(df) == 62000
+        
+    def test_defineGrn(self):
+        cpath = os.path.join( self.out_dir, "config", "grn_config.yml")
+        config = hummus.config.open_config(cpath)
+        multilayer_folder = "./data/chen_multilayer"
+
+        save_flag = True
+        out_path = os.path.join( self.tmp, "ranked_grn_out.tsv" )
+        result = hummus.core_grn.define_grn_from_config(
+                multilayer_folder,
+                config,
+                "all",
+                save = save_flag, # Do we want to save the results on disk
+                output_f = out_path, # Name of the result file IF save on disk
+                return_df = True, # return in console the results
+                                               # (e.g.: If you're interested only in TF-genes interactions and not in peaks-related scores, put ['RNA']
+                return_config = True,
+                njobs = 1 # How many cores do you wanna use ?
+        )
+        
+        columns = ['index', 'layer', 'path_layer', 'score', 'gene', 'tf']
+        df, config = result
+        
+        assert os.path.isfile(out_path) == True
+        assert type(result) == tuple
+        assert len(df.columns) == 6
+        assert list(df.columns) == columns
+        assert len(df) == 62000
         
