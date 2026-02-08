@@ -82,11 +82,17 @@ save_multilayer(hummus = hummus, folder_name = "chen_multilayer")
 
 ATF2_genes <- define_target_genes(  hummus, tf_list = list("ATF2"), multilayer_f = "chen_multilayer", njobs = 1)
   
-target_genes <- define_target_genes( hummus, multilayer_f = "chen_multilayer", njobs = 1)
+target_genes <- define_target_genes( hummus, multilayer_folder = "chen_multilayer", njobs = 1)
 grn <- define_grn( hummus, multilayer_folder = "chen_multilayer", njobs = 5 )
-enhancers <- define_enhancers( hummus, gene_list = list("ATF2"),  multilayer_f = "chen_multilayer", njobs = 1 )
-binding_regions <- define_binding_regions( hummus, multilayer_f = "chen_multilayer", njobs = 1 )
+enhancers <- define_enhancers( hummus, gene_list = list("ATF2"),  multilayer_folder = "chen_multilayer", njobs = 1 )
+binding_regions <- define_binding_regions( hummus, multilayer_folder = "chen_multilayer", njobs = 1 )
 
+# -------- items snakemake parameter file
+njobs
+working_dir
+assays_rda_path
+
+# ----------------------------- playground ---------------------------------
 # R version does not create config yml file
 
 multiplex_names = NULL
