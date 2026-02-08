@@ -59,12 +59,13 @@ for (f in files) {
 }
 
 hummus <- Initiate_Hummus_Object(chen_dataset_subset, multilayer_folder="test_wrapper_init_dir")
-
 grn <- define_grn( hummus, multilayer_folder = "../chen_multilayer", njobs = 5 )
-# TODO: now testing the wrappers
 
+# Flow ---------------
+
+rule
 load(file='./HuMMuS/data/chen_dataset_subset.rda')
-hummus <- Initiate_Hummus_Object(chen_dataset_subset)
+hummus <- Initiate_Hummus_Object(chen_dataset_subset, multilayer_folder = "hmexec_dir")
 
 genome_annotations <- get_genome_annotations(  ensdb_annotations = EnsDb.Hsapiens.v86::EnsDb.Hsapiens.v86 )
 Signac::Annotation(hummus@assays$peaks) <- genome_annotations
@@ -88,9 +89,14 @@ enhancers <- define_enhancers( hummus, gene_list = list("ATF2"),  multilayer_fol
 binding_regions <- define_binding_regions( hummus, multilayer_folder = "chen_multilayer", njobs = 1 )
 
 # -------- items snakemake parameter file
-njobs
-working_dir
-assays_rda_path
+njobs = 4
+working_dir = 'wrkdir_hummus'
+assays_rda_path = 'chen_dataset_subset.rda'
+network_methods = { 'tf': 'Omnipath', 'gene': 'GENIE3', 'peak': 'cicero' }
+
+conda install rpy2 pyreadr - do not work
+hm = readRDS('./playground/test_wrapper_init_dir/hummus_object.rds')
+
 
 # ----------------------------- playground ---------------------------------
 # R version does not create config yml file
