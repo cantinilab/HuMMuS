@@ -6,7 +6,7 @@ sudo apt-get install zlib1g-dev libabsl-dev
 
 conda create --name rhummus_env python=3.10 r-base=4.4.3 -y
 conda install h5py
-conda install r-reticulate r-devtools r-signac r-grr r-doparallel r-dorng r-monocle3
+conda install r-reticulate r-jsonlite r-devtools r-signac r-grr r-doparallel r-dorng r-monocle3
 
 conda install bioconda::bioconductor-tfbstools bioconda::bioconductor-chromvar bioconda::bioconductor-motifmatchr bioconda::bioconductor-singlecellexperiment bioconda::bioconductor-biovizbase 
 conda install omnipath bioconda::bioconductor-singlecellexperiment
@@ -29,6 +29,7 @@ BiocManager::install("BSgenome.Hsapiens.UCSC.hg38")
 remove.packages("cicero")
 #devtools::install_github("cole-trapnell-lab/monocle3", upgrade = "never")
 devtools::install_github("cole-trapnell-lab/cicero-release", ref = "monocle3", upgrade = "always")
+devtools::install_github("coletl/coler")
 
 */
 

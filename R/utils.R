@@ -1,5 +1,11 @@
 `%||%` <- rlang::`%||%`
 
+load_first_object <- function(fname){
+    e <- new.env(parent = parent.frame())
+    load(fname, e)
+    return(e[[ls(e)[1]]])
+}
+
 #' @title Extract TF names from scRNA data and tf2motifs
 #'
 #' @param species (character) - Species name. Default: "human".
