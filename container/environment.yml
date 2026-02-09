@@ -364,6 +364,7 @@ dependencies:
   - r-gbrd=0.4.12=r44hc72bb7e_2
   - r-generics=0.1.4=r44hc72bb7e_1
   - r-gert=2.3.1=r44h5e22a44_0
+  - r-getopt=1.20.4=r44ha770c72_2
   - r-ggbeeswarm=0.7.3=r44hc72bb7e_0
   - r-ggplot2=4.0.1=r44h785f33e_0
   - r-ggrastr=1.0.2=r44hc72bb7e_3
@@ -427,6 +428,7 @@ dependencies:
   - r-nloptr=2.2.1=r44h8ae9fae_1
   - r-nnet=7.3_20=r44h54b55ab_1
   - r-openssl=2.3.4=r44h50f7d53_0
+  - r-optparse=1.7.5=r44hc72bb7e_2
   - r-otel=0.2.0=r44hc72bb7e_1
   - r-parallelly=1.46.1=r44h54b55ab_0
   - r-patchwork=1.3.2=r44hc72bb7e_1
