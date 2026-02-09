@@ -1,5 +1,12 @@
 `%||%` <- rlang::`%||%`
 
+#' @title Returns the content of an rda file
+#'
+#' @param fname (character) - Path to the rda file.
+#'
+#' @return object comprised in the rda file
+#' @export
+#'
 load_first_object <- function(fname){
     e <- new.env(parent = parent.frame())
     load(fname, e)

@@ -2,6 +2,8 @@
 #' @description This function is a wrapper for the Initiate_Hummus_Object function
 #' in hummus_objet.R. It creates the directories needed to store the bipartites, multiplexes, config and seed.
 #' @param folder_name Directory that will store the multilayer information
+#' @export
+#'
   # Initialize directories
 create_init_directories_wrapper <- function( folder_name ){
   multiplex_folder <- "multiplex"
@@ -20,7 +22,8 @@ create_init_directories_wrapper <- function( folder_name ){
 #' @description This function is a wrapper for the Initiate_Hummus_Object and add_network functions
 #' in hummus_objet.R, in the Initiate_Hummus_Object function it stores the initial hummus object and in the add_network one it updates the hummus object that was stored
 #' @param hummus A hummus object
-#' @param folder_name Directory that will store the multilayer information
+#' @export
+#'
   # Initialize directories
 store_update_hummus_object_wrapper <- function( hummus ){
   folder_name <- hummus@multilayer_folder

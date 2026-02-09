@@ -159,7 +159,7 @@ run_omnipath_wrapper <- function(
   source_target = source_target,
   verbose = 1) {
 
-  TF_PPI <- OmnipathR::import_post_translational_interactions(
+  TF_PPI <- OmnipathR::post_translational(
     organism = organism, partners = tfs, source_target = source_target
   )
 

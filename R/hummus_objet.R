@@ -521,14 +521,19 @@ setMethod("show", "Hummus_Object",
 #'
 save_multilayer <- function(
     hummus,
-    folder_name,
+    folder_name = NULL,
     verbose = TRUE,
     suffix = ".tsv"
     ) {
   
   obj_folder = hummus@multilayer_folder
-  if( obj_folder != folder_name ){
-    create_init_directories_wrapper(folder_name)
+  if(! is.null(folder_name)) {
+      if( obj_folder != folder_name ){
+        create_init_directories_wrapper(folder_name)
+      }
+  }
+  else{
+    folder_name = obj_folder
   }
   
   # For each multiplex, create a subfolder of multiplex, 
@@ -536,6 +541,7 @@ save_multilayer <- function(
   for (multiplex_name in names(hummus@multilayer@multiplex)){
     dir.create(paste0(folder_name, "/", multiplex_folder, "/", multiplex_name))
     print(hummus@multilayer@multiplex[[multiplex_name]])
+    
     for (network_name in names(hummus@multilayer@multiplex[[multiplex_name]]@networks)){
       print(paste(multiplex_name, network_name))
       write.table(hummus@multilayer@multiplex[[multiplex_name]]@networks[[network_name]],
@@ -648,19 +654,20 @@ add_network <- function(
   multiplex@features <- unique(c(multiplex@features, features))
   multiplex@directed[[network_name]] <- directed
   multiplex@weighted[[network_name]] <- weighted
-
+    
   # Return object
   if (inherits(object, "multiplex")) {
     return(multiplex)
   } else if (inherits(object, "multilayer")) {
     object@multiplex[[multiplex_name]] <- multiplex
+    store_update_hummus_object_wrapper(object)
     return(object)
   } else if (inherits(object, "Hummus_Object")) {
+    store_update_hummus_object_wrapper(object)
     object@multilayer@multiplex[[multiplex_name]] <- multiplex
     return(object)
   }
   
-  store_update_hummus_object_wrapper(object)
 }
 
 

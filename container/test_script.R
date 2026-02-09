@@ -77,11 +77,11 @@ hummus@motifs_db <- get_tf2motifs( download_folder="./" )
 hummus <- bipartite_tfs2peaks( hummus_object = hummus, tf_expr_assay = "RNA", peak_assay = "peaks", tf_multiplex_name = "TF", genome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38 )
 hummus <- bipartite_peaks2genes( hummus_object = hummus, gene_assay = "RNA", peak_assay = "peaks", store_network = FALSE )
 
-hummus <- compute_tf_network(hummus, gene_assay = "RNA", verbose = 1, multiplex_name = "TF", tf_network_name = "TF_network")
+hummus <- compute_tf_network(hummus, gene_assay = "RNA", method = "Omnipath", verbose = 1, multiplex_name = "TF", tf_network_name = "TF_network")
 hummus <- compute_gene_network( hummus, gene_assay = "RNA",  method = "GENIE3",  verbose = 1, number_cores = 5,  store_network = TRUE, output_file = "gene_network.tsv")
 hummus <- compute_atac_peak_network(hummus, atac_assay = "peaks", verbose = 1, genome = BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38,  store_network = TRUE, output_file = "peak_network.tsv") 
 
-save_multilayer(hummus = hummus, folder_name = "chen_multilayer")
+save_multilayer(hummus, folder_name = "chen_multilayer")
 
 # rule 3 - analysis
 ATF2_genes <- define_target_genes(  hummus, tf_list = list("ATF2"), multilayer_f = "chen_multilayer", njobs = 1)
@@ -101,19 +101,42 @@ conda install rpy2 pyreadr - do not work
 hm = readRDS('./playground/test_wrapper_init_dir/hummus_object.rds')
 
 working_dir: "wrkdir_hummus"
-njobs: 4
 assays_rda_path = 'chen_dataset_subset.rda'
-network_methods
-  - tf
-    - Omnipath
-  - gene
-    - GENIE3
-  - peak
-    - cicero
+
+resources:
+    cores: 4
     
-samples:
-  - sampleA
-  - sampleB
+assays_rda_path: 'chen_dataset_subset.rda'
+network_methods:
+    tf: "Omnipath"
+    gene: "GENIE3"
+    peak: "cicero"
+    
+analysis:
+    grn:
+        seeds:
+            gene: "all"
+            tf: "all"
+        save_flag: true
+        name: 'ranked_grn.tsv'
+    target_gene:
+        seeds:
+            gene: "all"
+            tf: "all"
+        save_flag: true
+        name: 'ranked_gene.tsv'
+    enhancer:
+        seeds:
+            gene: "all"
+            tf: "all"
+        save_flag: true
+        name: 'ranked_enhancer.tsv'
+    binding_region:
+        seeds:
+            gene: "all"
+            tf: "all"
+        save_flag: true
+        name: 'ranked_binding_region.tsv'
 
 # ----------------------------- playground ---------------------------------
 # R version does not create config yml file
