@@ -536,6 +536,9 @@ save_multilayer <- function(
     folder_name = obj_folder
   }
   
+  multiplex_folder <- "multiplex"
+  bipartite_folder <- "bipartite"
+  
   # For each multiplex, create a subfolder of multiplex, 
   # and save its networks inside
   for (multiplex_name in names(hummus@multilayer@multiplex)){
@@ -663,8 +666,8 @@ add_network <- function(
     store_update_hummus_object_wrapper(object)
     return(object)
   } else if (inherits(object, "Hummus_Object")) {
-    store_update_hummus_object_wrapper(object)
     object@multilayer@multiplex[[multiplex_name]] <- multiplex
+    store_update_hummus_object_wrapper(object)
     return(object)
   }
   

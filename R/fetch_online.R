@@ -53,7 +53,9 @@ get_tf2motifs <- function(species = "human", download_folder = './' ) {
     # Original data accessible at https://github.com/GreenleafLab/chromVARmotifs
     url = "https://github.com/GreenleafLab/chromVARmotifs/raw/refs/heads/master/data/human_pwms_v2.rda"
     dpath = file.path( download_folder, 'human_pwms_v2.rda' )
-    download.file(url, dpath)
+    if( ! file.exists(dpath) ){
+        download.file(url, dpath)
+    }
     load( file=dpath )
     
     # Load data from chromVARmotifs
@@ -68,7 +70,9 @@ get_tf2motifs <- function(species = "human", download_folder = './' ) {
     # Load data from JASPAR2020
     url = "https://github.com/GreenleafLab/chromVARmotifs/raw/refs/heads/master/data/mouse_pwms_v2.rda"
     dpath = file.path( download_folder, 'mouse_pwms_v2.rda' )
-    download.file(url, dpath)
+    if( ! file.exists(dpath) ){
+        download.file(url, dpath)
+    }
     load( file=dpath )
     
 # Load data from chromVARmotifs
