@@ -9,7 +9,7 @@
 - *Documentation* (for issue #19) - Clarification of multilayer_folder (changing description and renaming from multilayer_f to multilayer_folder)
 - *Documentation* - Following the TODO suggestion, the explanation about the expected values of the \*\_graph_type parameters was added
 
-- *Fix* - While building the multilayers step by step, i tried to reproduce the correct environment needed to install the dependencies and follow the tutorial (https://cantinilab.github.io/HuMMuS/articles/chen\_vignette.html#) until the end
+- *Fix* - While building the multilayers step by step, i tried to reproduce the correct environment needed to install the dependencies and follow the tutorial (https://cantinilab.github.io/HuMMuS/articles/chen_vignette.html#) until the end
 - *Fix* - In the define_* functions, the values of eta and lamb were computed and being updated in the config passed, but this information was being lost, since the functions were not returning the config back to be stored in a file. I also added the feature of forcing it to save when the update_config is activated
 - *Fix* - Adjust of eta and lamb values conversion of types and include array type checking for lambda as ndarray together with numpy array
 - *Fix* - In process_config function in config.py, it was appending the mutilayer folder path every time it was being called by the define_* functions, i added a condition to avoid the duplicated concatenation
