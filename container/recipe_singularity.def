@@ -73,6 +73,8 @@ From: ubuntu:24.04
     
     cd /opt
     pip install /opt/HuMMuS/hummuspy
+    cp /opt/HuMMuS/hummuspy/src/hummuspy/utils/logging/logging_conf.ini /opt/miniconda3/envs/rhummus_env/lib/python3.10/site-packages/hummuspy/utils/logging/
+    
     Rscript install_rdeps.R
     
     

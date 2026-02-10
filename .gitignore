@@ -18,6 +18,12 @@
 # Output files from R CMD check
 /*.Rcheck/
 
+# snakemake files
+workflow/.snakemake
+workflow/.conda
+workflow/.config
+workflow/.cache
+
 # RStudio files
 .Rproj.user/
 

@@ -56,6 +56,7 @@ RUN git switch task_improve_parameter_doc
 
 RUN cd /opt
 RUN pip install /opt/HuMMuS/hummuspy
+RUN cp /opt/HuMMuS/hummuspy/src/hummuspy/utils/logging/logging_conf.ini /opt/miniconda3/envs/rhummus_env/lib/python3.10/site-packages/hummuspy/utils/logging/
 RUN Rscript install_rdeps.R
 
 ENV PATH=/opt/miniconda3/bin:$PATH
