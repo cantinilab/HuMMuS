@@ -17,7 +17,7 @@
 -  *Feature* - Adjust config save file and enabling the storage of the seeds used when calling any of the four exploration analysis types
 -  *Feature* - I added an option to return the output dataframe or only config or both in the get_output_from_dicts and define_* functions in core_grn.py
 -  *Feature* - In the get_tf2motifs function, i implemented the automatic download of the human and/or mouse data from https://github.com/GreenleafLab/chromVARmotifs
--  *Feature* (for issue #17) - A container folder was added in the repository comprising the recipes to build and docker images, encapsulating the dependencies
+-  *Feature* (for issue #17) - A container folder was added in the repository comprising the recipes to build singularity and docker images, encapsulating the dependencies
 -  *Feature* (for issue #15) - A wrapper function to create the multilayer directories and another to save the hummus in .rds file were implemented, and the main folder name/path is now saved as a slot of the hummus object. In all the functions that need the multilayer_folder, it is retrieving from the hummus object slot, to be consistent. Changed the original calls using paste0 to concat the parts of the directories by file.path to be compatible to other OS (windows).
 -  *Feature* - Added a simple example of another bipartite (rna-drug) and multiplex (drug-drug) in the tests directory with instructions (readme.md) and the processing script.
 -  *Feature* (for issue #16) - Added memory profiler as a decorator outputting as a logger. Use it with @profile_memory
