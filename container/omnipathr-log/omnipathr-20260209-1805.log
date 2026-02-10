@@ -1,0 +1,26 @@
+[2026-02-09 18:05:11] [INFO]    [OmnipathR] Welcome to OmnipathR!
+[2026-02-09 18:05:11] [INFO]    [OmnipathR] OmnipathR version: 3.14.0
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] Reading JSON from `/home/yasmmin/.cache/OmnipathR/cache.json` (encoding: UTF-8).
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] JSON validation successful: TRUE
+[2026-02-09 18:05:11] [INFO]    [OmnipathR] Initialized cache: `/home/yasmmin/.cache/OmnipathR`.
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] Reading JSON from `/home/yasmmin/miniconda3/envs/rhummus_env/lib/R/library/OmnipathR/db/db_def.json` (encoding: UTF-8).
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] JSON validation successful: TRUE
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] Reading JSON from `/home/yasmmin/miniconda3/envs/rhummus_env/lib/R/library/OmnipathR/internal/magic_bytes.json` (encoding: UTF-8).
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] JSON validation successful: TRUE
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] Reading JSON from `/home/yasmmin/miniconda3/envs/rhummus_env/lib/R/library/OmnipathR/internal/urls.json` (encoding: UTF-8).
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] JSON validation successful: TRUE
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] Reading JSON from `/home/yasmmin/miniconda3/envs/rhummus_env/lib/R/library/OmnipathR/internal/id_types.json` (encoding: UTF-8).
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] JSON validation successful: TRUE
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] Arguments for OmniPath query: [partners=NA,source_target=AND,organisms=9606,query_type=interactions]
+[2026-02-09 18:05:11] [INFO]    [OmnipathR] Loading database `Ensembl and OMA organism names`.
+[2026-02-09 18:05:11] [INFO]    [OmnipathR] Looking up in cache `https://www.ensembl.org/info/about/species.html`: key=7332486db7400730697234bad76ca0c8e4d00799, latest version=1.
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] Cache file path: /home/yasmmin/.cache/OmnipathR/7332486db7400730697234bad76ca0c8e4d00799-1.html
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] Looking up in cache: `https://omabrowser.org/All/oma-species.txt`.
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] Loaded data from RDS `/home/yasmmin/.cache/OmnipathR/30e690cbb55dfc63b5903ab337f34ffc2f4be397-1.rds`.
+[2026-02-09 18:05:11] [INFO]    [OmnipathR] Loaded database `Ensembl and OMA organism names`.
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] Organism(s): 9606
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] Orthology targets: 
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] Looking up in cache: `https://omnipathdb.org/interactions?genesymbols=yes&datasets=omnipath,pathwayextra,kinaseextra,ligrecextra&organisms=9606&source_target=AND&fields=sources,references,curation_effort&license=academic`
+[2026-02-09 18:05:11] [TRACE]   [OmnipathR] Loaded data from RDS `/home/yasmmin/.cache/OmnipathR/8f81109124ed70555db4d6ae7359dcadda4d66e2-1.rds`.
+[2026-02-09 18:05:11] [INFO]    [OmnipathR] Loaded from cache: `https://omnipathdb.org/interactions?genesymbols=yes&datasets=omnipath,pathwayextra,kinaseextra,ligrecextra&organisms=9606&source_target=AND&fields=sources,references,curation_effort&license=academic`
+[2026-02-09 18:05:14] [SUCCESS] [OmnipathR] Loaded 139054 interactions from cache.

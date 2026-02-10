@@ -1,0 +1,31 @@
+chooseCRANmirror(ind = 1)
+
+library(reticulate)
+reticulate::use_condaenv('rhummus_env')
+
+install.packages('rlog')
+
+library(devtools)
+devtools::install_github("cantinilab/HuMMuS", ref="dev_SeuratV5", upgrade = "never")
+
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("OmnipathR")
+
+options(timeout = 1000)
+BiocManager::install("EnsDb.Hsapiens.v86")
+BiocManager::install("BSgenome.Hsapiens.UCSC.hg38")
+
+tryCatch(
+      expr = {
+        remove.packages("cicero")
+      },
+      error = function(e){
+        print("No residual cicero package found")
+      }
+)
+
+#devtools::install_github("cole-trapnell-lab/monocle3", upgrade = "never")
+devtools::install_github("cole-trapnell-lab/cicero-release", ref = "monocle3", upgrade = "always")
+
+install.packages("/opt/HuMMuS", repos = NULL, type = "source")

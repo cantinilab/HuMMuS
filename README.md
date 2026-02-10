@@ -4,6 +4,28 @@
 [![doc-deployment](https://github.com/cantinilab/HuMMuS/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/cantinilab/HuMMuS/actions/workflows/pages/pages-build-deployment?theme=flickr)
 [![PyPI version](https://img.shields.io/pypi/v/hummuspy?color=blue)](https://pypi.org/project/hummuspy/)
 
+### List of modifications made on this branch
+
+- *Documentation* (for issue #19) - Clarification of multilayer_folder (changing description and renaming from multilayer_f to multilayer_folder)
+- *Documentation* - Following the TODO suggestion, the explanation about the expected values of the \*\_graph_type parameters was added
+
+- *Fix* - While building the multilayers step by step, i tried to reproduce the correct environment needed to install the dependencies and follow the tutorial (https://cantinilab.github.io/HuMMuS/articles/chen_vignette.html#) until the end
+- *Fix* - In the define_* functions, the values of eta and lamb were computed and being updated in the config passed, but this information was being lost, since the functions were not returning the config back to be stored in a file. I also added the feature of forcing it to save when the update_config is activated
+- *Fix* - Adjust of eta and lamb values conversion of types and include array type checking for lambda as ndarray together with numpy array
+- *Fix* - In process_config function in config.py, it was appending the mutilayer folder path every time it was being called by the define_* functions, i added a condition to avoid the duplicated concatenation
+
+-  *Feature* - Adjust config save file and enabling the storage of the seeds used when calling any of the four exploration analysis types
+-  *Feature* - I added an option to return the output dataframe or only config or both in the get_output_from_dicts and define_* functions in core_grn.py
+-  *Feature* - In the get_tf2motifs function, i implemented the automatic download of the human and/or mouse data from https://github.com/GreenleafLab/chromVARmotifs
+-  *Feature* (for issue #17) - A container folder was added in the repository comprising the recipes to build singularity and docker images, encapsulating the dependencies
+-  *Feature* (for issue #15) - A wrapper function to create the multilayer directories and another to save the hummus in .rds file were implemented, and the main folder name/path is now saved as a slot of the hummus object. In all the functions that need the multilayer_folder, it is retrieving from the hummus object slot, to be consistent. Changed the original calls using paste0 to concat the parts of the directories by file.path to be compatible to other OS (windows).
+-  *Feature* - Added a simple example of another bipartite (rna-drug) and multiplex (drug-drug) in the tests directory with instructions (readme.md) and the processing script.
+-  *Feature* (for issue #16) - Added memory profiler as a decorator outputting as a logger. Use it with @profile_memory
+-  *Feature* - Added option to pass gene_list and tf_list or peak_list as a path to a file containing each element per line. Updated the parameter description in the docstring
+-  *Feature* - Added option to save the node types transition plots. The assertion of check_lamb values was commented in save_config and get_*_lamb functions because it only works when applying for the standard full connected layers. Adding a new bipartite that do not have relations with the other node entities is semantically correct but will not comprise check_lamb restrictions. 
+-  *Feature* (for issue #16) - Implemented and finished unit tests for the functionalities in python
+-  *Feature* (for issue #17) - Added snakemake workflow and documentation about the configuration input file and instructions of usage and call
+
 ### Heterogeneous Multilayer network for Multi-omics Single-cell data
 
 HuMMuS exploits multi-omics single-cell measurements to infer numerous regulatory mechanisms.

@@ -111,7 +111,7 @@ def general_config(
         self_loops=0,
         restart_prob=0.7,
         bipartites_type: Union[str, list[str], dict[str]] = ('00', '00'),
-        save_configfile: bool = True,
+        save_configfile: bool = False,
         config_filename: str = 'config.yaml',
         suffix='.tsv'):
 
@@ -213,7 +213,7 @@ def general_config(
     config = dict()
     config['multiplex'] = dict()
     config['bipartite'] = dict()
-    config['seed'] = seed_path
+    config['seeds'] = seed_path
     config['self_loops'] = self_loops
 
     # We add the multiplexes to the config
@@ -230,7 +230,7 @@ def general_config(
     # if type of bipartites not associated to their names already,
     # we create a dict with the same order as the bipartites
     if type(bipartites_type) == list or type(bipartites_type) == tuple:
-        print("bipartites_type has been provided throguh a list, make sure " +
+        print("bipartites_type has been provided through a list, make sure " +
               "the order matches the one of the 'bipartites' dictionary' keys."
               )
         temp = dict()
@@ -263,6 +263,24 @@ def general_config(
 
     return config
 
+def save_seed(seed, filename):
+    """ Save the seed list used in a specific analysis type (target genes, enhancers, binding regions or grn.
+
+    Parameters
+    ----------
+    seed: list
+        The seed list.
+    filename: str
+        The name of the file to save the seed text file to.
+
+    Returns
+    -------
+    None
+    """
+    
+    f = open(filename, 'w')
+    f.write( "\n".join(seed) )
+    f.close()
 
 def save_config(config, filename):
     """ Save the config dictionary as a yaml file.
@@ -286,9 +304,13 @@ def save_config(config, filename):
     multiplex_order.sort()
     config['multiplex'] = {k: config['multiplex'][k] for k in multiplex_order}
     if 'eta' in config.keys():
-        config['eta'] = config['eta'].loc[multiplex_order]
+        if type(config['eta']) == pandas.DataFrame :
+            config['eta'] = config['eta'].loc[multiplex_order]
     if 'lamb' in config.keys():
-        config['lamb'] = config['lamb'].loc[multiplex_order, multiplex_order]
+        if type(config['lamb']) == pandas.DataFrame :
+            config['lamb'] = config['lamb'].loc[multiplex_order, multiplex_order]
+        if type(config['lamb']) == list :
+            config['lamb'] = numpy.array( config['lamb'] )
 
     config = setup_proba_config(config, lamb=config["lamb"], eta=config["eta"])
 
@@ -367,7 +389,7 @@ def process_config(
             "names": [multiplex+"_"+str(i+1) for i in range(
                 len(config["multiplex"][multiplex]['layers']))],
             "graph_type": config["multiplex"][multiplex]['graph_type'],
-            "layers": [os.path.join(multilayer_folder, path) for path
+            "layers": [ os.path.join(multilayer_folder, path) if (multilayer_folder not in path) else path for path
                        in config["multiplex"][multiplex]["layers"]]
         }
         config['multiplex'][multiplex] = new_multiplex
@@ -378,13 +400,17 @@ def process_config(
 
     config['eta'] = config['eta'].to_list()
     config['lamb'] = numpy.array(config['lamb']).tolist()
-    seeds_path = os.path.join(multilayer_folder, config['seed'])
-    if os.path.exists(seeds_path):
-        config['seeds'] = pandas.read_csv(
-            seeds_path, header=None).iloc[:, 0].values.tolist()
+    
+    if( type( config['seeds'] ) == str ):
+        seeds_path = os.path.join(multilayer_folder, config['seeds'])
+        if os.path.exists(seeds_path):
+            config['seeds'] = pandas.read_csv(
+                seeds_path, header=None).iloc[:, 0].values.tolist()
     else:
-        config['seeds'] = []
-    del config['seed']
+        if( type( config['seeds'] ) != list ):
+            config['seeds'] = []
+        
+    del config['seeds']
     if 'r' in config.keys():
         config['restart_proba'] = config['r']
         del config['r']
@@ -533,8 +559,8 @@ def setup_proba_config(
             .format(eta.index.tolist(), list(config['multiplex'].keys()))
     else:
         raise TypeError("eta should be a numpy array or a pandas Series")
-
-    if type(lamb) == numpy.array:
+    
+    if type(lamb) == numpy.array or type(lamb) == numpy.ndarray:
         # Check that lamb is a square matrix of size len(config['multiplex'])
         assert lamb.shape[0] == lamb.shape[1],\
             "lamb should be a square matrix"
@@ -563,8 +589,7 @@ def setup_proba_config(
     lamb = lamb.fillna(0)
 
     # Check that lamb is a valid probability matrix
-    assert check_lamb(lamb, config),\
-        "lamb is not a valid probability matrix according to bipartites"
+    #assert check_lamb(lamb, config), "lamb is not a valid probability matrix according to bipartites"
 
     # Order eta and lamb according to the order of the layers in the config
     eta = eta[config['multiplex'].keys()]
@@ -628,7 +653,9 @@ def get_grn_lamb(config,
                  tf_multiplex='TF',
                  peak_multiplex='peaks',
                  rna_multiplex='RNA',
-                 draw=False
+                 draw=False,
+                 save_plot=False,
+                 name_plot="grn_lamb.png"
                  ):
 
     lamb = initialise_lamb(config,
@@ -645,15 +672,16 @@ def get_grn_lamb(config,
                     axis=1)
 
     # max_lambd check to see
-    assert check_lamb(config=config, lamb=lamb), "There seem to be a " +\
-        "incoherence between bipartite source/targets and multiplex names" +\
-        "provided in get_classic_grn_lamb"
+    #assert check_lamb(config=config, lamb=lamb), "There seem to be a  incoherence between bipartite source/targets and multiplex namesprovided in get_classic_grn_lamb"
 
+    if(save_plot is True):
+        draw = True
+        
     if draw is True:
         to_draw_lamb = lamb.loc[[tf_multiplex, peak_multiplex, rna_multiplex],
                                 [tf_multiplex, peak_multiplex, rna_multiplex]]
 
-        draw_lamb(to_draw_lamb)
+        draw_lamb(to_draw_lamb, save_plot=save_plot, name_plot=name_plot )
 
     return lamb
 
@@ -665,7 +693,9 @@ def get_enhancers_lamb(config,
                        tf_multiplex='TF',
                        peak_multiplex='peaks',
                        rna_multiplex='RNA',
-                       draw=False
+                       draw=False,
+                       save_plot=False,
+                       name_plot="enhancer_lamb.png"
                        ):
 
     lamb = initialise_lamb(config,
@@ -685,14 +715,15 @@ def get_enhancers_lamb(config,
     lamb = lamb.fillna(0)
 
     # max_lambd check to see
-    assert check_lamb(config=config, lamb=lamb), "There seem to be a " +\
-        "incoherence between bipartite source/targets and multiplex names" +\
-        "provided in get_classic_grn_lamb"
+    #assert check_lamb(config=config, lamb=lamb), "There seem to be a  incoherence between bipartite source/targets and multiplex names "provided in get_classic_grn_lamb"
 
+    if(save_plot is True):
+        draw = True
+        
     if draw is True:
         to_draw_lamb = lamb.loc[[tf_multiplex, peak_multiplex, rna_multiplex],
                                 [tf_multiplex, peak_multiplex, rna_multiplex]]
-        draw_lamb(to_draw_lamb)
+        draw_lamb(to_draw_lamb, save_plot=save_plot, name_plot=name_plot )
 
     return lamb
 
@@ -704,7 +735,9 @@ def get_binding_regions_lamb(config,
                              tf_multiplex='TF',
                              peak_multiplex='peaks',
                              rna_multiplex='RNA',
-                             draw=False
+                             draw=False,
+                             save_plot=False,
+                             name_plot="binding_region_lamb.png"
                              ):
 
     lamb = initialise_lamb(config,
@@ -726,14 +759,15 @@ def get_binding_regions_lamb(config,
     lamb = lamb.fillna(0)
 
     # max_lambd check to see
-    assert check_lamb(config=config, lamb=lamb), "There seem to be a " +\
-        "incoherence between bipartite source/targets and multiplex names" +\
-        "provided in get_classic_grn_lamb"
+    #assert check_lamb(config=config, lamb=lamb), "There seem to be a incoherence between bipartite source/targets and multiplex names provided in get_classic_grn_lamb"
 
+    if(save_plot is True):
+        draw = True
+        
     if draw is True:
         to_draw_lamb = lamb.loc[[tf_multiplex, peak_multiplex, rna_multiplex],
                                 [tf_multiplex, peak_multiplex, rna_multiplex]]
-        draw_lamb(to_draw_lamb)
+        draw_lamb(to_draw_lamb, save_plot=save_plot, name_plot=name_plot )
 
     return lamb
 
@@ -745,7 +779,9 @@ def get_target_genes_lamb(config,
                           tf_multiplex='TF',
                           peak_multiplex='peaks',
                           rna_multiplex='RNA',
-                          draw=False
+                             draw=False,
+                             save_plot=False,
+                             name_plot="target_gene_lamb.png"
                           ):
 
     lamb = initialise_lamb(config,
@@ -765,14 +801,15 @@ def get_target_genes_lamb(config,
     lamb = lamb.fillna(0)
 
     # max_lambd check to see
-    assert check_lamb(config=config, lamb=lamb), "There seem to be a " +\
-        "incoherence between bipartite source/targets and multiplex names" +\
-        "provided in get_classic_grn_lamb"
+    #assert check_lamb(config=config, lamb=lamb), "There seem to be a incoherence between bipartite source/targets and multiplex names provided in get_classic_grn_lamb"
 
+    if(save_plot is True):
+        draw = True
+        
     if draw is True:
         to_draw_lamb = lamb.loc[[tf_multiplex, peak_multiplex, rna_multiplex],
                                 [tf_multiplex, peak_multiplex, rna_multiplex]]
-        draw_lamb(to_draw_lamb)
+        draw_lamb(to_draw_lamb, save_plot=save_plot, name_plot=name_plot )
 
     return lamb
 
@@ -780,7 +817,7 @@ def get_target_genes_lamb(config,
 ##############################
 # Check proba transitions    #
 ##############################
-def get_max_lamb(config, directed=True, draw=False, figsize=(7, 7)):
+def get_max_lamb(config, directed=True, draw=False, save_plot=False, name_plot="max_lamb.png", figsize=(7, 7)):
     """Calculate the maximum lamb matrix according to bipartites
     indicated in the config in input.
     Bipartites are used to know which layers can be connected to each other.
@@ -844,13 +881,16 @@ def get_max_lamb(config, directed=True, draw=False, figsize=(7, 7)):
     # normalise per rows
     max_lamb = max_lamb.div(max_lamb.sum(axis=0), axis=1)
 
+    if(save_plot is True):
+        draw = True
+        
     if draw is True:
-        draw_lamb(max_lamb, figsize=figsize)
+        draw_lamb(max_lamb, figsize=figsize, save_plot=save_plot, name_plot=name_plot )
 
     return max_lamb
 
 
-def check_lamb(lamb, config, directed=True, draw=False):
+def check_lamb(lamb, config, directed=True, draw=False, save_plot=False, name_plot="check_lamb.png" ):
     """Check that lamb is a valid probability matrix according to bipartites
     indicated in the config in input.
     Bipartites are used to know which layers can be connected to each other.
@@ -870,7 +910,7 @@ def check_lamb(lamb, config, directed=True, draw=False):
     """
 
     # Calculate the maximum lamb matrix according to bipartites
-    max_lamb = (get_max_lamb(config, directed=directed, draw=draw) > 0).astype(int)
+    max_lamb = (get_max_lamb(config, directed=directed, draw=draw, save_plot=save_plot, name_plot=name_plot ) > 0).astype(int)
 
     # Count number of locations where lamb has no non-zero value
     # and max_lamb is zero
@@ -888,7 +928,7 @@ def check_lamb(lamb, config, directed=True, draw=False):
 ##############################
 # Draw proba transitions     #
 ##############################
-def draw_config(config, figsize=(7, 7)):
+def draw_config(config, figsize=(7, 7), save_plot=False, name_plot="config_lamb.png" ):
     """Draw the lamb argument config as a networkx graph.
     
     Parameters
@@ -907,10 +947,10 @@ def draw_config(config, figsize=(7, 7)):
     node_color = ["blue" if color == 0 else "green"
                   for color in node_color]
 
-    draw_lamb(config["lamb"], figsize=figsize, node_color=node_color)
+    draw_lamb(config["lamb"], figsize=figsize, node_color=node_color, save_plot=save_plot, name_plot=name_plot )
 
 
-def draw_lamb(df, figsize=(7, 7), node_color='blue'):
+def draw_lamb(df, figsize=(7, 7), node_color='blue', save_plot=False, name_plot="lamb.png"):
     """Draw the lamb matrix as a networkx graph.
 
     Parameters
@@ -1010,6 +1050,8 @@ def draw_lamb(df, figsize=(7, 7), node_color='blue'):
 
     ax.set_ylim([list(pos.values())[0][1] - 0.5,
                  list(pos.values())[-1][1] + 0.5])
+    if( save_plot ):
+        fig.savefig( name_plot, dpi=1200 )
 
 def my_draw_networkx_edge_labels(
     G,

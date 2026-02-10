@@ -161,6 +161,9 @@ bipartite_tfs2peaks <- function(
                            "network" = tfs2peaks,
                            "multiplex_left" = peak_multiplex_name,
                            "multiplex_right" = tf_multiplex_name)
+  
+  store_update_hummus_object_wrapper(hummus_object)
+  
   return(hummus_object) # Return TF-peak bipartite object
 }
 
@@ -291,6 +294,8 @@ bipartite_peaks2genes <- function(
                            "network" = peaks2genes,
                            "multiplex_left" = gene_multiplex_name,
                            "multiplex_right" = peak_multiplex_name)
+  store_update_hummus_object_wrapper(hummus_object)
+  
   return(hummus_object)
 }
 
