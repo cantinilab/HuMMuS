@@ -53,4 +53,4 @@ The configuration file contains the following information:
 
 #### Usage:
 - In the folder container/ you will find instructions to build a singularity image with all needed dependencies for HuMMuS work correctly.
-- Run command example attaching a directory in the singularity image: `snakemake --cores 4 --use-singularity --singularity-args "--bind  '/mnt/yasdata/home/yasmmin/:/mnt/yasdata/home/yasmmin/'"`
+- Run command example attaching a directory in the singularity image: `snakemake --cores 4 --use-singularity --singularity-args "--bind  '/mnt/data_volume/home/user//:/mnt/data_volume/home/user/'"`
