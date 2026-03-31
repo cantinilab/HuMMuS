@@ -58,6 +58,28 @@ library(HuMMuS)
 ## Download the single-cell data
 The data used in this tutorial can be [downloaded here](https://figshare.com/account/home#/projects/168899)
 
+Note that this data is paired and in form of a Seurat object which will then be transformed into a HuMMuS R object (see next step). However, HuMMuS also works with unpaired data. You just need to set up your own Seurat object with your unpaired scRNA and scATAC data as described below. The example assumes your scRNA and scATAC matrices are stored in a .h5 file, in case your file is stored in a different format you may need to replace the function that reads the files.
+```{r set_up_unpaired_seurat}
+# Get RNA data
+rna_counts <- Read10X_h5("filtered_feature_bc_matrix.h5")
+
+# Get ATAC data
+peaks_counts <- Read10X_h5("filtered_peak_bc_matrix.h5")
+
+peak_coordinates <- rownames(peaks_counts)
+peak_ranges <- StringToGRanges(peak_coordinates, sep = c(":", "-"))
+
+# Create the Seurat object
+seurat_obj <- SeuratObject::CreateSeuratObject(counts = rna_counts, assay = "RNA")
+seurat_obj@assays$peaks <- Signac::CreateChromatinAssay(
+  counts = peaks_counts,
+  ranges = peak_ranges,
+  sep = c(":", "-")
+)
+
+seurat_obj
+```
+You can now continue normally with the next steps, just replace `chen_dataset_subset` with `seurat_obj`.
 
 ## 1. Initialisation of HuMMuS object
 HuMMuS R objects are instances developed on top of seurat objects. It means it’s created from a seurat object and the contained assays can be accessed the same way.
