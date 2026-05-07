@@ -1,3 +1,4 @@
+import os
 import numpy
 from typing import Union
 import pandas
@@ -23,7 +24,8 @@ def format_multilayer(
 
     ! The DataFrame should have 2-3 columns :
      ['source', 'target', 'weight'], or ['source', 'target'] !
-    #TODO : explain graph_type !!
+    
+    *_graph_type parameters: Graph type refers to a string composed of two characters, whose values can only be 0 or 1. The first character is 1 if the graph is directed, otherwise, if all the relations among the nodes are bi-directional the value is 0. The second character indicates whether the relations among the nodes has a weight to be considered (value 1) or not (value 0).
     Args:
         TF_layer (Union[list, pandas.DataFrame]): TF layer(s) edge list
         ATAC_layer (Union[list, pandas.DataFrame]): ATAC layer(s) edge list
@@ -204,7 +206,7 @@ def get_GRN(
 # 1/4 Define GRN config and compute results #
 #############################################
 def define_grn_from_config(
-        multilayer_f,
+        multilayer_folder,
         config,
         gene_list=None,
         tf_list=None,
@@ -216,6 +218,7 @@ def define_grn_from_config(
         update_config=True,
         save=False,
         return_df=True,
+        return_config=False,
         output_f=None,
         njobs=1):
     """Define a GRN from a multilayer network and a config file.
@@ -229,14 +232,14 @@ def define_grn_from_config(
 
     Parameters
     ----------
-    multilayer_f : str
-        Path to the multilayer folder.
+    multilayer_folder : str
+        The path to the folder where the multilayer processed files are stored.
     config : dict
         Config dictionnary.
-    gene_list : list, optional
-        List of genes. The default is 'all'.
-    tf_list : list, optional
-        List of TFs. The default is 'all'.
+    gene_list : list or str, optional
+        List of genes or a path to a text file listing elements per line. The default is None, considering all genes.
+    tf_list : list or str, optional
+        List of TFs or a path to a text file listing elements per line. The default is None, considering all TFs.
     config_name : str, optional
         Name of the config file that will be saved.
         The default is 'grn_config.yml'.
@@ -258,6 +261,8 @@ def define_grn_from_config(
         an output_f name to save the GRN result.
     return_df : bool, optional
         Return the result. The default is True.
+    return_config : bool, optional
+        Return the config updated. The default is False.
     output_f : str, optional
         Name of the output file. The default is None. Only used if save=True.
     njobs : int, optional
@@ -301,7 +306,13 @@ def define_grn_from_config(
 
     # process the config to the right format to
     # compute the random walks without local saving
-    config = hummuspy.config.process_config(config, multilayer_f)
+    config = hummuspy.config.process_config(config, multilayer_folder)
+    
+    if( gene_list == "all" ):
+        gene_list = None
+
+    if( tf_list == "all" ):
+        tf_list = None
 
     if gene_list is None:
         gene_list = []
@@ -315,11 +326,18 @@ def define_grn_from_config(
             layer_nodes = numpy.concatenate([
                 numpy.unique(df_layer[0].values),
                 numpy.unique(df_layer[1].values)])
-            gene_list = numpy.unique(numpy.concatenate([gene_list, layer_nodes]
-                                                       ))
+            gene_list = numpy.unique(numpy.concatenate([ gene_list, layer_nodes] ))
+    else:
+        flag = False
+        if( type(gene_list) == str ):
+            if( os.path.isfile(gene_list) ):
+                gene_list = numpy.unique( list( filter( lambda x: x != '', open(gene_list, 'r').read().split('\n') ) ) )
+                flag = True
+        if( not flag ):
+            raise Exception("Invalid value for gene_list parameter")
 
     config['seeds'] = gene_list
-
+    
     df = hummuspy.explore_network.compute_multiple_RandomWalk(
         **config,
         output_f=output_f,
@@ -347,6 +365,14 @@ def define_grn_from_config(
                 numpy.unique(df_layer[1].values)])
             tf_list = numpy.unique(numpy.concatenate([tf_list, layer_nodes]))
         tf_list = tf_list[tf_list != 'fake_node']
+    else:
+        flag = False
+        if( type(tf_list) == str ):
+            if( os.path.isfile(tf_list) ):
+                tf_list = numpy.unique( list( filter( lambda x: x != '', open(tf_list, 'r').read().split('\n') ) ) )
+                flag = True
+        if( not flag ):
+            raise Exception("Invalid value for tf_list parameter")
 
     # Add normalisation ?
     df = df[df['tf'].isin(tf_list)]
@@ -359,8 +385,12 @@ def define_grn_from_config(
                                                            sep='\t',
                                                            index=False,
                                                            header=True)
-    if return_df:
+    if( return_df and return_config ):
+        return df, config
+    elif(return_df ):
         return df
+    elif(return_config):
+        return config
 
 
 ###############################################################################
@@ -368,7 +398,7 @@ def define_grn_from_config(
 # 2/4 Define enhancers config and compute results #
 #############################################
 def define_enhancers_from_config(
-        multilayer_f,
+        multilayer_folder,
         config,
         gene_list=None,
         peak_list=None,
@@ -380,6 +410,7 @@ def define_enhancers_from_config(
         update_config=True,
         save=False,
         return_df=True,
+        return_config=False,
         output_f=None,
         njobs=1):
     """Return enhancers prediction from a multilayer network and a config file.
@@ -393,14 +424,14 @@ def define_enhancers_from_config(
 
     Parameters
     ----------
-    multilayer_f : str
-        Path to the multilayer folder.
+    multilayer_folder : str
+        The path to the folder where the multilayer processed files are stored..
     config : dict
-        Config dictionnary.
-    gene_list : list, optional
-        List of genes. The default is 'all'.
-    peak_list : list, optional
-        List of peaks. The default is 'all'.
+        Config dictionary.
+    gene_list : list or str, optional
+        List of genes or a path to a text file listing elements per line. The default is None, considering all genes.
+    peak_list : list or str, optional
+        List of peaks or a path to a text file listing elements per line. The default is None, considering all peaks.
     config_name : str, optional
         Name of the config file that will be saved.
         The default is 'enhancers_config.yml'.
@@ -422,6 +453,8 @@ def define_enhancers_from_config(
         an output_f name to save the predictions.
     return_df : bool, optional
         Return the result. The default is True.
+    return_config : bool, optional
+        Return the config updated. The default is False.
     output_f : str, optional
         Name of the output file. The default is None. Only used if save=True.
     njobs : int, optional
@@ -467,7 +500,10 @@ def define_enhancers_from_config(
 
     # process the config to the right format to
     # compute the random walks without local saving
-    config = hummuspy.config.process_config(config, multilayer_f)
+    config = hummuspy.config.process_config(config, multilayer_folder)
+
+    if( gene_list == "all" ):
+        gene_list = None
 
     if gene_list is None:
         gene_list = []
@@ -481,8 +517,16 @@ def define_enhancers_from_config(
             layer_nodes = numpy.concatenate([
                 numpy.unique(df_layer[0].values),
                 numpy.unique(df_layer[1].values)])
-            gene_list = numpy.unique(numpy.concatenate([gene_list, layer_nodes]
-                                                       ))
+            gene_list = numpy.unique(numpy.concatenate([ gene_list, layer_nodes] ))
+    else:
+        flag = False
+        if( type(gene_list) == str ):
+            if( os.path.isfile(gene_list) ):
+                gene_list = numpy.unique( list( filter( lambda x: x != '', open(gene_list, 'r').read().split('\n') ) ) )
+                flag = True
+        if( not flag ):
+            raise Exception("Invalid value for gene_list parameter")
+                
     config['seeds'] = gene_list
 
     df = hummuspy.explore_network.compute_multiple_RandomWalk(
@@ -510,8 +554,15 @@ def define_enhancers_from_config(
             layer_nodes = numpy.concatenate([
                 numpy.unique(df_layer[0].values),
                 numpy.unique(df_layer[1].values)])
-            peak_list = numpy.unique(numpy.concatenate([peak_list, layer_nodes]
-                                                       ))
+            peak_list = numpy.unique(numpy.concatenate([ peak_list, layer_nodes] ))
+    else:
+        flag = False
+        if( type(peak_list) == str ):
+            if( os.path.isfile(tf_list) ):
+                peak_list = numpy.unique( list( filter( lambda x: x != '', open(peak_list, 'r').read().split('\n') ) ) )
+                flag = True
+        if( not flag ):
+            raise Exception("Invalid value for peak_list parameter")
 
     # Add normalisation ?
     df = df[df['peak'].isin(peak_list)]
@@ -524,15 +575,19 @@ def define_enhancers_from_config(
                                                            sep='\t',
                                                            index=False,
                                                            header=True)
-    if return_df:
+    if( return_df and return_config ):
+        return df, config
+    elif(return_df ):
         return df
+    elif(return_config):
+        return config
 
 
 #########################################################
 # 3/4 Define binding regions config and compute results #
 #########################################################
 def define_binding_regions_from_config(
-        multilayer_f,
+        multilayer_folder,
         config,
         tf_list=None,
         peak_list=None,
@@ -544,6 +599,7 @@ def define_binding_regions_from_config(
         update_config=True,
         save=False,
         return_df=True,
+        return_config=False,
         output_f=None,
         njobs=1):
     """Return binding regions prediction from a multilayer network and a config
@@ -558,10 +614,10 @@ def define_binding_regions_from_config(
 
     Parameters
     ----------
-    multilayer_f : str
-        Path to the multilayer folder.
+    multilayer_folder : str
+        The path to the folder where the multilayer processed files are stored..
     config : dict
-        Config dictionnary.
+        Config dictionary.
     tf_list : list, optional
         List of TFs. The default is 'all'.
     peak_list : list, optional
@@ -587,6 +643,8 @@ def define_binding_regions_from_config(
         an output_f name to save the predictions.
     return_df : bool, optional
         Return the result. The default is True.
+    return_config : bool, optional
+        Return the config updated. The default is False.
     output_f : str, optional
         Name of the output file. The default is None. Only used if save=True.
     njobs : int, optional
@@ -631,8 +689,14 @@ def define_binding_regions_from_config(
 
     # process the config to the right format to
     # compute the random walks without local saving
-    config = hummuspy.config.process_config(config, multilayer_f)
+    config = hummuspy.config.process_config(config, multilayer_folder)
 
+    if( tf_list == "all" ):
+        tf_list = None
+
+    if( peak_list == "all" ):
+        peak_list = None
+        
     if tf_list is None:
         tf_list = []
         for layer in config['multiplex'][tf_multiplex]['layers']:
@@ -645,9 +709,16 @@ def define_binding_regions_from_config(
             layer_nodes = numpy.concatenate([
                 numpy.unique(df_layer[0].values),
                 numpy.unique(df_layer[1].values)])
-            tf_list = numpy.unique(numpy.concatenate([tf_list, layer_nodes]
-                                                     ))
+            tf_list = numpy.unique(numpy.concatenate([ tf_list, layer_nodes] ))
         tf_list = tf_list[tf_list != 'fake_node']
+    else:
+        flag = False
+        if( type(tf_list) == str ):
+            if( os.path.isfile(tf_list) ):
+                tf_list = numpy.unique( list( filter( lambda x: x != '', open(tf_list, 'r').read().split('\n') ) ) )
+                flag = True
+        if( not flag ):
+            raise Exception("Invalid value for tf_list parameter")
 
     config['seeds'] = tf_list
 
@@ -676,8 +747,15 @@ def define_binding_regions_from_config(
             layer_nodes = numpy.concatenate([
                 numpy.unique(df_layer[0].values),
                 numpy.unique(df_layer[1].values)])
-            peak_list = numpy.unique(numpy.concatenate([peak_list, layer_nodes]
-                                                       ))
+            peak_list = numpy.unique(numpy.concatenate([ peak_list, layer_nodes] ))
+    else:
+        flag = False
+        if( type(peak_list) == str ):
+            if( os.path.isfile(tf_list) ):
+                peak_list = numpy.unique( list( filter( lambda x: x != '', open(peak_list, 'r').read().split('\n') ) ) )
+                flag = True
+        if( not flag ):
+            raise Exception("Invalid value for peak_list parameter")
 
     # Add normalisation ?
     df = df[df['peak'].isin(peak_list)]
@@ -690,15 +768,19 @@ def define_binding_regions_from_config(
                                                            sep='\t',
                                                            index=False,
                                                            header=True)
-    if return_df:
+    if( return_df and return_config ):
+        return df, config
+    elif(return_df ):
         return df
+    elif(return_config):
+        return config
 
 
 ######################################################
 # 4/4 Define target genes config and compute results #
 ######################################################
 def define_target_genes_from_config(
-        multilayer_f,
+        multilayer_folder,
         config,
         gene_list=None,
         tf_list=None,
@@ -710,6 +792,7 @@ def define_target_genes_from_config(
         update_config=True,
         save=False,
         return_df=True,
+        return_config=False,
         output_f=None,
         njobs=1):
     """Return target genes prediction from a multilayer network and a config
@@ -723,14 +806,14 @@ def define_target_genes_from_config(
 
     Parameters
     ----------
-    multilayer_f : str
-        Path to the multilayer folder.
+    multilayer_folder : str
+        The path to the folder where the multilayer processed files are stored..
     config : dict
-        Config dictionnary.
-    gene_list : list, optional
-        List of genes. The default is 'all'.
-    tf_list : list, optional
-        List of TFs. The default is 'all'.
+        Config dictionary.
+    gene_list : list or str, optional
+        List of genes or a path to a text file listing elements per line. The default is None, considering all genes.
+    tf_list : list or str, optional
+        List of TFs or a path to a text file listing elements per line. The default is None, considering all TFs.
     config_name : str, optional
         Name of the config file that will be saved.
         The default is 'target_genes_config.yml'.
@@ -752,6 +835,8 @@ def define_target_genes_from_config(
         an output_f name to save the predictions.
     return_df : bool, optional
         Return the result. The default is True.
+    return_config : bool, optional
+        Return the config updated. The default is False.
     output_f : str, optional
         Name of the output file. The default is None. Only used if save=True.
     njobs : int, optional
@@ -795,7 +880,13 @@ def define_target_genes_from_config(
 
     # process the config to the right format to
     # compute the random walks without local saving
-    config = hummuspy.config.process_config(config, multilayer_f)
+    config = hummuspy.config.process_config(config, multilayer_folder)
+
+    if( gene_list == "all" ):
+        gene_list = None
+
+    if( tf_list == "all" ):
+        tf_list = None
 
     if gene_list is None:
         gene_list = []
@@ -809,8 +900,15 @@ def define_target_genes_from_config(
             layer_nodes = numpy.concatenate([
                 numpy.unique(df_layer[0].values),
                 numpy.unique(df_layer[1].values)])
-            gene_list = numpy.unique(numpy.concatenate([gene_list, layer_nodes]
-                                                       ))
+            gene_list = numpy.unique(numpy.concatenate([ gene_list, layer_nodes] ))
+    else:
+        flag = False
+        if( type(gene_list) == str ):
+            if( os.path.isfile(gene_list) ):
+                gene_list = numpy.unique( list( filter( lambda x: x != '', open(gene_list, 'r').read().split('\n') ) ) )
+                flag = True
+        if( not flag ):
+            raise Exception("Invalid value for gene_list parameter")
 
     if tf_list is None:
         tf_list = []
@@ -824,9 +922,16 @@ def define_target_genes_from_config(
             layer_nodes = numpy.concatenate([
                 numpy.unique(df_layer[0].values),
                 numpy.unique(df_layer[1].values)])
-            tf_list = numpy.unique(numpy.concatenate([tf_list, layer_nodes]
-                                                     ))
+            tf_list = numpy.unique(numpy.concatenate([ tf_list, layer_nodes] ))
         tf_list = tf_list[tf_list != 'fake_node']
+    else:
+        flag = False
+        if( type(tf_list) == str ):
+            if( os.path.isfile(tf_list) ):
+                tf_list = numpy.unique( list( filter( lambda x: x != '', open(tf_list, 'r').read().split('\n') ) ) )
+                flag = True
+        if( not flag ):
+            raise Exception("Invalid value for tf_list parameter")
 
     config['seeds'] = tf_list
 
@@ -854,13 +959,16 @@ def define_target_genes_from_config(
                                                            sep='\t',
                                                            index=False,
                                                            header=True)
-    if return_df:
+    if( return_df and return_config ):
+        return df, config
+    elif(return_df ):
         return df
-
+    elif(return_config):
+        return config
 
 def get_output_from_dicts(
         output_request: str,
-        multilayer_f,
+        multilayer_folder,
         multiplexes_list,
         bipartites_list,
         folder_multiplexes='multiplex',
@@ -877,8 +985,10 @@ def get_output_from_dicts(
         update_config=True,
         save=False,
         return_df=True,
+        return_config=False,
         output_f=None,
-        njobs=1):
+        njobs=1,
+        save_configfile=False):
     """
     Compute an output from a multilayer network and a config file, that can be
     chosen among ['grn', 'enhancers', 'binding_regions', 'target_genes'].
@@ -890,14 +1000,16 @@ def get_output_from_dicts(
     ----------
     output_request : ['grn', 'enhancers', 'binding_regions', 'target_genes']
         Type of output requested.
-    multilayer_f : str
-        Path to the multilayer folder.
+    multilayer_folder : str
+        The path to the folder where the multilayer processed files are stored.
     config : dict
-        Config dictionnary.
+        Config dictionary.
     gene_list : list, optional
-        List of genes. The default is 'all'.
+        A vector of genes to be considered for the final binding
+#' regions (filtering is done on the genes before inferring the binding_regions). The default is 'all'.
     tf_list : list, optional
-        List of TFs. The default is 'all'.
+        A vector of TFs to be considered for the binding_regions
+#'  (filtering is done on the TFs after inferring the binding_regions). The default is 'all'.
     config_name : str, optional
         Name of the config file. The default is 'config.yml'.
     config_folder : str, optional
@@ -918,6 +1030,8 @@ def get_output_from_dicts(
         Name of the output file. The default is None.
     njobs : int, optional
         Number of jobs. The default is 1.
+    save_configfile: bool
+        If True, save the config file as a yaml file.
 
     Returns
     -------ith open(self.config_path) as fin:
@@ -955,6 +1069,7 @@ def get_output_from_dicts(
     print('update_config : ', update_config)
     print('save : ', save)
     print('return_df : ', return_df)
+    print('return_config : ', return_config)
     print('output_f : ', output_f)
     print('njobs : ', njobs)
 
@@ -968,11 +1083,16 @@ def get_output_from_dicts(
         self_loops=0,
         restart_prob=0.7,
         bipartites_type=bipartites_type,
-        save_configfile=False,
         config_filename=config_filename)
-
+    
+    config['multilayer_folder'] = multilayer_folder
+    
+    old_return_config = return_config
+    if( save_configfile ):
+        update_config = True
+        return_config = True
     parameters = {
-        'multilayer_f':   multilayer_f,
+        'multilayer_folder':   multilayer_folder,
         'config':         config,
         'gene_list':      gene_list,
         'peak_list':      peak_list,
@@ -985,26 +1105,52 @@ def get_output_from_dicts(
         'update_config':  update_config,
         'save':           save,
         'return_df':      return_df,
+        'return_config':  return_config,
         'output_f':       output_f,
         'njobs':          njobs
     }
-
+        
     if output_request == 'grn':
         del parameters['peak_list']
-        df = define_grn_from_config(**parameters)
+        resout = define_grn_from_config(**parameters)
 
     elif output_request == 'enhancers':
         del parameters['tf_list']
-        df = define_enhancers_from_config(**parameters)
+        resout = define_enhancers_from_config(**parameters)
 
     elif output_request == 'binding_regions':
         del parameters['gene_list']
-        df = define_binding_regions_from_config(**parameters)
+        resout = define_binding_regions_from_config(**parameters)
 
     elif output_request == 'target_genes':
         del parameters['peak_list']
-        df = define_target_genes_from_config(**parameters)
+        resout = define_target_genes_from_config(**parameters)
     else:
         raise ValueError("Please select an output_request value in ('grn', 'enhancers', 'binding_regions', 'target_genes').")
+    
+    if( save_configfile ):
+        if( 'eta' in config and 'lamb' in config ):
+            cpath = os.path.join( multilayer_folder, config_folder, config_filename )
+            hummuspy.config.save_config(config, cpath)
+            print("Configuration file saved")
+    
+    if( 'seeds' in config ):
+        seed_folder = 'seed'
+        seed_filename = "%s_%s" %(output_request, "seed.txt")
+        spath = os.path.join( multilayer_folder, seed_folder, seed_filename )
+        hummuspy.config.save_seed( config['seeds'], spath)
+        print("Seed file saved")
 
-    return df
+    
+    if( return_df and old_return_config ):
+        return df, config
+    elif( return_df ):
+        df = resout
+        if( type(resout) == tuple ):
+            df, config = resout
+        return df
+    elif( old_return_config ):
+        config = resout
+        if( type(resout) == tuple ):
+            df, config = resout
+        return config

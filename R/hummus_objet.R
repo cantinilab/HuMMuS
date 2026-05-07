@@ -164,7 +164,8 @@ Hummus_Object <- setClass(
         "assays" = "list",
         "active.assay" = "character",
         "multilayer" = "multilayer",
-        "motifs_db" = "motifs_db"
+        "motifs_db" = "motifs_db",
+        "multilayer_folder" = "character"
     )
 )
 
@@ -187,7 +188,10 @@ Initiate_Hummus_Object <- function(
   seurat_assays,
   active.assay = NULL,
   multilayer = NULL,
-  motifs_db = NULL) {
+  motifs_db = NULL,
+  multilayer_folder="multilayer") {
+  
+  create_init_directories_wrapper(multilayer_folder)
 
   # Check if seurat_assays is a Seurat object or a list of Seurat assays
   if (inherits(seurat_assays, "Seurat")) {
@@ -231,8 +235,11 @@ Initiate_Hummus_Object <- function(
     assays = assays,
     active.assay = active.assay,
     multilayer = multilayer,
-    motifs_db = motifs_db
+    motifs_db = motifs_db,
+    multilayer_folder = multilayer_folder
   )
+
+  store_update_hummus_object_wrapper(object)
 
   return(object)
 }
@@ -514,27 +521,30 @@ setMethod("show", "Hummus_Object",
 #'
 save_multilayer <- function(
     hummus,
-    folder_name,
+    folder_name = NULL,
     verbose = TRUE,
     suffix = ".tsv"
     ) {
-
+  
+  obj_folder = hummus@multilayer_folder
+  if(! is.null(folder_name)) {
+      if( obj_folder != folder_name ){
+        create_init_directories_wrapper(folder_name)
+      }
+  }
+  else{
+    folder_name = obj_folder
+  }
+  
   multiplex_folder <- "multiplex"
   bipartite_folder <- "bipartite"
-  seed_folder      <- "seed"
-  config_folder    <- "config"
-
-  dir.create(folder_name)
-  dir.create(paste0(folder_name, "/", multiplex_folder))
-  dir.create(paste0(folder_name, "/", bipartite_folder))
-  dir.create(paste0(folder_name, "/", seed_folder))
-  dir.create(paste0(folder_name, "/", config_folder))
-
+  
   # For each multiplex, create a subfolder of multiplex, 
   # and save its networks inside
   for (multiplex_name in names(hummus@multilayer@multiplex)){
     dir.create(paste0(folder_name, "/", multiplex_folder, "/", multiplex_name))
     print(hummus@multilayer@multiplex[[multiplex_name]])
+    
     for (network_name in names(hummus@multilayer@multiplex[[multiplex_name]]@networks)){
       print(paste(multiplex_name, network_name))
       write.table(hummus@multilayer@multiplex[[multiplex_name]]@networks[[network_name]],
@@ -552,6 +562,7 @@ save_multilayer <- function(
                                bipartite_folder, "/",
                                bipartite, ".tsv"))
   }
+
 }
 
 
@@ -646,17 +657,20 @@ add_network <- function(
   multiplex@features <- unique(c(multiplex@features, features))
   multiplex@directed[[network_name]] <- directed
   multiplex@weighted[[network_name]] <- weighted
-
+    
   # Return object
   if (inherits(object, "multiplex")) {
     return(multiplex)
   } else if (inherits(object, "multilayer")) {
     object@multiplex[[multiplex_name]] <- multiplex
+    store_update_hummus_object_wrapper(object)
     return(object)
   } else if (inherits(object, "Hummus_Object")) {
     object@multilayer@multiplex[[multiplex_name]] <- multiplex
+    store_update_hummus_object_wrapper(object)
     return(object)
   }
+  
 }
 
 

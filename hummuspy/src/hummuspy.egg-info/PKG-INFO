@@ -1,0 +1,28 @@
+Metadata-Version: 2.4
+Name: hummuspy
+Version: 0.1.9.post2
+Summary: HuMMuS is a novel method for the inference of regulatory mechanisms from multi-omics data with any type and number of omics, through a heterogeneous multilayer network framework.
+Author-email: Rémi Trimbour <remi.trimbour@pasteur.fr>
+License: GPL-3.0-only
+Keywords: hummus,multilayer,multi-omics,regulatory network
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: multixrank<0.4,>=0.1
+Requires-Dist: joblib>=1.3.0
+Requires-Dist: tqdm>=4.66.3
+Requires-Dist: numpy<2.0.0,>1.24.2
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: matplotlib>=3.4.3
+Requires-Dist: scipy>=1.8.0
+Requires-Dist: distributed>=2023.0.0
+Requires-Dist: dask>=2023.0.0
+Requires-Dist: rich>=10.12.0
+Requires-Dist: bokeh!=3.0.*,>=2.4.2
+Requires-Dist: pyarrow
+Dynamic: license-file
+
+Python framework of HuMMuS.
+
+It is the backbone code running when processing random walk exploration with the R HuMMuS package.

@@ -18,6 +18,12 @@
 # Output files from R CMD check
 /*.Rcheck/
 
+# snakemake files
+workflow/.snakemake
+workflow/.conda
+workflow/.config
+workflow/.cache
+
 # RStudio files
 .Rproj.user/
 
@@ -51,7 +57,7 @@ rsconnect/
 omnipath-log/
 b/
 a/
-test*
+#test*
 RW_grn.tsv
 config*
 .ipynb_checkpoints

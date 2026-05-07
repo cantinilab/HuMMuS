@@ -139,7 +139,7 @@ format_bipartites_names <- function(
 #' @param tf_multiplex The name of the multiplex containing the TFs
 #' @param atac_multiplex The name of the multiplex containing the ATAC-seq peaks
 #' @param rna_multiplex The name of the multiplex containing the RNA-seq genes
-#' @param multilayer_f The folder where the multilayer is stored
+#' @param multilayer_folder The path to the folder where the multilayer processed files are stored
 #' @param gene_list A vector of genes to be considered for the final GRN
 #' (filtering is done on the genes before inferring the GRN)
 #' @param tf_list A vector of TFs to be considered for the final GRN (filtering
@@ -157,7 +157,7 @@ format_bipartites_names <- function(
 #' @export
 #'
 #' @examples grn <- define_grn(hummus_object = hummus,
-#'                             multilayer_f = multilayer_folder,
+#'                             multilayer_folder = multilayer_folder,
 #'                             njobs = 5)
 #'
 define_grn <- function(
@@ -169,7 +169,6 @@ define_grn <- function(
   tf_multiplex = "TF",
   atac_multiplex = "peaks",
   rna_multiplex = "RNA",
-  multilayer_f = "multilayer",
   gene_list = NULL,
   tf_list = NULL,
   save = FALSE,
@@ -178,6 +177,7 @@ define_grn <- function(
   suffix_bipartites = ".tsv",
   njobs = 1
   ) {
+  multilayer_folder = hummus_object@multilayer_folder
 
   grn <- define_output(
     output_type = "grn",
@@ -189,7 +189,6 @@ define_grn <- function(
     tf_multiplex = tf_multiplex,
     atac_multiplex = atac_multiplex,
     rna_multiplex = rna_multiplex,
-    multilayer_f = multilayer_f,
     gene_list = gene_list,
     tf_list = tf_list,
     save = save,
@@ -217,7 +216,7 @@ define_grn <- function(
 #' @param tf_multiplex The name of the multiplex containing the TFs
 #' @param atac_multiplex The name of the multiplex containing the ATAC-seq peaks
 #' @param rna_multiplex The name of the multiplex containing the RNA-seq genes
-#' @param multilayer_f The folder where the multilayer is stored
+#' @param multilayer_folder The path to the folder where the multilayer processed files are stored
 #' @param gene_list A vector of genes to be considered for the final enhancers
 #' (filtering is done on the genes before inferring the enhancers)
 #' @param tf_list A vector of TFs to be considered for the final enhancers
@@ -235,7 +234,7 @@ define_grn <- function(
 #' @export
 #'
 #' @examples enhancers <- define_enhancers(hummus_object = hummus,
-#'                             multilayer_f = multilayer_folder,
+#'                             multilayer_folder = multilayer_folder,
 #'                             njobs = 5)
 #'
 define_enhancers <- function(
@@ -247,7 +246,6 @@ define_enhancers <- function(
   tf_multiplex = "TF",
   atac_multiplex = "peaks",
   rna_multiplex = "RNA",
-  multilayer_f = "multilayer",
   gene_list = NULL,
   tf_list = NULL,
   save = FALSE,
@@ -256,6 +254,7 @@ define_enhancers <- function(
   suffix_bipartites = ".tsv",
   njobs = 1
   ) {
+  multilayer_folder = hummus_object@multilayer_folder
 
   enhancers <- define_output(
     output_type = "enhancers",
@@ -267,7 +266,6 @@ define_enhancers <- function(
     tf_multiplex = tf_multiplex,
     atac_multiplex = atac_multiplex,
     rna_multiplex = rna_multiplex,
-    multilayer_f = multilayer_f,
     gene_list = gene_list,
     tf_list = tf_list,
     save = save,
@@ -296,7 +294,7 @@ define_enhancers <- function(
 #' @param tf_multiplex The name of the multiplex containing the TFs
 #' @param atac_multiplex The name of the multiplex containing the ATAC-seq peaks
 #' @param rna_multiplex The name of the multiplex containing the RNA-seq genes
-#' @param multilayer_f The folder where the multilayer is stored
+#' @param multilayer_folder The path to the folder where the multilayer processed files are stored
 #' @param gene_list A vector of genes to be considered for the final binding
 #' regions (filtering is done on the genes before inferring the binding_regions)
 #' @param tf_list A vector of TFs to be considered for the binding_regions
@@ -314,7 +312,7 @@ define_enhancers <- function(
 #' @export
 #'
 #' @examples binding_regions <- define_binding_regions(hummus_object = hummus,
-#'                             multilayer_f = multilayer_folder,
+#'                             multilayer_folder = multilayer_folder,
 #'                             njobs = 5)
 #'
 define_binding_regions <- function(
@@ -326,7 +324,6 @@ define_binding_regions <- function(
   tf_multiplex = "TF",
   atac_multiplex = "peaks",
   rna_multiplex = "RNA",
-  multilayer_f = "multilayer",
   gene_list = NULL,
   tf_list = NULL,
   save = FALSE,
@@ -335,6 +332,7 @@ define_binding_regions <- function(
   suffix_bipartites = ".tsv",
   njobs = 1
   ) {
+  multilayer_folder = hummus_object@multilayer_folder
 
   binding_regions <- define_output(
     output_type = "binding_regions",
@@ -346,7 +344,6 @@ define_binding_regions <- function(
     tf_multiplex = tf_multiplex,
     atac_multiplex = atac_multiplex,
     rna_multiplex = rna_multiplex,
-    multilayer_f = multilayer_f,
     gene_list = gene_list,
     tf_list = tf_list,
     save = save,
@@ -375,7 +372,7 @@ define_binding_regions <- function(
 #' @param tf_multiplex The name of the multiplex containing the TFs
 #' @param atac_multiplex The name of the multiplex containing the ATAC-seq peaks
 #' @param rna_multiplex The name of the multiplex containing the RNA-seq genes
-#' @param multilayer_f The folder where the multilayer is stored
+#' @param multilayer_folder The path to the folder where the multilayer processed files are stored
 #' @param gene_list A vector of genes to be considered for the target_genes
 #' (filtering is done on the genes before inferring the target_genes)
 #' @param tf_list A vector of TFs to be considered for the final target_genes
@@ -393,7 +390,7 @@ define_binding_regions <- function(
 #' @export
 #'
 #' @examples target_genes <- define_target_genes(hummus_object = hummus,
-#'                             multilayer_f = multilayer_folder,
+#'                             multilayer_folder = multilayer_folder,
 #'                             njobs = 5)
 #'
 define_target_genes <- function(
@@ -405,7 +402,6 @@ define_target_genes <- function(
   tf_multiplex = "TF",
   atac_multiplex = "peaks",
   rna_multiplex = "RNA",
-  multilayer_f = "multilayer",
   gene_list = NULL,
   tf_list = NULL,
   save = FALSE,
@@ -414,6 +410,7 @@ define_target_genes <- function(
   suffix_bipartites = ".tsv",
   njobs = 1
   ) {
+  multilayer_folder = hummus_object@multilayer_folder
 
   target_genes <- define_output(
     output_type = "target_genes",
@@ -425,7 +422,6 @@ define_target_genes <- function(
     tf_multiplex = tf_multiplex,
     atac_multiplex = atac_multiplex,
     rna_multiplex = rna_multiplex,
-    multilayer_f = multilayer_f,
     gene_list = gene_list,
     tf_list = tf_list,
     save = save,
@@ -454,7 +450,7 @@ define_target_genes <- function(
 #' @param tf_multiplex The name of the multiplex containing the TFs
 #' @param atac_multiplex The name of the multiplex containing the ATAC-seq peaks
 #' @param rna_multiplex The name of the multiplex containing the RNA-seq genes
-#' @param multilayer_f The folder where the multilayer is stored
+#' @param multilayer_folder The path to the folder where the multilayer processed files are stored
 #' @param gene_list A vector of genes to be considered for the target_genes
 #' (filtering is done on the genes before inferring the target_genes)
 #' @param tf_list A vector of TFs to be considered for the final target_genes
@@ -482,15 +478,17 @@ define_output <- function(
   tf_multiplex = "TF",
   atac_multiplex = "peaks",
   rna_multiplex = "RNA",
-  multilayer_f = "multilayer",
   gene_list = NULL,
   tf_list = NULL,
   save = FALSE,
   output_f = NULL,
   return_df = TRUE,
   suffix_bipartites = ".tsv",
-  njobs = 1
+  njobs = 1,
+  save_configfile = TRUE
   ) {
+  
+  multilayer_folder = hummus_object@multilayer_folder
 
   # Check if hummuspy is installed and import it
   hummuspy <- tryCatch({
@@ -509,11 +507,12 @@ define_output <- function(
     hummus_object,
     bipartites_names = bipartites_names,
     suffix_bipartites = suffix_bipartites)
-
+  
+  
   # define target_genes with hummuspy function
   output <- hummuspy$core_grn$get_output_from_dicts(
     output_request = output_type,
-    multilayer_f = multilayer_f,
+    multilayer_folder = multilayer_folder,
     multiplexes_list = multiplexes_dictionary,
     bipartites_list = bipartites_dictionary,
     gene_list = gene_list,
@@ -527,7 +526,8 @@ define_output <- function(
     update_config = TRUE,
     save = save,
     return_df = return_df,
-    njobs = njobs)
+    njobs = njobs,
+    save_configfile = save_configfile)
 
   # return target_genes
   return(output)
@@ -554,7 +554,7 @@ define_output <- function(
 #' @param save_configfile A boolean indicating if the config file should be saved
 #' @param config_name The name of the config file to be created by hummuspy
 #' @param config_folder The folder where the config file will be created (inside multilayer_f)
-#' @param multilayer_f The folder where the multilayer is stored
+#' @param multilayer_folder The path to the folder where the multilayer processed files are stored
 #' 
 #' @return A config file for hummuspy
 #' @export
@@ -572,9 +572,9 @@ define_general_config <- function(
   save_configfile = FALSE,
   config_name = "config.yml",
   config_folder = "config",
-  multilayer_f = "multilayer",
   suffix_bipartites = ".tsv"
   ) {
+  multilayer_folder = hummus_object@multilayer_folder
 
   # Check if hummuspy is installed and import it
   hummuspy <- tryCatch({
@@ -597,7 +597,7 @@ define_general_config <- function(
   self_loops <- as.integer(self_loops)
 
   if (save_configfile == TRUE) {
-    config_filename <- file.path(multilayer_f, config_folder, config_name)
+    config_filename <- file.path(multilayer_folder, config_folder, config_name)
   } else {
     config_filename <- NULL
   }

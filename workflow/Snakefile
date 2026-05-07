@@ -1,0 +1,28 @@
+import os
+from snakemake.utils import min_version
+min_version("7.0.0")
+
+configfile: "config/config.yaml"
+container: "/home/yasmmin/hummus_vm/hummus.simg"
+
+rule all:
+    input:
+        os.path.join( config['working_dir'], "ready", "analysis_done.txt")
+        
+# 3. Run analysis
+module analysis_hummus:
+    snakefile: "modules/analysis_hummus.smk"
+    config: config
+use rule * from analysis_hummus
+
+# 2. Run layers and network generation
+module generate_networks_layers:
+    snakefile: "modules/generate_networks_layers.smk"
+    config: config
+use rule * from generate_networks_layers
+
+# 1. Run hummus object preparation and assay data processing
+module process_data:
+    snakefile: "modules/process_data.smk"
+    config: config
+use rule * from process_data

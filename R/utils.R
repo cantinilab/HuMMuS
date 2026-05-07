@@ -1,5 +1,18 @@
 `%||%` <- rlang::`%||%`
 
+#' @title Returns the content of an rda file
+#'
+#' @param fname (character) - Path to the rda file.
+#'
+#' @return object comprised in the rda file
+#' @export
+#'
+load_first_object <- function(fname){
+    e <- new.env(parent = parent.frame())
+    load(fname, e)
+    return(e[[ls(e)[1]]])
+}
+
 #' @title Extract TF names from scRNA data and tf2motifs
 #'
 #' @param species (character) - Species name. Default: "human".

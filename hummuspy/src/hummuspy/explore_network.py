@@ -10,6 +10,7 @@ def compute_RandomWalk(
         eta,
         lamb,
         seeds,
+        multilayer_folder = None,
         self_loops=True,
         restart_proba=0.7,
         pr=None,
@@ -22,7 +23,7 @@ def compute_RandomWalk(
 
     Parameters
     ----------
-    multilayer_f : str
+    multilayer_folder : str
         Path to the multilayer folder.
     config_name : str
         Name of the config file.
@@ -57,11 +58,11 @@ def compute_RandomWalk(
     Examples
     --------
     >>> import hummuspy
-    >>> multilayer_f = 'path/to/multilayer/folder'
+    >>> multilayer_folder = 'path/to/multilayer/folder'
     >>> config_folder = 'config'
     >>> config_name = 'hummuspy.config.yml'
     >>> seed = 'seed1'
-    >>> df = compute_RandomWalk(multilayer_f,
+    >>> df = compute_RandomWalk(multilayer_folder,
                                 config_name,
                                 seed,
                                 # seeds_filename = 'auto'/'your_name.txt'
@@ -110,6 +111,7 @@ def compute_multiple_RandomWalk(
         eta,
         lamb,
         seeds,
+        multilayer_folder = None,
         self_loops=True,
         restart_proba=0.7,
         pr=None,
@@ -123,8 +125,8 @@ def compute_multiple_RandomWalk(
 
     Parameters
     ----------
-    multilayer_f : str
-        Path to the multilayer folder.
+    multilayer_folder : str
+        The path to the folder where the multilayer processed files are stored.
     config_name : strLINC01409
         Name of the config file.
     seeds : list
@@ -158,11 +160,11 @@ def compute_multiple_RandomWalk(
     Examples
     --------
     >>> import hummuspy
-    >>> multilayer_f = 'path/to/multilayer/folder'
+    >>> multilayer_folder = 'path/to/multilayer/folder'
     >>> config_folder = 'config'
     >>> config_name = 'hummuspy.config.yml'
     >>> seed = 'seed1'
-    >>> df = compute_RandomWalk(multilayer_f,
+    >>> df = compute_RandomWalk(multilayer_folder,
                                 config_name,
                                 seed,
                                 # seeds_filename = 'auto'/'your_name.txt'

@@ -1,0 +1,80 @@
+Bootstrap: docker
+From: ubuntu:24.04
+
+%environment
+    # PATHS
+    export PATH=/opt/miniconda3/bin:$PATH
+    . /opt/miniconda3/etc/profile.d/conda.sh
+    conda activate rhummus_env
+
+%files
+    container/environment.yml /opt/environment.yml
+    container/install_rdeps.R /opt/install_rdeps.R
+
+%post
+    
+    # update apt
+    apt update -y
+
+    # basic packages (~2 min)
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata
+    apt install -y build-essential  \
+                   gcc \
+                   graphviz \
+                   cmake \
+                   git \
+                   wget \
+                   curl \
+                   vim \
+                   bzip2 \
+                   libbz2-dev \
+                   file \
+                   libxrender-dev \
+                   libxext-dev \
+                   postgresql \
+                   postgresql-contrib \
+                   swig \
+                   python3-dev
+    
+    apt -y install libudunits2-dev libgdal-dev libgeos-dev libproj-dev 
+    apt -y install zlib1g-dev libabsl-dev
+
+    # MS compatible font for plotting (~3 min.)
+    DEBIAN_FRONTEND=noninteractive apt install -y ttf-mscorefonts-installer
+
+    # conda
+    mkdir -p /opt/miniconda3
+    cd /opt/miniconda3 
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh -p /opt/miniconda3 -b -f
+    rm Miniconda3-latest-Linux-x86_64.sh
+    export PATH=/opt/miniconda3/bin:$PATH
+    export conda_NO_LOW_SPEED_LIMIT=1   # no timeout on conda commands
+    export PIPENV_INSTALL_TIMEOUT=3600   # 1h timeout on pip install commands 
+    export PIP_DEFAULT_TIMEOUT=3600
+
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+    # create and activate conda
+    conda update conda -y
+    . /opt/miniconda3/etc/profile.d/conda.sh
+
+    
+    conda config --add channels conda-forge
+    conda env create --name rhummus_env --file=/opt/environment.yml
+    
+    conda activate rhummus_env
+    
+    cd /opt
+    git clone https://github.com/YasCoMa/HuMMuS
+    
+    cd /opt/HuMMuS
+    git switch task_improve_parameter_doc
+    
+    cd /opt
+    pip install /opt/HuMMuS/hummuspy
+    cp /opt/HuMMuS/hummuspy/src/hummuspy/utils/logging/logging_conf.ini /opt/miniconda3/envs/rhummus_env/lib/python3.10/site-packages/hummuspy/utils/logging/
+    
+    Rscript install_rdeps.R
+    
+    
